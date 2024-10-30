@@ -1,1 +1,1 @@
-# Stock-Market-Simulator-EE364
+# Readme

@@ -20,8 +20,8 @@ public class Stocks{
         return this.price;
 }
 
-    public String getPriceHistory(){
-        return this.priceHistory.toString();
+    public List<Double> getPriceHistory() {
+        return new ArrayList<>(priceHistory);
     }
 
     public String getSymbol(){
@@ -33,8 +33,9 @@ public class Stocks{
         return this.companyName;
     }
 
-    public void addPrice(double newPrice) {
-        priceHistory.add(newPrice);
+    public void setPrice(double price) {
+        this.price = price;
+        this.priceHistory.add(price);
     }
 
 

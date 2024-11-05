@@ -1,35 +1,42 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class Stocks{
 
-    String symbol;
-    String companyName;
-    List<Double> priceHistory;
-    double price;
+    private String symbol;
+    private String companyName;
+    private double price;
+    private List<Double> priceHistory;
 
-    public Stocks(String symbol, String companyName, List<Double> priceHistory, double price){
+    public Stocks(String symbol, String companyName, double price){
         this.symbol = symbol;
         this.companyName = companyName;
-        this.priceHistory = priceHistory;
         this.price = price;
+        this.priceHistory = new ArrayList<>();
 
     }
 
-    double getPrice(){
+    public double getPrice(){
         return this.price;
 }
 
-    String getPriceHistory(){
+    public String getPriceHistory(){
         return this.priceHistory.toString();
     }
 
-    String getSymbol(){
+    public String getSymbol(){
         return this.symbol;
     }
+
     
-    String getCompanyName(){
+    public String getCompanyName(){
         return this.companyName;
     }
+
+    public void addPrice(double newPrice) {
+        priceHistory.add(newPrice);
+    }
+
 
 
 }

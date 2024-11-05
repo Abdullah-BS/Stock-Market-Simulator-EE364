@@ -15,4 +15,9 @@ public class Event {
     public double getImpact(){
         return eventImpact;
     }
+
+    public String toString() {
+        return "(EventName='" + eventName + "', impact=" + eventImpact + ")";
+    }
+
 }

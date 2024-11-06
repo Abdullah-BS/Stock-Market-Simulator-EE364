@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+
 public class MarketSimulator {
     private ArrayList<Stocks> listStock;
     private ArrayList<Event> listEvent;

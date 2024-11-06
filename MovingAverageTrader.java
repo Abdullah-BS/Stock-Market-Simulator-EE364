@@ -1,7 +1,7 @@
 import java.util.LinkedList; 
 import java.util.Queue; 
 
-public class MovingAverageTrader {
+public class MovingAverageTrader extends Trader implements knowledgeableTrader{
 
     protected int period;
     protected Queue<Double> values;

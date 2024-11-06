@@ -1,6 +1,6 @@
 import java.util.List;
 
-public class RSITrader {
+public class RSITrader extends Trader implements knowledgeableTrader{
     
     private int period;
     private double gain; 

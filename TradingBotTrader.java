@@ -1,24 +1,24 @@
+import java.util.List;
+
 public class TradingBotTrader extends Trader {
 
     //<editor-fold desc="Data Fields">
 
     private int period;
-    private double[] values;
     private double gains;
     private double losses;
     //</editor-fold>
 
     //<editor-fold desc="Constructors">
 
-    TradingBotTrader() {
+    public TradingBotTrader(String Name, double initialCash) {
+        super(Name, initialCash);
 
     }
-    TradingBotTrader(String Name, double intialCash, int period, double[] values, double gains, double losses) {
-        super(Name, intialCash);
+    public TradingBotTrader(String Name, double initialCash, int period) {
+        super(Name, initialCash);
         this.period = period;
-        this.values = values;
-        this.gains = gains;
-        this.losses = losses;
+
     }
     //</editor-fold>
 
@@ -30,13 +30,6 @@ public class TradingBotTrader extends Trader {
     }
     public void setPeriod(int period) {
         this.period = period;
-    }
-
-    public double[] getValues() {
-        return values;
-    }
-    public void setValues(double[] values) {
-        this.values = values;
     }
 
     public double getGains() {
@@ -59,15 +52,14 @@ public class TradingBotTrader extends Trader {
     //<editor-fold desc="Trading bot-- Calculations behaviour">
 
     // RSI
-    public double calculateRSI(int period) {
+    public double calculateRSI(int period, List<Double> prices) {
         double RSI;
-        double[] prices = stocks.getPriceHistory();
         double gain = 0;
         double loss = 0;
 
         for (int i = 0; i <= period; i++) {
 
-            double change = prices[i+1] - prices[i];
+            double change = prices.get(i+1) - prices.get(i);
             if (change > 0) {
                 gain += change;
             } else {
@@ -84,15 +76,15 @@ public class TradingBotTrader extends Trader {
     }
 
     // MovingAverage
-    public double calculateMovingAverage(int period) {
+    public double calculateMovingAverage(int period, List<Double> prices) {
         double valueMA=0;
-        double[] prices= stocks.getPricehistory();
         double sum=0;
-        int index= prices.length-period;
+        int index= prices.size()-period+1;
+
 
         if(index>0){
-            for(double amount :prices){
-                sum+=amount;
+            for(double price :prices){
+                sum+=price;
                 valueMA=sum/period;
             }
         }
@@ -105,10 +97,10 @@ public class TradingBotTrader extends Trader {
 
 
     // Calculate based on RSI and MovingAverage
-    public double calculate(int period) {
+    public double calculate(int period, List<Double> prices) {
         double value;
-        double RSI= calculateRSI(period);
-        double MA= calculateMovingAverage(period);
+        double RSI= calculateRSI(period, prices);
+        double MA= calculateMovingAverage(period, prices);
 
         value= (RSI+MA)/2;
 
@@ -117,8 +109,31 @@ public class TradingBotTrader extends Trader {
     //</editor-fold>
 
 
-    //<editor-fold desc="Excute">
-    public void excute(){}
+    //<editor-fold desc="Execute">
+    public void execute(int period,Stocks stock, int quantity) {
+        List<Double> priceHistory = stock.getPriceHistory();
+        double threshold = 1.10;
+        // Check if the period is within the limit of the array then Execute
+        if (stock.getPriceHistory().size() < period + 1) {
+
+            double value = calculate(period, priceHistory);
+            double currentPrice = stock.getPrice();
+
+            if (value < currentPrice * threshold) {
+
+                System.out.println("Suggestion to buy stock");
+                buy(stock.getSymbol(), quantity, currentPrice);
+            } else if (value >= currentPrice * threshold) {
+
+                System.out.println("Suggestion to sell stock");
+                sell(stock.getSymbol(), quantity, currentPrice);
+
+            }
+
+        } else {
+            System.out.println("Error");
+        }
+    }
 
     public String getName(){
 

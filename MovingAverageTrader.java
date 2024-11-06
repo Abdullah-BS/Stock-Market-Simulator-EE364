@@ -3,8 +3,8 @@ import java.util.Queue;
 
 public class MovingAverageTrader extends Trader implements knowledgeableTrader{
 
-    protected int period;
-    protected Queue<Double> values;
+    private int period;
+    private Queue<Double> values;
 
     public MovingAverageTrader(int period) {
         this.period = period;

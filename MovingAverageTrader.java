@@ -12,7 +12,7 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader{
 
     }
    
-    public double calculateMovingAverage() {
+    public double calculate(int period) {
         if (values.size() < period) {
             // إذا كانت عدد القيم أقل من الفترة المطلوبة، لا يمكننا حساب المتوسط
             return 0.0;
@@ -36,10 +36,6 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader{
     }
 
     
-    public abstract void execute();
-
-    public abstract String getName();
-
-    public abstract double calculate(int period);
+    public String getName() { return  "MovingAverage Trading Strategy";}
 }
 

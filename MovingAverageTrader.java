@@ -26,7 +26,16 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader{
          return sum / period;
     }
 
+   public void execute() {
+        double movingAverage = calculate();
+        double currentPrice = values.peek() != null ? values.peek() : 0.0;
 
+        if (currentPrice > movingAverage) {
+            System.out.println("Action: Sell stock, price is above the moving average.");
+        } else {
+            System.out.println("Action: Buy stock, price is below or equal to the moving average.");
+        }
+    
     // دالة لإضافة قيمة جديدة وتحديث القائمة
     public void addValue(double newValue) {
         if (values.size() == period) {

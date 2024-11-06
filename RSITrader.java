@@ -5,28 +5,45 @@ public class RSITrader {
     private int period;
     private double gain; 
     private double loss;
-    Market market;
-    List<Stock> stocks = market.getStocks();
+    List<Stock> stocks;
 
-    public double calculate(int period){
-    double prices[] = stocks.getPriceHistory();
-    gain = 0;
-    loss = 0;
-
-    for (int i = 1; i <= period; i++) {
-
-        double change = prices[i] - prices[i - 1];
-        if (change > 0) {
-            gain += change;
-        } else {
-            loss -= change;
-        }
+    public RSITrader(int period, List<Stock> stocks) {
+        this.period = period;
+        this.stocks = stocks;
     }
-    double avgGain = gain / period;
-    double avgLoss = loss / period;
 
-    double rs = avgGain / avgLoss;
-    return 100 - (100 / (1 + rs));
+    public void calculate() {
+        
+        for (Stock stock : stocks) {
+            double[] prices = stock.getPriceHistory(); // Assuming this returns a double array
+            
+            
+            if (prices.length < period + 1) {
+                System.out.println("Not enough price data to calculate RSI for " + stock.getSymbol());
+                continue;
+            }
+
+            double gain = 0;
+            double loss = 0;
+
+          
+            for (int i = 1; i <= period; i++) {
+                double change = prices[i] - prices[i - 1];
+                if (change > 0) {
+                    gain += change;
+                } else {
+                    loss -= change;
+                }
+            }
+
+            double avgGain = gain / period;
+            double avgLoss = loss / period;
+
+            double rsi = avgLoss == 0 ? 100 : 100 - (100 / (1 + (avgGain / avgLoss)));
+            
+           
+            System.out.println("Stock: " + stock.getSymbol() + ", RSI: " + rsi);
+        }
     }
      
     

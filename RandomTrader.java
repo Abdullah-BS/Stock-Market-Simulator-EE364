@@ -1,15 +1,15 @@
 public class RandomTrader extends Trader{
 
-    private int randomNumber;
+    private double randomNumber;
 
-    public RandomTrader(String name, double cash ,int randomNumber) {
+    public RandomTrader(String name, double cash) {
         super(name, cash);
-        this.randomNumber = randomNumber;
+        this.randomNumber = Math.random();
     }
 
-    public int getRandomNumber() {return randomNumber;}
+    public double getRandomNumber() {return randomNumber;}
 
-    public void setRandomNumber(int randomNumber) {this.randomNumber = randomNumber;}
+    public void setRandomNumber(double randomNumber) {this.randomNumber = randomNumber;}
 
 
     public double calculate(int period) {

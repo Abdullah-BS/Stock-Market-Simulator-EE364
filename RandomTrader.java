@@ -19,6 +19,6 @@ public class RandomTrader extends Trader{
     public void execute() {}
 
     public String getName() {
-        return "Random Trader";
+        return "Random Trader ";
     }
 }

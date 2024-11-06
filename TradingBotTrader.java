@@ -61,7 +61,7 @@ public class TradingBotTrader extends Trader {
     // RSI
     public double calculateRSI(int period) {
         double RSI;
-        double prices[] = stocks.getPriceHistory();
+        double[] prices = stocks.getPriceHistory();
         double gain = 0;
         double loss = 0;
 

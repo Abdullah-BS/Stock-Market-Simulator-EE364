@@ -4,7 +4,7 @@ public class TradingBotTrader extends Trader {
 
     private int period;
     private double[] values;
-    private double gians;
+    private double gains;
     private double losses;
     //</editor-fold>
 
@@ -13,11 +13,11 @@ public class TradingBotTrader extends Trader {
     TradingBotTrader() {
 
     }
-    TradingBotTrader(String Name, double intialCash, int period, double[] values, double gians, double losses) {
+    TradingBotTrader(String Name, double intialCash, int period, double[] values, double gains, double losses) {
         super(Name, intialCash);
         this.period = period;
         this.values = values;
-        this.gians = gians;
+        this.gains = gains;
         this.losses = losses;
     }
     //</editor-fold>
@@ -39,11 +39,11 @@ public class TradingBotTrader extends Trader {
         this.values = values;
     }
 
-    public double getGians() {
-        return gians;
+    public double getGains() {
+        return gains;
     }
-    public void setGians(double gians) {
-        this.gians = gians;
+    public void setGains(double gains) {
+        this.gains = gains;
     }
 
     public double getLosses() {
@@ -65,9 +65,9 @@ public class TradingBotTrader extends Trader {
         double gain = 0;
         double loss = 0;
 
-        for (int i = 1; i <= period; i++) {
+        for (int i = 0; i <= period; i++) {
 
-            double change = prices[i] - prices[i - 1];
+            double change = prices[i+1] - prices[i];
             if (change > 0) {
                 gain += change;
             } else {
@@ -85,7 +85,7 @@ public class TradingBotTrader extends Trader {
 
     // MovingAverage
     public double calculateMovingAverage(int period) {
-        double valueMA;
+        double valueMA=0;
         double[] prices= stocks.getPricehistory();
         double sum=0;
         int index= prices.length-period;
@@ -95,14 +95,11 @@ public class TradingBotTrader extends Trader {
                 sum+=amount;
                 valueMA=sum/period;
             }
+        }
         else{
                 System.out.println("Error");
-            }
-        return valueMA;
+
         }
-
-
-
         return valueMA;
     }
 

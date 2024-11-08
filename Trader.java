@@ -1,7 +1,8 @@
 // Trader.java
 
-import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public abstract class Trader {
     private String name;
@@ -17,7 +18,7 @@ public abstract class Trader {
         this.worthHistory = new ArrayList<>();
     }
 
-    public boolean buy(Stocks stock, int quantity, double price) {
+    public boolean buy(Stocks stock, int quantity, double price) {      // Set quanitity to 1 (in phase 1)
         double totalCost = price * quantity;
         if (cash >= totalCost) {
             cash -= totalCost;
@@ -63,14 +64,13 @@ public abstract class Trader {
     //         sell(stock, quantity, price);
     //     }
     // }
+    
+    public abstract double calculate(int period, List<Double> priceHistory);
 
-    public abstract double calculate();
-
-    public abstract void execute();
+    public abstract void execute(Stocks stock, int quantity);
 
     public String getName() {
         return name;
     }
 
 }
-

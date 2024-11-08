@@ -122,11 +122,11 @@ public class TradingBotTrader extends Trader {
             if (value < currentPrice * threshold) {
 
                 System.out.println("Suggestion to buy stock");
-                buy(stock.getSymbol(), quantity, currentPrice);
+                buy(stock, quantity, currentPrice);
             } else if (value >= currentPrice * threshold) {
 
                 System.out.println("Suggestion to sell stock");
-                sell(stock.getSymbol(), quantity, currentPrice);
+                sell(stock, quantity, currentPrice);
 
             }
 

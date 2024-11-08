@@ -3,11 +3,10 @@ import java.util.List;
 public class RSITrader extends Trader implements knowledgeableTrader{
     
     private int period;
-    private double gain; 
-    private double loss;
 
     public RSITrader(String name, double cash) {
         super(name, cash);
+        this.period = 5;
     }
 
     public RSITrader(String name, double cash, int period) {
@@ -19,21 +18,16 @@ public class RSITrader extends Trader implements knowledgeableTrader{
     public void setPeriod(int period) {this.period = period;}
 
     public double calculate(int period, List<Double> priceHistory) {
+
+            try {
+                
         
-        for (double price : priceHistory) {
-
-            // what does continue do? infinite loop?
-            if (priceHistory.size() < period + 1) {
-//                System.out.println("Not enough price data to calculate RSI for " + stock.getSymbol());
-                continue;
-            }
-
             double gain = 0;
             double loss = 0;
 
 
-            for (int i = 1; i <= period; i++) {
-                double change = priceHistory.get(i) - priceHistory.get(i - 1);
+            for (int j = 1; j <= period; j++) {
+                double change = priceHistory.get(j) - priceHistory.get(j - 1);
                 if (change > 0) {
                     gain += change;
                 } else {
@@ -49,22 +43,34 @@ public class RSITrader extends Trader implements knowledgeableTrader{
 
             return rsi;
         }
-        return 0;
-        // no Return statement outside the loop was an error. no idea why.
-    }
+
+        catch (Exception e) {
+            System.out.println("Error calculating RSI for " + stock.getSymbol());
+            return 0;
+        }
+
+        }
+
+
     public void execute(Stocks stock, int quantity) {
         List<Double> priceHistory = stock.getPriceHistory();
         double RSI = calculate(this.period, priceHistory);
         double currentPrice = stock.getPrice();
-        double threshold = 1.10;
 
-        if (RSI > currentPrice*threshold) {
+        if (RSI > 70) {
             System.out.println("Action: Sell stock, price is above the RSI.");
-            sell(stock.getSymbol(), quantity, currentPrice);
-        } else {
-            System.out.println("Action: Buy stock, price is below or equal to the RSI.");
-            buy(stock.getSymbol(), quantity, currentPrice);
+            sell(stock, quantity, currentPrice);
+
+        } else if (RSI < 30) {
+            System.out.println("Action: Buy stock, price is significantly below the RSI.");
+            buy(stock, quantity, currentPrice);
+        } 
+
+        else {
+            System.out.println("Action: Hold stock, price is within the RSI range.");
         }
+        
+        
     }
 
     public String getName() { return  "RSI Trading Strategy";}

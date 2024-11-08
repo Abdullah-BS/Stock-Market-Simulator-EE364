@@ -6,7 +6,7 @@ public class RandomTrader extends Trader{
 
     public RandomTrader(String name, double cash) {
         super(name, cash);
-        this.randomNumber = Math.random();
+        this.randomNumber = Math.random();  // 0 - 0.99
     }
 
     public double getRandomNumber() {return randomNumber;}
@@ -14,7 +14,7 @@ public class RandomTrader extends Trader{
     public void setRandomNumber(double randomNumber) {this.randomNumber = randomNumber;}
 
     //  What is the use of Calculate in randomTrader??
-    public double calculate(int period) {
+    public double calculate(int period, List<Double> priceHistory) {
         return randomNumber;
     }
 
@@ -24,7 +24,7 @@ public class RandomTrader extends Trader{
         // Check if the period is within the limit of the array then Execute
         if (stock.getPriceHistory().size() < period + 1) {
 
-            double value = calculate(period);
+            double value = calculate(period, stock);
             double currentPrice = stock.getPrice();
 
             // needs editing

@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Random;
 
 public class RandomTrader extends Trader{
 
@@ -21,23 +22,27 @@ public class RandomTrader extends Trader{
     // what to do with the period in Random????
     public void execute(int period,Stocks stock, int quantity) {
         List<Double> priceHistory = stock.getPriceHistory();
+        Random random=new Random();
+        boolean buyOrSell = random.nextBoolean() ;
+        
+            
         // Check if the period is within the limit of the array then Execute
         if (stock.getPriceHistory().size() < period + 1) {
 
             double value = calculate(period, stock);
             double currentPrice = stock.getPrice();
-
+        
             // needs editing
             // buy and sell method must be boolean!!
-            if (buy(stock.getSymbol(), quantity, currentPrice)) {
+            if (buyOrSell) {
 
                 System.out.println("buying stock");
-                buy(stock.getSymbol(), quantity, currentPrice);
+                buy(stock, quantity, currentPrice);
             }
-            else if (sell(stock.getSymbol(), quantity, currentPrice)) {
+            else {
 
                 System.out.println("selling stock");
-                sell(stock.getSymbol(), quantity, currentPrice);
+                sell(stock, quantity, currentPrice);
 
             }
             // editing ends here

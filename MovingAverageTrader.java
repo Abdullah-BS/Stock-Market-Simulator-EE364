@@ -1,6 +1,4 @@
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 public class MovingAverageTrader extends Trader implements knowledgeableTrader{
 
@@ -35,6 +33,8 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader{
 
         if (currentPrice > movingAverage) {
             System.out.println("Action: Sell stock, price is above the moving average.");
+            sell(stock, period, currentPrice)
+            
         } else {
             System.out.println("Action: Buy stock, price is below or equal to the moving average.");
         }

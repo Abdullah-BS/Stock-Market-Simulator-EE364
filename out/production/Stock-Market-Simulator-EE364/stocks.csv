@@ -1,100 +1,100 @@
-AAPL,Apple Inc.,230.76
-MSFT,Microsoft Corporation,330.53
-GOOGL,Alphabet Inc.,145.31
-AMZN,Amazon.com Inc.,136.68
-NVDA,NVIDIA Corporation,456.68
-META,Meta Platforms Inc.,310.45
-TSLA,Tesla Inc.,229.99
-ADBE,Adobe Inc.,548.67
-CRM,Salesforce Inc.,190.88
-INTC,Intel Corporation,31.81
-CSCO,Cisco Systems Inc.,49.68
-ORCL,Oracle Corporation,114.79
-IBM,International Business Machines Corporation,143.27
-AMD,Advanced Micro Devices Inc.,94.90
-QCOM,Qualcomm Incorporated,111.11
-TXN,Texas Instruments Incorporated,175.55
-AVGO,Broadcom Inc.,880.36
-AMAT,Applied Materials Inc.,129.38
-MU,Micron Technology Inc.,76.27
-NOW,ServiceNow Inc.,566.62
-ADSK,Autodesk Inc.,179.51
-INTU,Intuit Inc.,584.67
-PYPL,PayPal Holdings Inc.,54.60
-NFLX,Netflix Inc.,378.80
-BIDU,Baidu Inc.,123.46
-VMW,VMware Inc.,164.80
-WDAY,Workday Inc.,239.90
-SNPS,Synopsys Inc.,440.53
-CDNS,Cadence Design Systems Inc.,246.35
-LRCX,Lam Research Corporation,560.31
-KLAC,KLA Corporation,523.05
-MCHP,Microchip Technology Incorporated,77.69
-ADI,Analog Devices Inc.,151.50
-CTSH,Cognizant Technology Solutions Corporation,69.02
-ANSS,ANSYS Inc.,335.25
-MRVL,Marvell Technology Inc.,54.72
-FTNT,Fortinet Inc.,59.76
-TEAM,Atlassian Corporation,205.77
-SPLK,Splunk Inc.,145.00
-ZBRA,Zebra Technologies Corporation,222.21
-SHOP,Shopify Inc.,57.72
-SQ,Block Inc.,62.43
-TWLO,Twilio Inc.,46.46
-DOCU,DocuSign Inc.,43.02
-ASML,ASML Holding NV,717.09
-TXG,10x Genomics Inc.,47.60
-PDD,Pinduoduo Inc.,90.35
-JD,JD.com Inc.,27.97
-BABA,Alibaba Group Holding Limited,85.25
-NTES,NetEase Inc.,110.28
-CSX,CSX Corporation,30.13
-FIS,Fidelity National Information Services Inc.,64.31
-V,Visa Inc.,225.56
-MA,Mastercard Inc.,378.96
-SPGI,S&P Global Inc.,462.90
-MS,Morgan Stanley,84.26
-GS,Goldman Sachs Group Inc.,300.51
-BAC,Bank of America Corporation,24.63
-JPM,JPMorgan Chase & Co.,172.08
-WMT,Walmart Inc.,151.30
-DIS,The Walt Disney Company,72.70
-PEP,PepsiCo Inc.,165.59
-KO,The Coca-Cola Company,55.82
-NKE,Nike Inc.,106.89
-COST,Costco Wholesale Corporation,592.97
-HD,The Home Depot Inc.,268.61
-TGT,Target Corporation,122.24
-BA,The Boeing Company,180.05
-HON,Honeywell International Inc.,186.05
-MMM,3M Company,84.14
-GE,General Electric Company,114.93
-CVX,Chevron Corporation,146.61
-XOM,Exxon Mobil Corporation,112.30
-PG,The Procter & Gamble Company,124.40
-JNJ,Johnson & Johnson,149.86
-PFE,Pfizer Inc.,36.11
-MRNA,Moderna Inc.,113.18
-LLY,Eli Lilly and Company,595.85
-ABT,Abbott Laboratories,97.31
-NVS,Novartis AG,102.62
-AZN,AstraZeneca PLC,71.62
-VZ,Verizon Communications Inc.,30.70
-T,AT&T Inc.,14.99
-SBUX,Starbucks Corporation,97.30
-MCD,McDonald's Corporation,236.45
-CMG,Chipotle Mexican Grill Inc.,2213.59
-BKNG,Booking Holdings Inc.,3010.49
-ABNB,Airbnb Inc.,141.81
-UBER,Uber Technologies Inc.,43.82
-LYFT,Lyft Inc.,11.13
-ROKU,Roku Inc.,42.24
-SPOT,Spotify Technology SA,150.51
-EBAY,eBay Inc.,45.75
-ETSY,Etsy Inc.,59.12
-ZM,Zoom Video Communications Inc.,70.34
-DOCU,DocuSign Inc.,45.78
-PTON,Peloton Interactive Inc.,5.12
-SNAP,Snap Inc.,9.37
-TWTR,Twitter Inc.,53.18
-CRWD,CrowdStrike Holdings Inc.,181.12
+AAPL,Apple Inc.,2819.75
+MSFT,Microsoft Corporation,4572.07
+GOOGL,Alphabet Inc.,8975.42
+AMZN,Amazon.com Inc.,2585.53
+NVDA,NVIDIA Corporation,9435.79
+META,Meta Platforms Inc.,2699.34
+TSLA,Tesla Inc.,11326.69
+ADBE,Adobe Inc.,97369.89
+CRM,Salesforce Inc.,1350.15
+INTC,Intel Corporation,1371.28
+CSCO,Cisco Systems Inc.,18891.08
+ORCL,Oracle Corporation,6929.41
+IBM,International Business Machines Corporation,1049.37
+AMD,Advanced Micro Devices Inc.,546.62
+QCOM,Qualcomm Incorporated,708.37
+TXN,Texas Instruments Incorporated,476.15
+AVGO,Broadcom Inc.,52614.27
+AMAT,Applied Materials Inc.,7238.85
+MU,Micron Technology Inc.,1475.36
+NOW,ServiceNow Inc.,40904.67
+ADSK,Autodesk Inc.,925.18
+INTU,Intuit Inc.,164382.60
+PYPL,PayPal Holdings Inc.,2265.12
+NFLX,Netflix Inc.,14545.15
+BIDU,Baidu Inc.,3749.01
+VMW,VMware Inc.,640.11
+WDAY,Workday Inc.,1905.94
+SNPS,Synopsys Inc.,13130.18
+CDNS,Cadence Design Systems Inc.,94571.19
+LRCX,Lam Research Corporation,5482.92
+KLAC,KLA Corporation,1592.40
+MCHP,Microchip Technology Incorporated,779.06
+ADI,Analog Devices Inc.,2034.60
+CTSH,Cognizant Technology Solutions Corporation,2632.05
+ANSS,ANSYS Inc.,13696.69
+MRVL,Marvell Technology Inc.,638.08
+FTNT,Fortinet Inc.,4170.57
+TEAM,Atlassian Corporation,4881.87
+SPLK,Splunk Inc.,22679.94
+ZBRA,Zebra Technologies Corporation,7570.48
+SHOP,Shopify Inc.,249.74
+SQ,Block Inc.,211.96
+TWLO,Twilio Inc.,2513.43
+DOCU,DocuSign Inc.,182.91
+ASML,ASML Holding NV,41758.85
+TXG,10x Genomics Inc.,338.12
+PDD,Pinduoduo Inc.,2810.93
+JD,JD.com Inc.,8530.42
+BABA,Alibaba Group Holding Limited,5528.16
+NTES,NetEase Inc.,1338.26
+CSX,CSX Corporation,646.84
+FIS,Fidelity National Information Services Inc.,6453.06
+V,Visa Inc.,1991.18
+MA,Mastercard Inc.,2613.25
+SPGI,S&P Global Inc.,3092.83
+MS,Morgan Stanley,642.13
+GS,Goldman Sachs Group Inc.,1507.03
+BAC,Bank of America Corporation,97.82
+JPM,JPMorgan Chase & Co.,10135.99
+WMT,Walmart Inc.,14389.96
+DIS,The Walt Disney Company,43138.28
+PEP,PepsiCo Inc.,3090.18
+KO,The Coca-Cola Company,5011.01
+NKE,Nike Inc.,1593.21
+COST,Costco Wholesale Corporation,14441.78
+HD,The Home Depot Inc.,1669.98
+TGT,Target Corporation,502.07
+BA,The Boeing Company,5955.88
+HON,Honeywell International Inc.,2093.18
+MMM,3M Company,2794.55
+GE,General Electric Company,13595.26
+CVX,Chevron Corporation,1739.37
+XOM,Exxon Mobil Corporation,20311.29
+PG,The Procter & Gamble Company,8685.85
+JNJ,Johnson & Johnson,5673.71
+PFE,Pfizer Inc.,2028.17
+MRNA,Moderna Inc.,396.41
+LLY,Eli Lilly and Company,23351.20
+ABT,Abbott Laboratories,6335.03
+NVS,Novartis AG,4234.68
+AZN,AstraZeneca PLC,2376.42
+VZ,Verizon Communications Inc.,484.95
+T,AT&T Inc.,33.74
+SBUX,Starbucks Corporation,1239.35
+MCD,McDonald's Corporation,2308.02
+CMG,Chipotle Mexican Grill Inc.,6164.79
+BKNG,Booking Holdings Inc.,22607.71
+ABNB,Airbnb Inc.,18564.02
+UBER,Uber Technologies Inc.,17199.51
+LYFT,Lyft Inc.,130.79
+ROKU,Roku Inc.,454.43
+SPOT,Spotify Technology SA,32497.51
+EBAY,eBay Inc.,1156.13
+ETSY,Etsy Inc.,14397.64
+ZM,Zoom Video Communications Inc.,2373.39
+DOCU,DocuSign Inc.,666.87
+PTON,Peloton Interactive Inc.,36.37
+SNAP,Snap Inc.,854.70
+TWTR,Twitter Inc.,693.15
+CRWD,CrowdStrike Holdings Inc.,2531.23

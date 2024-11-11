@@ -25,7 +25,7 @@ public abstract class Trader {
             stockPortfolio.put(stock, stockPortfolio.getOrDefault(stock, 0) + quantity);
             return true;
         } else {
-            System.out.println("Not enough cash to buy " + quantity + " of " + stock);
+            System.out.println("Not enough cash to buy " + quantity + " of " + stock.getSymbol());
             return false;
         }
     }
@@ -42,7 +42,7 @@ public abstract class Trader {
             return true;
 
         } else {
-            System.out.println("Not enough stock to sell " + quantity + " of " + stock);
+            System.out.println("Not enough stock to sell " + quantity + " of " + stock.getSymbol());
             return false;       
         }
     }
@@ -64,7 +64,12 @@ public abstract class Trader {
     //         sell(stock, quantity, price);
     //     }
     // }
-    
+
+
+    public HashMap<Stocks, Integer> getStockPortfolio() {
+        return stockPortfolio;
+    }
+
     public abstract double calculate(int period, List<Double> priceHistory);
 
     public abstract void execute(Stocks stock, int quantity);

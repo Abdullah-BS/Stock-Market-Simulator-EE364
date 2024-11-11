@@ -1,25 +1,25 @@
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.List;
 
 public class MainApp {
 
 
-    private static MarketSimulator marketSimulator;
-    private static ArrayList<Trader> listOfTraders;
-    private static String[] traderNames = {"Abdullah", "Ahmed", "Yamin", "Saud", "Mohanned"};
-    private static double initialCash = 10000;
-    private static int dayCounter = 0;
+    private MarketSimulator marketSimulator;
+    private ArrayList<Trader> listOfTraders;
+    private String[] traderNames = {"Abdullah", "Ahmed", "Yamin", "Saud", "Mohanned"};
+    private double initialCash = 10000;
+    private int dayCounter = 0;
 
     public MainApp(){
         this.marketSimulator = new MarketSimulator();
         this.listOfTraders = new ArrayList<>();
         createListOfTraders();
-        runSimulation();
 
     }
 
-    public static void createListOfTraders(){
+    public void createListOfTraders(){
 
         for (String traderName : traderNames){
 
@@ -41,11 +41,19 @@ public class MainApp {
     }
 
     public void simulateDay(){
+        Random random = new Random();
         dayCounter++;
-        marketSimulator.applyEventToStock();
         System.out.println("\n--- Day " + dayCounter + " ---");
+        List<String> dailyReport = marketSimulator.simulateDay();
+        for (String event : dailyReport) {
+            System.out.println(event);
+        }
+
         for (Trader trader : listOfTraders){
-            trader.execute();
+            List<Stocks> listOfStocks = marketSimulator.getListStock();
+            Stocks randomStock = listOfStocks.get(random.nextInt(listOfStocks.size()));
+
+            trader.execute(randomStock, random.nextInt(10));
         }
 
     }
@@ -63,12 +71,21 @@ public class MainApp {
             }
 
             simulateDay();
+            printResults();
         }
 
     }
 
+    private void printResults() {
+        System.out.println("\nInvestor Net Worth:");
+        for (Trader trader : listOfTraders) {
+            System.out.println(String.format("%s: $%.2f", trader.getName(), trader.calculateNetWorth(trader.getStockPortfolio())));
+        }
+    }
+
     public static void main (String[] args){
             MainApp app = new MainApp();
+            app.runSimulation();
 
     }
 

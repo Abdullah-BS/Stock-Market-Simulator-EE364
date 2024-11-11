@@ -73,7 +73,7 @@ public class RSITrader extends Trader implements knowledgeableTrader{
         
     }
 
-    public String getName() { return  "RSI Trading Strategy";}
+    public String getName() { return  super.getName() + "(RSI)";}
 
 
 

@@ -48,6 +48,6 @@ public class RandomTrader extends Trader{
 
 
     public String getName() {
-        return " Random Trader ";
+        return super.getName() + "(Random Strategy)";
     }
 }

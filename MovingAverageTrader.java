@@ -15,6 +15,7 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader{
     public double calculate(int period, List<Double> priceHistory) {
         if (priceHistory.size() < period + 1) {
             // إذا كانت عدد القيم أقل من الفترة المطلوبة، لا يمكننا حساب المتوسط
+            System.out.println("Problem Here");
             return 0.0;
         }
 
@@ -46,6 +47,6 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader{
     }
     
     public String getName() {
-        return "MovingAverage Trading Strategy";
+        return super.getName() + "(Moving Average)";
     }
 }

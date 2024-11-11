@@ -45,7 +45,7 @@ public class RSITrader extends Trader implements knowledgeableTrader{
         }
 
         catch (Exception e) {
-            System.out.println("Error calculating RSI for " + stock.getSymbol());
+            System.out.println("Error calculating RSI");
             return 0;
         }
 

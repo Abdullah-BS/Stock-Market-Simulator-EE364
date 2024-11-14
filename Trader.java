@@ -10,7 +10,7 @@ import java.util.List;
 public abstract class Trader {
     private String name;
     private double cash;
-    private HashMap<Stocks, Integer> stockPortfolio;
+    protected HashMap<Stocks, Integer> stockPortfolio;
     private double netWorth;
     private ArrayList<Double> worthHistory;
 
@@ -40,11 +40,12 @@ public abstract class Trader {
 
             do {
                 if(getStockPortfolio().get(stock) >= quantity) {
-//                    System.out.println("Action: Sell stock, price is significantly above the moving average.");
+                    System.out.println("Action: Sell stock, price is significantly above the moving average.");
 
                     double totalRevenue = price * quantity;
                     cash += totalRevenue;
                     stockPortfolio.put(stock, stockPortfolio.get(stock) - quantity);
+                    System.out.println(stockPortfolio.get(stock));
 
                     if (stockPortfolio.get(stock) == 0) {
                     stockPortfolio.remove(stock);
@@ -99,11 +100,20 @@ public abstract class Trader {
 
     public void initializeStockPortfolio(MarketSimulator market) {
 
-//        int numberOfRandomStocks = 100;
-//        List<Stocks> listOfStocks = market.getRandomStocks(numberOfRandomStocks);
-//        for (Stocks stock : listOfStocks) {
-//            stockPortfolio.put(stock, stockPortfolio.get(stock) + 1);
-//        }
+        int numberOfRandomStocks = 10;
+        List<Stocks> listOfStocks = market.getRandomStocks(numberOfRandomStocks);
+//        System.out.println("Number of random stocks: " + listOfStocks.size());
+        for (Stocks stock : listOfStocks) {
+//            System.out.println("Processing stock: " + stock);
+//            System.out.println("Current quantity in portfolio: " + stockPortfolio.getOrDefault(stock, 0));
+            stockPortfolio.put(stock, stockPortfolio.getOrDefault(stock, 0) + 1);
+//            System.out.println("problem????");
+
+
+
+
+        }
+        System.out.println("Updated quantity in Trader portfolio: " + stockPortfolio);
     }
 
 

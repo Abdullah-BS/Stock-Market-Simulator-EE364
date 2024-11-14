@@ -37,6 +37,12 @@ public class Stocks{
         this.price = price;
         this.priceHistory.add(price);
     }
+    public String toString() {
+        return "Stock{" +
+                "symbol='" + symbol + '\'' +
+                ", price=" + price +
+                '}';
+    }
 
 
 

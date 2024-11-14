@@ -55,14 +55,14 @@ public class RSITrader extends Trader implements knowledgeableTrader{
 
 
     public void execute(Stocks stock, int quantity) {
-
+            System.out.println(stockPortfolio);
             List<Double> priceHistory = stock.getPriceHistory();
 
             double buyRSI = calculate(this.period, priceHistory);
             double currentPrice = stock.getPrice();
 
             if (buyRSI < 30) {
-//                System.out.println("Action: Buy stock, price is significantly below the RSI.");
+                System.out.println("Action: Buy stock, price is significantly below the RSI.");
                 buy(stock, quantity, currentPrice);
             }
 
@@ -84,7 +84,7 @@ public class RSITrader extends Trader implements knowledgeableTrader{
             double maximumRSI = maxEntry.getValue();
 
 
-            if (maximumRSI > 70) {
+            if (maximumRSI > 50) {
                 sell(maximumStock, quantity, currentPrice);
 
             } else {

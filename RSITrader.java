@@ -19,6 +19,8 @@ public class RSITrader extends Trader implements knowledgeableTrader{
 
     public double calculate(int period, List<Double> priceHistory) {
 
+            period = Math.min(period, priceHistory.size());
+
             try {
                 
         

@@ -13,18 +13,25 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader{
     }
    
     public double calculate(int period, List<Double> priceHistory) {
-        if (priceHistory.size() < period + 1) {
-            // إذا كانت عدد القيم أقل من الفترة المطلوبة، لا يمكننا حساب المتوسط
-            System.out.println("Problem Here");
+
+        period = Math.min(period, priceHistory.size());
+
+        try {
+
+            double sum = 0.0;
+
+            for (double value : priceHistory) {
+                sum += value;
+            }
+
+            return sum / period;
+        }
+
+        catch (Exception e) {
+            System.out.println("Cant calculate MovingAverageTrader" + e.getMessage());
             return 0.0;
         }
 
-        double sum = 0.0;
-        for (double value : priceHistory) {
-            sum += value;
-        }
-        
-         return sum / period;
     }
 
     public void execute(Stocks stock, int quantity) {
@@ -32,9 +39,16 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader{
         double movingAverage = calculate(this.period, priceHistory);
         double currentPrice = stock.getPrice();
 
-        if (currentPrice > movingAverage * (1 + threshold)) {
-            System.out.println("Action: Sell stock, price is significantly above the moving average.");
-            sell(stock, quantity, currentPrice);
+            if (currentPrice > movingAverage * (1 + threshold) && (getStockPortfolio().containsKey(stock))) {
+                do {
+                    if(getStockPortfolio().get(stock) >= quantity) {
+                        System.out.println("Action: Sell stock, price is significantly above the moving average.");
+                        sell(stock, quantity, currentPrice);
+                        break;
+                    }
+                    quantity = quantity - 1;
+                } while(true);
+
 
         } else if (currentPrice < movingAverage * (1 - threshold)) {
             System.out.println("Action: Buy stock, price is significantly below the moving average.");

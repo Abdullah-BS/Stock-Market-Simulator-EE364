@@ -11,6 +11,8 @@ public class MainApp {
     private String[] traderNames = {"Abdullah", "Ahmed", "Yamin", "Saud", "Mohanned"};
     private double initialCash = 10000;
     private int dayCounter = 0;
+    private int quantity;
+    private Random random = new Random();
 
     public MainApp(){
         this.marketSimulator = new MarketSimulator();
@@ -23,7 +25,6 @@ public class MainApp {
 
         for (String traderName : traderNames){
 
-        Random random = new Random();
         int randomNum = random.nextInt(3);
         if (randomNum == 0){
             listOfTraders.add(new RandomTrader(traderName, initialCash));
@@ -41,7 +42,9 @@ public class MainApp {
     }
 
     public void simulateDay(){
-        Random random = new Random();
+
+        quantity = random.nextInt(10);
+
         dayCounter++;
         System.out.println("\n--- Day " + dayCounter + " ---");
         List<String> dailyReport = marketSimulator.simulateDay();

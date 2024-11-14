@@ -1,5 +1,8 @@
 // Trader.java
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,11 +14,12 @@ public abstract class Trader {
     private double netWorth;
     private ArrayList<Double> worthHistory;
 
-    public Trader(String name, double cash) {
+    public Trader(String name, double cash, MarketSimulator market) {
         this.name = name;
         this.cash = cash;
         this.stockPortfolio = new HashMap<>();
         this.worthHistory = new ArrayList<>();
+        initializeStockPortfolio(market);
     }
 
     public boolean buy(Stocks stock, int quantity, double price) {      // Set quanitity to 1 (in phase 1)
@@ -31,18 +35,32 @@ public abstract class Trader {
     }
 
     public boolean sell(Stocks stock, int quantity, double price) {
-        if (stockPortfolio.containsKey(stock) && stockPortfolio.get(stock) >= quantity) {
-            double totalRevenue = price * quantity;
-            cash += totalRevenue;
-            stockPortfolio.put(stock, stockPortfolio.get(stock) - quantity);
-            
-            if (stockPortfolio.get(stock) == 0) {
-                stockPortfolio.remove(stock);
-            }
-            return true;
+
+        if (stockPortfolio.containsKey(stock)) {
+
+            do {
+                if(getStockPortfolio().get(stock) >= quantity) {
+//                    System.out.println("Action: Sell stock, price is significantly above the moving average.");
+
+                    double totalRevenue = price * quantity;
+                    cash += totalRevenue;
+                    stockPortfolio.put(stock, stockPortfolio.get(stock) - quantity);
+
+                    if (stockPortfolio.get(stock) == 0) {
+                    stockPortfolio.remove(stock);
+                }
+
+                    return true;
+
+                }
+
+                quantity = quantity - 1;
+            } while(true);
+
+
 
         } else {
-            System.out.println("Not enough stock to sell " + quantity + " of " + stock.getSymbol());
+            System.out.println("Stock " + stock.getSymbol() + " is not in the portfolio.");
             return false;       
         }
     }
@@ -78,4 +96,16 @@ public abstract class Trader {
         return name;
     }
 
+
+    public void initializeStockPortfolio(MarketSimulator market) {
+
+//        int numberOfRandomStocks = 100;
+//        List<Stocks> listOfStocks = market.getRandomStocks(numberOfRandomStocks);
+//        for (Stocks stock : listOfStocks) {
+//            stockPortfolio.put(stock, stockPortfolio.get(stock) + 1);
+//        }
+    }
+
+
 }
+

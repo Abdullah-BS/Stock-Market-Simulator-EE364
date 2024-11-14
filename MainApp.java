@@ -26,16 +26,18 @@ public class MainApp {
         for (String traderName : traderNames){
 
         int randomNum = random.nextInt(3);
+        randomNum = 10;         //temp
+
         if (randomNum == 0){
-            listOfTraders.add(new RandomTrader(traderName, initialCash));
+            listOfTraders.add(new RandomTrader(traderName, initialCash, this.marketSimulator));
         }
 
         else if (randomNum == 1){
-            listOfTraders.add(new MovingAverageTrader(traderName, initialCash, random.nextInt(10) + 1));
+            listOfTraders.add(new MovingAverageTrader(traderName, initialCash, random.nextInt(10) + 1,this.marketSimulator));
         }
 
         else {
-            listOfTraders.add(new RSITrader(traderName, initialCash, random.nextInt(10) + 1));
+            listOfTraders.add(new RSITrader(traderName, initialCash, random.nextInt(10) + 1, this.marketSimulator));
         }
 
         }
@@ -56,7 +58,7 @@ public class MainApp {
             List<Stocks> listOfStocks = marketSimulator.getListStock();
             Stocks randomStock = listOfStocks.get(random.nextInt(listOfStocks.size()));
 
-            trader.execute(randomStock, random.nextInt(10));
+            trader.execute(randomStock, quantity);
         }
 
     }

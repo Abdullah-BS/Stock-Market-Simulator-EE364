@@ -1,16 +1,14 @@
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RSITrader extends Trader implements knowledgeableTrader{
     
     private int period;
 
-    public RSITrader(String name, double cash) {
-        super(name, cash);
-        this.period = 5;
-    }
-
-    public RSITrader(String name, double cash, int period) {
-        super(name, cash);
+    public RSITrader(String name, double cash, int period, MarketSimulator market) {
+        super(name, cash, market);
         this.period = period;
     }
 
@@ -32,8 +30,10 @@ public class RSITrader extends Trader implements knowledgeableTrader{
                 double change = priceHistory.get(j) - priceHistory.get(j - 1);
                 if (change > 0) {
                     gain += change;
-                } else {
-                    loss -= change;
+                    loss = (loss * (period - 1)) / period;  // No new loss
+                } else if (change < 0) {
+                    gain = (gain * (period - 1)) / period;  // No new gain
+                    loss += -change;
                 }
             }
 
@@ -47,7 +47,7 @@ public class RSITrader extends Trader implements knowledgeableTrader{
         }
 
         catch (Exception e) {
-            System.out.println("Error calculating RSI");
+//            System.out.println("Error calculating RSI");
             return 0;
         }
 
@@ -55,25 +55,45 @@ public class RSITrader extends Trader implements knowledgeableTrader{
 
 
     public void execute(Stocks stock, int quantity) {
-        List<Double> priceHistory = stock.getPriceHistory();
-        double RSI = calculate(this.period, priceHistory);
-        double currentPrice = stock.getPrice();
 
-        if (RSI > 70) {
-            System.out.println("Action: Sell stock, price is above the RSI.");
-            sell(stock, quantity, currentPrice);
+            List<Double> priceHistory = stock.getPriceHistory();
 
-        } else if (RSI < 30) {
-            System.out.println("Action: Buy stock, price is significantly below the RSI.");
-            buy(stock, quantity, currentPrice);
-        } 
+            double buyRSI = calculate(this.period, priceHistory);
+            double currentPrice = stock.getPrice();
 
-        else {
-            System.out.println("Action: Hold stock, price is within the RSI range.");
+            if (buyRSI < 30) {
+//                System.out.println("Action: Buy stock, price is significantly below the RSI.");
+                buy(stock, quantity, currentPrice);
+            }
+
+            HashMap<Stocks, Double> stockRSIMap = new HashMap<>();
+
+            for (Stocks newStock : super.getStockPortfolio().keySet()) {
+                double rsi = calculate(this.period, newStock.getPriceHistory());
+                stockRSIMap.put(stock, rsi);
+            }
+
+            Map.Entry<Stocks, Double> maxEntry = stockRSIMap.entrySet()
+                     .stream()
+                     .max(Map.Entry.comparingByValue())
+                     .orElse(null);  // If the map is empty, return null
+
+        if (maxEntry != null) {
+
+            Stocks maximumStock = maxEntry.getKey();
+            double maximumRSI = maxEntry.getValue();
+
+
+            if (maximumRSI > 70) {
+                sell(maximumStock, quantity, currentPrice);
+
+            } else {
+                System.out.println("Action: Hold stock, price is within the RSI range.");
+            }
         }
-        
-        
-    }
+
+        }
+
 
     public String getName() { return  super.getName() + "(RSI)";}
 

@@ -84,13 +84,13 @@ public class MarketSimulator {
     }
 
 
-    private List<Stocks> getRandomStocks(int count) {
+    public List<Stocks> getRandomStocks(int count) {
         List<Stocks> shuffledStocks = new ArrayList<>(listStock);
         Collections.shuffle(shuffledStocks);
         return shuffledStocks.subList(0, count);
     }
 
-    private void saveStocksToFile() {
+    public void saveStocksToFile() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(STOCK_CSV))) {
             for (Stocks stock : listStock) {
                 writer.write(String.format("%s,%s,%.2f%n", stock.getSymbol(), stock.getCompanyName(), stock.getPrice()));

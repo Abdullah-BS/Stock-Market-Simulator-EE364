@@ -85,6 +85,8 @@ public class MainApp {
         System.out.println("\nInvestor Net Worth:");
         for (Trader trader : listOfTraders) {
             System.out.println(String.format("%s: $%.2f", trader.getName(), trader.calculateNetWorth(trader.getStockPortfolio())));
+            System.out.println(trader.getNetWorth());
+            System.out.println(trader.getWorthHistory());
         }
     }
 

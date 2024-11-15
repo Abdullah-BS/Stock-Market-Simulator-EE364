@@ -22,14 +22,27 @@ public abstract class Trader {
         initializeStockPortfolio(market);
     }
 
+    public double getNetWorth() {
+        return netWorth;
+
+    }
+
+    public ArrayList<Double> getWorthHistory() {
+        return worthHistory;
+    }
+
     public boolean buy(Stocks stock, int quantity, double price) {      // Set quanitity to 1 (in phase 1)
+//        System.out.println(price);
         double totalCost = price * quantity;
+//        System.out.println(totalCost);
         if (cash >= totalCost) {
+//            System.out.println(cash);
             cash -= totalCost;
+//            System.out.println(cash);
             stockPortfolio.put(stock, stockPortfolio.getOrDefault(stock, 0) + quantity);
             return true;
         } else {
-            System.out.println("Not enough cash to buy " + quantity + " of " + stock.getSymbol());
+//            System.out.println("Not enough cash to buy " + quantity + " of " + stock.getSymbol() + "  "+getName()+ "   "+ cash+"  "+ stock.getPrice());
             return false;
         }
     }
@@ -40,12 +53,12 @@ public abstract class Trader {
 
             do {
                 if(getStockPortfolio().get(stock) >= quantity) {
-                    System.out.println("Action: Sell stock, price is significantly above the moving average.");
+//                    System.out.println("Action: Sell stock, price is significantly above the RSI threshold.");
 
                     double totalRevenue = price * quantity;
                     cash += totalRevenue;
                     stockPortfolio.put(stock, stockPortfolio.get(stock) - quantity);
-                    System.out.println(stockPortfolio.get(stock));
+//                    System.out.println(stockPortfolio.get(stock));
 
                     if (stockPortfolio.get(stock) == 0) {
                     stockPortfolio.remove(stock);
@@ -70,11 +83,15 @@ public abstract class Trader {
         netWorth = cash;
         for (Stocks stock : stockPortfolio.keySet()) {
             double stockPrice = stock.getPrice();
+//            System.out.println(stockPrice);
             netWorth += stockPrice * stockPortfolio.get(stock);
         }
         worthHistory.add(netWorth);
+//        System.out.println(netWorth);
+//        System.out.println(worthHistory);
         return netWorth;
     }
+
 
     // public void trade(String stock, int quantity, double price, boolean isBuying) {
     //     if (isBuying) {
@@ -113,7 +130,7 @@ public abstract class Trader {
 
 
         }
-        System.out.println("Updated quantity in Trader portfolio: " + stockPortfolio);
+//        System.out.println("Updated quantity in Trader portfolio: " + stockPortfolio);
     }
 
 

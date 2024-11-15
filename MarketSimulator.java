@@ -33,10 +33,20 @@ public class MarketSimulator {
             while ((line = reader.readLine()) != null) {
                 
                 String[] parts = line.split(",");
+                if (parts.length > 2) {
+                    List<Double> priceHistory = new ArrayList<>();
 
-                if (parts.length == 3) {
-                listStock.add(new Stocks(parts[0], parts[1], Double.parseDouble(parts[2])));
-            }
+                    String symbol = parts[0];
+                    String company = parts[1];
+
+                    for (int i = 2; i < parts.length; i++) {
+                        priceHistory.add(Double.parseDouble(parts[i]));
+                    }
+
+                    listStock.add(new Stocks(symbol,company,priceHistory));
+
+
+                }
                 else {
                     listEvent.add(new Event(parts[0], Double.parseDouble(parts[1])));
                 }
@@ -52,6 +62,7 @@ public class MarketSimulator {
     
     public void applyEventToStock(Stocks stock, Event event){
         double random = Math.random();
+        random=0.01;
         double priceChange = stock.getPrice() *(event.getImpact()+random);
         stock.setPrice(stock.getPrice() + priceChange);
      }

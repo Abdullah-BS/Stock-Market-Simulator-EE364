@@ -8,11 +8,12 @@ public class Stocks{
     private double price;
     private List<Double> priceHistory;
 
-    public Stocks(String symbol, String companyName, double price){
+    public Stocks(String symbol, String companyName, List<Double> priceHistory){
         this.symbol = symbol;
         this.companyName = companyName;
-        this.price = price;
-        this.priceHistory = new ArrayList<>();
+        this.priceHistory = new ArrayList<>(priceHistory);
+        this.price= (getPriceHistory().getLast());
+
 
     }
 
@@ -35,6 +36,7 @@ public class Stocks{
 
     public void setPrice(double price) {
         this.price = price;
+        System.out.println(price);
         this.priceHistory.add(price);
     }
     public String toString() {

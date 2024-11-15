@@ -6,13 +6,13 @@ import java.util.List;
 public class MainApp {
 
 
-    private MarketSimulator marketSimulator;
-    private ArrayList<Trader> listOfTraders;
-    private String[] traderNames = {"Abdullah", "Ahmed", "Yamin", "Saud", "Mohanned"};
-    private double initialCash = 10000;
-    private int dayCounter = 0;
-    private int quantity;
-    private Random random = new Random();
+    public MarketSimulator marketSimulator;
+    public ArrayList<Trader> listOfTraders;
+    public String[] traderNames = {"Abdullah", "Ahmed", "Yamin", "Saud", "Mohanned"};
+    public double initialCash = 10000;
+    public int dayCounter = 0;
+    public int quantity;
+    public Random random = new Random();
 
     public MainApp(){
         this.marketSimulator = new MarketSimulator();
@@ -26,7 +26,7 @@ public class MainApp {
         for (String traderName : traderNames){
 
         int randomNum = random.nextInt(3);
-        randomNum = 10;         //temp
+               //temp
 
         if (randomNum == 0){
             listOfTraders.add(new RandomTrader(traderName, initialCash, this.marketSimulator));
@@ -43,25 +43,29 @@ public class MainApp {
         }
     }
 
-    public void simulateDay(){
-
+    public List<String> simulateDay() {
         quantity = random.nextInt(10);
 
         dayCounter++;
         System.out.println("\n--- Day " + dayCounter + " ---");
+
+        // Simulate daily market events and collect them
         List<String> dailyReport = marketSimulator.simulateDay();
         for (String event : dailyReport) {
             System.out.println(event);
         }
 
-        for (Trader trader : listOfTraders){
+        // Execute trades for all traders
+        for (Trader trader : listOfTraders) {
             List<Stocks> listOfStocks = marketSimulator.getListStock();
             Stocks randomStock = listOfStocks.get(random.nextInt(listOfStocks.size()));
-
             trader.execute(randomStock, quantity);
         }
 
+        // Return the daily report for the GUI
+        return dailyReport;
     }
+
 
 
     public void runSimulation() {

@@ -5,27 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c6ff5412-655a-4591-a952-7c650bc3c03e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/lib.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/lib.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/MainApp.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MarketSimulator.java" beforeDir="false" afterPath="$PROJECT_DIR$/MarketSimulator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MovingAverageTrader.java" beforeDir="false" afterPath="$PROJECT_DIR$/MovingAverageTrader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RSITrader.java" beforeDir="false" afterPath="$PROJECT_DIR$/RSITrader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RandomTrader.java" beforeDir="false" afterPath="$PROJECT_DIR$/RandomTrader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Trader.java" beforeDir="false" afterPath="$PROJECT_DIR$/Trader.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/Event.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/Event.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MainApp.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MainApp.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MarketSimulator.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MarketSimulator.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MovingAverageTrader.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MovingAverageTrader.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/RSITrader.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/RSITrader.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/RandomTrader.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/RandomTrader.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/Stocks.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/Stocks.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/Trader.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/Trader.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/knowledgeableTrader.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/knowledgeableTrader.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/stocks.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/stocks.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/stocks.csv" beforeDir="false" afterPath="$PROJECT_DIR$/stocks.csv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,19 +42,21 @@
   "keyToString": {
     "Application.Java.executor": "Run",
     "Application.MainApp.executor": "Run",
+    "Application.MainAppGUI.executor": "Run",
     "Application.test.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "main",
+    "ignore.preview.features.used": "true",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Admin/OneDrive - King Abdullaziz University/Desktop/KAU/Year 4 - Junior/EE-364/Stock-Market-Simulator-EE364",
+    "last_opened_file_path": "C:/Users/YAMN/Desktop/openjfx-23.0.1_windows-x64_bin-sdk/javafx-sdk-23.0.1/lib/javafx-swt.jar",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Project",
+    "project.structure.last.edited": "Libraries",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
     "settings.editor.selected.configurable": "preferences.editor",
@@ -79,6 +67,7 @@
     <configuration name="Java" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="MainApp" />
       <module name="Stock-Market-Simulator-EE364" />
+      <option name="VM_PARAMETERS" value="--module-path C:\Users\YAMN\Desktop\openjfx-23.0.1_windows-x64_bin-sdk\javafx-sdk-23.0.1\lib --add-modules javafx.controls,javafx.fxml " />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -87,8 +76,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-b114ca120d71-intellij.indexing.shared.core-IU-242.21829.227" />
-        <option value="bundled-js-predefined-d6986cc7102b-7c0b70fcd90d-JavaScript-IU-242.21829.227" />
+        <option value="bundled-jdk-9823dce3aa75-28b599e66164-intellij.indexing.shared.core-IU-242.23726.103" />
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-IU-242.23726.103" />
       </set>
     </attachedChunks>
   </component>
@@ -111,6 +100,8 @@
       <workItem from="1731337820198" duration="881000" />
       <workItem from="1731345704540" duration="596000" />
       <workItem from="1731356818308" duration="8003000" />
+      <workItem from="1731694059187" duration="541000" />
+      <workItem from="1731694689469" duration="657000" />
     </task>
     <servers />
   </component>

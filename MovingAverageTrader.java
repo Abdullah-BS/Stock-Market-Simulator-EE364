@@ -3,7 +3,7 @@ import java.util.List;
 public class MovingAverageTrader extends Trader implements knowledgeableTrader{
 
     private int period;
-    private double threshold = 0.05;
+    private double threshold = 0.015;
 
 
     public MovingAverageTrader(String name, double cash, int period, MarketSimulator market) {
@@ -29,7 +29,7 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader{
 
         catch (Exception e) {
             System.out.println("Cant calculate MovingAverageTrader" + e.getMessage());
-            return 0.0;
+            return 222.60;
         }
 
     }

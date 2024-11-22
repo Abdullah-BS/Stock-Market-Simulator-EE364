@@ -22,6 +22,10 @@ public abstract class Trader {
         initializeStockPortfolio(market);
     }
 
+    public double getCash() {
+        return cash;
+    }
+
     public double getNetWorth() {
         return netWorth;
 

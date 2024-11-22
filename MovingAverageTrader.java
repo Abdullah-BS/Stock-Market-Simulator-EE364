@@ -4,6 +4,7 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader{
 
     private int period;
     private double threshold = 0.015;
+    private String traderType="RSI Trader";
 
 
     public MovingAverageTrader(String name, double cash, int period, MarketSimulator market) {

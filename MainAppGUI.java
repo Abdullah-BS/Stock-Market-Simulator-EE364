@@ -121,6 +121,35 @@ public class MainAppGUI extends Application {
         return table;
     }
 
+
+        private void ResetMainApp() {
+        mainApp = new MainApp();
+    }
+    private void ResetButton(Stage primaryStage, boolean isPhase1) {
+        // Stop any running simulations
+        if (simulationTimeline != null && simulationTimeline.getStatus() == Timeline.Status.RUNNING) {
+            simulationTimeline.stop();
+        }
+
+   
+        ResetMainApp();
+
+        // Reset UI components
+        day = 0; // Reset the simulation day counter
+        traderSeriesMap.clear(); // Clear chart series
+        eventsDisplay.clear(); // Clear displayed events
+        lineChart.getData().clear(); // Clear the line chart data
+        traderObservableList.setAll(mainApp.listOfTraders); // Rebind observable list
+
+        // Reload the current phase (Phase 1 or Phase 2)
+        if (isPhase1) {
+            initializePhase1(primaryStage);
+        } else {
+            startPhase2(primaryStage);
+        }
+    }
+
+
     private void initializePhase1(Stage primaryStage) {
         primaryStage.setTitle("Market Simulation Phase 1");
 
@@ -147,18 +176,20 @@ public class MainAppGUI extends Application {
         ToggleButton autoSimulateButton = new ToggleButton("Start Auto Simulation");
         autoSimulateButton.setOnAction(e -> toggleSimulation(autoSimulateButton));
 
+        Button restartButton = new Button("Restart");
+        restartButton.setOnAction(e -> ResetButton(primaryStage, true));
+
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
             if (simulationTimeline != null && simulationTimeline.getStatus() == Timeline.Status.RUNNING) {
-                simulationTimeline.stop(); // Stop the simulation timeline
+                simulationTimeline.stop();
             }
             initializeMainMenu(primaryStage);
         });
 
-
         TableView<Trader> table = createTraderTable();
 
-        HBox buttonLayout = new HBox(10, autoSimulateButton, backButton);
+        HBox buttonLayout = new HBox(10, autoSimulateButton, backButton, restartButton);
         VBox layout = new VBox(10, eventsDisplay, buttonLayout, lineChart, table);
         layout.setPrefSize(800, 600);
 
@@ -169,7 +200,7 @@ public class MainAppGUI extends Application {
         initializeTimeline();
     }
 
-    private void startPhase2(Stage primaryStage) {
+      private void startPhase2(Stage primaryStage) {
         primaryStage.setTitle("Market Simulation Phase 2");
 
         eventsDisplay = new TextArea();
@@ -195,6 +226,9 @@ public class MainAppGUI extends Application {
         ToggleButton autoSimulateButton = new ToggleButton("Start Auto Simulation");
         autoSimulateButton.setOnAction(e -> toggleSimulation(autoSimulateButton));
 
+        Button restartButton = new Button("Restart");
+        restartButton.setOnAction(e -> ResetButton(primaryStage, true));
+
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
             if (simulationTimeline != null && simulationTimeline.getStatus() == Timeline.Status.RUNNING) {
@@ -203,10 +237,9 @@ public class MainAppGUI extends Application {
             initializeMainMenu(primaryStage);
         });
 
-
         TableView<Trader> table = createTraderTable();
 
-        HBox buttonLayout = new HBox(10, autoSimulateButton, backButton);
+        HBox buttonLayout = new HBox(10, autoSimulateButton, backButton, restartButton);
         VBox layout = new VBox(10, eventsDisplay, buttonLayout, lineChart, table);
         layout.setPrefSize(800, 600);
 

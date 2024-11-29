@@ -50,6 +50,7 @@ public class MainAppGUI extends Application {
         // Show the Main Menu scene initially
         primaryStage.setScene(mainMenuScene);
         primaryStage.show();
+        primaryStage.setFullScreen(true);
     }
 
     private void initializeMainMenu(Stage primaryStage) {
@@ -71,7 +72,7 @@ public class MainAppGUI extends Application {
         ImageView imageView = new ImageView(new Image("Trading-Bot.jpg"));
         imageView.setPreserveRatio(true);
 
-        VBox menuLayout = new VBox(20, phase1Button, phase2Button, compareButton);
+        VBox menuLayout = new VBox(20, phase1Button, phase2Button);
         menuLayout.setStyle("-fx-alignment: center; -fx-padding: 20;");
 
         StackPane root = new StackPane();
@@ -81,6 +82,7 @@ public class MainAppGUI extends Application {
         primaryStage.setScene(mainMenuScene);
         primaryStage.setTitle("Market Simulator");
         primaryStage.show();
+        primaryStage.setFullScreen(true);
     }
 
     private TableView<Trader> createTraderTable() {
@@ -125,7 +127,7 @@ public class MainAppGUI extends Application {
         private void ResetMainApp() {
         mainApp = new MainApp();
     }
-    private void ResetButton(Stage primaryStage, boolean isPhase1) {
+    private void ResetButton(Stage primaryStage, boolean navigateToMainMenu, boolean isPhase1) {
         // Stop any running simulations
         if (simulationTimeline != null && simulationTimeline.getStatus() == Timeline.Status.RUNNING) {
             simulationTimeline.stop();
@@ -142,11 +144,15 @@ public class MainAppGUI extends Application {
         traderObservableList.setAll(mainApp.listOfTraders); // Rebind observable list
 
         // Reload the current phase (Phase 1 or Phase 2)
-        if (isPhase1) {
-            initializePhase1(primaryStage);
+        if (navigateToMainMenu) {
+            initializeMainMenu(primaryStage); // Go to the main menu
+        } else if (isPhase1) {
+            initializePhase1(primaryStage); // Reload Phase 1
         } else {
-            startPhase2(primaryStage);
+            startPhase2(primaryStage); // Reload Phase 2
         }
+
+        primaryStage.setFullScreen(true);
     }
 
 
@@ -177,14 +183,14 @@ public class MainAppGUI extends Application {
         autoSimulateButton.setOnAction(e -> toggleSimulation(autoSimulateButton));
 
         Button restartButton = new Button("Restart");
-        restartButton.setOnAction(e -> ResetButton(primaryStage, true));
+        restartButton.setOnAction(e -> ResetButton(primaryStage, false, true));
 
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
             if (simulationTimeline != null && simulationTimeline.getStatus() == Timeline.Status.RUNNING) {
                 simulationTimeline.stop();
             }
-            initializeMainMenu(primaryStage);
+            ResetButton(primaryStage, true, true);
         });
 
         TableView<Trader> table = createTraderTable();
@@ -196,8 +202,10 @@ public class MainAppGUI extends Application {
         Scene scene = new Scene(layout);
         primaryStage.setScene(scene);
         primaryStage.show();
+        primaryStage.setFullScreen(true);
 
         initializeTimeline();
+
     }
 
       private void startPhase2(Stage primaryStage) {
@@ -227,14 +235,14 @@ public class MainAppGUI extends Application {
         autoSimulateButton.setOnAction(e -> toggleSimulation(autoSimulateButton));
 
         Button restartButton = new Button("Restart");
-        restartButton.setOnAction(e -> ResetButton(primaryStage, true));
+        restartButton.setOnAction(e -> ResetButton(primaryStage, false, false));
 
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
             if (simulationTimeline != null && simulationTimeline.getStatus() == Timeline.Status.RUNNING) {
                 simulationTimeline.stop(); // Stop the simulation timeline
             }
-            initializeMainMenu(primaryStage);
+            ResetButton(primaryStage, true, false);
         });
 
         TableView<Trader> table = createTraderTable();
@@ -246,6 +254,7 @@ public class MainAppGUI extends Application {
         Scene scene = new Scene(layout);
         primaryStage.setScene(scene);
         primaryStage.show();
+        primaryStage.setFullScreen(true);
 
         initializeTimeline();
     }

@@ -14,6 +14,7 @@ public class MainApp {
     public int quantity;
     public Random random = new Random();
 
+    // Constructor: Make the market, create the list of traders
     public MainApp(){
         this.marketSimulator = new MarketSimulator();
         this.listOfTraders = new ArrayList<>();
@@ -50,14 +51,14 @@ public class MainApp {
         System.out.println("\n--- Day " + dayCounter + " ---");
 
         // Simulate daily market events and collect them
-        List<String> dailyReport = marketSimulator.simulateDay();
+        List<String> dailyReport = marketSimulator.simulateDay();       // this method return the daily report
         for (String event : dailyReport) {
-            System.out.println(event);
+            System.out.println(event);      // print the daily report
         }
 
         // Execute trades for all traders
+        List<Stocks> listOfStocks = marketSimulator.getListStock();
         for (Trader trader : listOfTraders) {
-            List<Stocks> listOfStocks = marketSimulator.getListStock();
             Stocks randomStock = listOfStocks.get(random.nextInt(listOfStocks.size()));
             trader.execute(randomStock, quantity);
         }
@@ -93,7 +94,7 @@ public class MainApp {
             System.out.println(trader.getWorthHistory());
         }
     }
-
+    // initialize the app
     public static void main (String[] args){
             MainApp app = new MainApp();
             app.runSimulation();

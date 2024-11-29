@@ -37,7 +37,6 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader{
 
     public void execute(Stocks stock, int quantity) {
 
-
             List<Double> priceHistory = stock.getPriceHistory();
             double movingAverage = calculate(this.period, priceHistory);
             double currentPrice = stock.getPrice();

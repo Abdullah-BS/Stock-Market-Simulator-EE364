@@ -28,7 +28,7 @@ public class RandomTrader extends Trader{
             
         // Check if the period is within the limit of the array then Execute
 
-            double value = calculate(10, priceHistory);
+//            double value = calculate(10, priceHistory);
             double currentPrice = stock.getPrice();
         
             // needs editing

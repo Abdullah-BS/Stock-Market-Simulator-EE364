@@ -5,8 +5,8 @@ public class RandomTrader extends Trader{
 
     private double randomNumber;
 
-    public RandomTrader(String name, double cash, MarketSimulator market) {
-        super(name, cash, market);
+    public RandomTrader(String name, MarketSimulator market) {
+        super(name, market);
         this.randomNumber = Math.random();  // 0 - 0.99
     }
 

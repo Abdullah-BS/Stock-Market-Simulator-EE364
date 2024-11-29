@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -218,28 +219,23 @@ public class MainAppGUI extends Application {
         VBox layout = new VBox(10);
         layout.setStyle("-fx-alignment: center; -fx-padding: 20;");
 
-        // Create TableView for comparison
         TableView<Trader> table = new TableView<>();
 
-        // Define columns for the TableView each
         TableColumn<Trader, String> nameColumn = new TableColumn<>("Trader Name");
-        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));//---> using the getName method to add values
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 
         TableColumn<Trader, Double> cashColumn = new TableColumn<>("Starting Cash");
-        cashColumn.setCellValueFactory(new PropertyValueFactory<>("cash"));//---> using the getCash method to add values
+        cashColumn.setCellValueFactory(cellData ->
+                new SimpleObjectProperty<>(cellData.getValue().initialCash) // Directly access initialCash
+        );
 
         TableColumn<Trader, Double> netWorthColumn = new TableColumn<>("Net Worth");
-        netWorthColumn.setCellValueFactory(new PropertyValueFactory<>("netWorth"));//---> using the getNetWorth method to add values
+        netWorthColumn.setCellValueFactory(new PropertyValueFactory<>("netWorth"));
 
         TableColumn<Trader, String> traderTypeColumn = new TableColumn<>("Trader Type");
-
-        // vvv this could be written better vvv
         traderTypeColumn.setCellValueFactory(cellData -> {
-
             Trader trader = cellData.getValue();
             String traderType = "";
-
-            // Determine trader type dynamically
             if (trader instanceof RandomTrader) {
                 traderType = "Random Trader";
             } else if (trader instanceof RSITrader) {
@@ -247,28 +243,23 @@ public class MainAppGUI extends Application {
             } else if (trader instanceof MovingAverageTrader) {
                 traderType = "MA Trader";
             }
-
-            return new  SimpleStringProperty(traderType);
+            return new SimpleStringProperty(traderType);
         });
-        // ^^^ this could be written better ^^^
 
         table.getColumns().addAll(nameColumn, cashColumn, netWorthColumn, traderTypeColumn);
 
-        // Populate the table with traders' data
         for (Trader trader : mainApp.listOfTraders) {
-
             table.getItems().add(trader);
-
         }
-            // Layout for comparison
-            layout.getChildren().addAll(table, backButton);
 
-            Scene comparisonScene = new Scene(layout, 800, 600);
-            primaryStage.setScene(comparisonScene);
-            primaryStage.setTitle("Market Comparison Report");
-            primaryStage.show();
+        layout.getChildren().addAll(table, backButton);
 
+        Scene comparisonScene = new Scene(layout, 800, 600);
+        primaryStage.setScene(comparisonScene);
+        primaryStage.setTitle("Market Comparison Report");
+        primaryStage.show();
     }
+
 
 
 

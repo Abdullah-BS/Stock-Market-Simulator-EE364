@@ -7,8 +7,8 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader{
     private String traderType="RSI Trader";
 
 
-    public MovingAverageTrader(String name, double cash, int period, MarketSimulator market) {
-        super(name, cash, market);
+    public MovingAverageTrader(String name, int period, MarketSimulator market) {
+        super(name, market);
         this.period = period;
 
     }

@@ -9,7 +9,6 @@ public class MainApp {
     public MarketSimulator marketSimulator;
     public ArrayList<Trader> listOfTraders;
     public String[] traderNames = {"Abdullah", "Ahmed", "Yamin", "Saud", "Mohanned"};
-    public double initialCash = 10000;
     public int dayCounter = 0;
     public int quantity;
     public Random random = new Random();
@@ -30,15 +29,15 @@ public class MainApp {
                //temp
 
         if (randomNum == 0){
-            listOfTraders.add(new RandomTrader(traderName, initialCash, this.marketSimulator));
+            listOfTraders.add(new RandomTrader(traderName, this.marketSimulator));
         }
 
         else if (randomNum == 1){
-            listOfTraders.add(new MovingAverageTrader(traderName, initialCash, random.nextInt(10) + 1,this.marketSimulator));
+            listOfTraders.add(new MovingAverageTrader(traderName, random.nextInt(10) + 1,this.marketSimulator));
         }
 
         else {
-            listOfTraders.add(new RSITrader(traderName, initialCash, random.nextInt(10) + 1, this.marketSimulator));
+            listOfTraders.add(new RSITrader(traderName, random.nextInt(10) + 1, this.marketSimulator));
         }
 
         }

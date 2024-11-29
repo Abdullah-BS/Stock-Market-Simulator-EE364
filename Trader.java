@@ -13,10 +13,11 @@ public abstract class Trader {
     protected HashMap<Stocks, Integer> stockPortfolio;
     private double netWorth;
     private ArrayList<Double> worthHistory;
+    public double initialCash = 10000;
 
-    public Trader(String name, double cash, MarketSimulator market) {
+    public Trader(String name, MarketSimulator market) {
         this.name = name;
-        this.cash = cash;
+        this.cash = initialCash;
         this.stockPortfolio = new HashMap<>();
         this.worthHistory = new ArrayList<>();
         initializeStockPortfolio(market);

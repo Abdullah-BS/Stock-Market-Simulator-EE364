@@ -24,11 +24,11 @@ public abstract class Trader {
     }
 
     public double getCash() {
-        return cash;
+        return Math.round(cash * 100.0) / 100.0;
     }
 
     public double getNetWorth() {
-        return netWorth;
+        return Math.round(netWorth * 100.0) / 100.0;
 
     }
 
@@ -95,6 +95,7 @@ public abstract class Trader {
 //        System.out.println(netWorth);
 //        System.out.println(worthHistory);
         return netWorth;
+
     }
 
 

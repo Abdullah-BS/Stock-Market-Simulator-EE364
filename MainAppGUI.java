@@ -44,13 +44,16 @@ public class MainAppGUI extends Application {
 
         primaryStage.getIcons().add(new Image("LOGO.jpg"));
 
+        primaryStage.setWidth(1920);
+        primaryStage.setHeight(1080);
+
         // Initialize Main Menu
         initializeMainMenu(primaryStage);
 
         // Show the Main Menu scene initially
         primaryStage.setScene(mainMenuScene);
         primaryStage.show();
-        primaryStage.setFullScreen(true);
+         
     }
 
     private void initializeMainMenu(Stage primaryStage) {
@@ -82,7 +85,7 @@ public class MainAppGUI extends Application {
         primaryStage.setScene(mainMenuScene);
         primaryStage.setTitle("Market Simulator");
         primaryStage.show();
-        primaryStage.setFullScreen(true);
+         
     }
 
     private TableView<Trader> createTraderTable() {
@@ -152,7 +155,7 @@ public class MainAppGUI extends Application {
             startPhase2(primaryStage); // Reload Phase 2
         }
 
-        primaryStage.setFullScreen(true);
+         
     }
 
 
@@ -202,7 +205,7 @@ public class MainAppGUI extends Application {
         Scene scene = new Scene(layout);
         primaryStage.setScene(scene);
         primaryStage.show();
-        primaryStage.setFullScreen(true);
+         
 
         initializeTimeline();
 
@@ -254,7 +257,7 @@ public class MainAppGUI extends Application {
         Scene scene = new Scene(layout);
         primaryStage.setScene(scene);
         primaryStage.show();
-        primaryStage.setFullScreen(true);
+         
 
         initializeTimeline();
     }

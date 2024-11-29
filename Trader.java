@@ -94,7 +94,7 @@ public abstract class Trader {
         worthHistory.add(netWorth);
 //        System.out.println(netWorth);
 //        System.out.println(worthHistory);
-        return netWorth;
+        return Math.round(netWorth * 100.0) / 100.0;
 
     }
 

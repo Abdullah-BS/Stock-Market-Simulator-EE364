@@ -88,7 +88,12 @@ public class MainAppGUI extends Application {
         TableColumn<Trader, String> nameColumn = new TableColumn<>("Trader Name");
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 
-        TableColumn<Trader, Double> cashColumn = new TableColumn<>("Starting Cash");
+        TableColumn<Trader, String> initialCashColumn = new TableColumn<>("Starting Cash");
+        initialCashColumn.setCellValueFactory(cellData ->
+                new SimpleObjectProperty<>(cellData.getValue().initialCash).asString() // Directly access initialCash
+        );
+
+        TableColumn<Trader, Double> cashColumn = new TableColumn<>("Current Cash");
         cashColumn.setCellValueFactory(new PropertyValueFactory<>("cash"));
 
         TableColumn<Trader, Double> netWorthColumn = new TableColumn<>("Net Worth");
@@ -110,7 +115,7 @@ public class MainAppGUI extends Application {
             return new SimpleStringProperty(traderType);
         });
 
-        table.getColumns().addAll(nameColumn, cashColumn, netWorthColumn, traderTypeColumn);
+        table.getColumns().addAll(nameColumn,initialCashColumn, cashColumn, netWorthColumn, traderTypeColumn);
 
         return table;
     }

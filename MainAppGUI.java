@@ -142,7 +142,13 @@ public class MainAppGUI extends Application {
         autoSimulateButton.setOnAction(e -> toggleSimulation(autoSimulateButton));
 
         Button backButton = new Button("Back");
-        backButton.setOnAction(e -> initializeMainMenu(primaryStage));
+        backButton.setOnAction(e -> {
+            if (simulationTimeline != null && simulationTimeline.getStatus() == Timeline.Status.RUNNING) {
+                simulationTimeline.stop(); // Stop the simulation timeline
+            }
+            initializeMainMenu(primaryStage);
+        });
+
 
         TableView<Trader> table = createTraderTable();
 
@@ -184,7 +190,13 @@ public class MainAppGUI extends Application {
         autoSimulateButton.setOnAction(e -> toggleSimulation(autoSimulateButton));
 
         Button backButton = new Button("Back");
-        backButton.setOnAction(e -> initializeMainMenu(primaryStage));
+        backButton.setOnAction(e -> {
+            if (simulationTimeline != null && simulationTimeline.getStatus() == Timeline.Status.RUNNING) {
+                simulationTimeline.stop(); // Stop the simulation timeline
+            }
+            initializeMainMenu(primaryStage);
+        });
+
 
         TableView<Trader> table = createTraderTable();
 

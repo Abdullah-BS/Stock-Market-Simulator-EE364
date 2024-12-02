@@ -6,6 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="c6ff5412-655a-4591-a952-7c650bc3c03e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MainAppGUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MainAppGUI.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/Trader.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/Trader.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -110,7 +112,8 @@
       <workItem from="1731694689469" duration="3950000" />
       <workItem from="1732197320341" duration="2556000" />
       <workItem from="1732272110688" duration="11241000" />
-      <workItem from="1732897279142" duration="1997000" />
+      <workItem from="1732897279142" duration="8618000" />
+      <workItem from="1733128039735" duration="421000" />
     </task>
     <servers />
   </component>

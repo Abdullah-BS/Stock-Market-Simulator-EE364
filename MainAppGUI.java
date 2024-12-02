@@ -61,11 +61,29 @@ public class MainAppGUI extends Application {
         phase1Button.setOnAction(e -> initializePhase1(primaryStage));
         phase1Button.setPrefWidth(200);
         phase1Button.setPrefHeight(50);
+        phase1Button.setStyle(
+                "-fx-background-color: #3498db; " + // Blue background
+                        "-fx-text-fill: white; " +         // White text
+                        "-fx-font-size: 16px; " +         // Larger font size
+                        "-fx-font-weight: bold; " +      // Bold font
+                        "-fx-border-color: #2980b9; " +  // Border color
+                        "-fx-border-width: 2px; "        // Border thickness
+        );
+
 
         Button phase2Button = new Button("Phase 2");
         phase2Button.setOnAction(e -> startPhase2(primaryStage));
         phase2Button.setPrefWidth(200);
         phase2Button.setPrefHeight(50);
+        phase2Button.setStyle(
+                "-fx-background-color: #ff3232; " + // Blue background
+                        "-fx-text-fill: white; " +         // White text
+                        "-fx-font-size: 16px; " +         // Larger font size
+                        "-fx-font-weight: bold; " +      // Bold font
+                        "-fx-border-color: #ff3232; " +  // Border color
+                        "-fx-border-width: 2px; "        // Border thickness
+        );
+
 
         Button compareButton = new Button("Compare Phases");
         compareButton.setOnAction(e -> startComparison(primaryStage));

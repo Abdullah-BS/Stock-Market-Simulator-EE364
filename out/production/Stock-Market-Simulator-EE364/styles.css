@@ -1,0 +1,103 @@
+.root {
+    -fx-background-color: #f0f0f0;
+    -fx-padding: 20px;
+    -fx-alignment: center;
+}
+
+/* Phase 1 button */
+.phase1-button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-border-color: #2980b9;
+    -fx-border-width: 2px;
+    -fx-cursor: hand;
+}
+
+/* Hover effect */
+.phase1-button:hover {
+    -fx-background-color: #2980b9; /* Darker blue on hover */
+    -fx-border-color: #1e6b99;
+}
+
+/* Pressed effect (when clicked) */
+.phase1-button:pressed {
+    -fx-background-color: #1e6b99; /* Even darker blue when clicked */
+    -fx-border-color: #0d3d66;    /* Darker border when clicked */
+}
+
+.phase1-inner-buttons {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-border-color: #2980b9;
+    -fx-border-width: 2px;
+    -fx-cursor: hand;
+}
+
+.phase1-inner-buttons:hover {
+    -fx-background-color: #2980b9; /* Darker blue on hover */
+    -fx-border-color: #1e6b99;
+}
+
+.phase1-inner-buttons:pressed {
+    -fx-background-color: #1e6b99; /* Even darker blue when clicked */
+    -fx-border-color: #0d3d66;    /* Darker border when clicked */
+}
+
+
+/* Text Area styling */
+.text-area {
+    -fx-font-size: 13px;
+    -fx-border-color: #ccc;
+    -fx-border-width: 2px;
+    -fx-padding: 10px;
+}
+
+
+/* LineChart styling */
+.chart {
+    -fx-background-color: #fff;
+    -fx-border-color: #ccc;
+    -fx-border-width: 2px;
+}
+
+/* Hover Effect on Chart Lines */
+.chart .chart-series-line:hover {
+    -fx-stroke: #555555; /* Red when hovered */
+}
+
+
+/* Style for the TableView */
+/* Table styling */
+.table-view {
+    -fx-font-size: 14px;
+    -fx-pref-width: 600px;
+}
+
+
+
+/* Phase 2 button */
+.phase2-button {
+    -fx-background-color: #ff3232; /* Default red */
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-border-color: #cc2929; /* Darker red border */
+    -fx-border-width: 2px;
+    -fx-cursor: hand;
+}
+
+/* Hover effect for Phase 2 button */
+.phase2-button:hover {
+    -fx-background-color: #cc2929; /* Darker red on hover */
+    -fx-border-color: #b02222;
+}
+
+/* Pressed effect for Phase 2 button */
+.phase2-button:pressed {
+    -fx-background-color: #b02222; /* Even darker red when clicked */
+    -fx-border-color: #8f1b1b;    /* Darker border when clicked */
+}
+

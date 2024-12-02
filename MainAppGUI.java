@@ -22,6 +22,7 @@ import javafx.scene.image.ImageView;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class MainAppGUI extends Application {
 
@@ -50,6 +51,7 @@ public class MainAppGUI extends Application {
         // Initialize Main Menu
         initializeMainMenu(primaryStage);
 
+
         // Show the Main Menu scene initially
         primaryStage.setScene(mainMenuScene);
         primaryStage.show();
@@ -61,34 +63,20 @@ public class MainAppGUI extends Application {
         phase1Button.setOnAction(e -> initializePhase1(primaryStage));
         phase1Button.setPrefWidth(200);
         phase1Button.setPrefHeight(50);
-        phase1Button.setStyle(
-                "-fx-background-color: #3498db; " + // Blue background
-                        "-fx-text-fill: white; " +         // White text
-                        "-fx-font-size: 16px; " +         // Larger font size
-                        "-fx-font-weight: bold; " +      // Bold font
-                        "-fx-border-color: #2980b9; " +  // Border color
-                        "-fx-border-width: 2px; "        // Border thickness
-        );
+        phase1Button.getStyleClass().add("phase1-button");
 
 
         Button phase2Button = new Button("Phase 2");
-        phase2Button.setOnAction(e -> startPhase2(primaryStage));
+        phase2Button.setOnAction(e -> initializePhase2(primaryStage));
         phase2Button.setPrefWidth(200);
         phase2Button.setPrefHeight(50);
-        phase2Button.setStyle(
-                "-fx-background-color: #ff3232; " + // Blue background
-                        "-fx-text-fill: white; " +         // White text
-                        "-fx-font-size: 16px; " +         // Larger font size
-                        "-fx-font-weight: bold; " +      // Bold font
-                        "-fx-border-color: #ff3232; " +  // Border color
-                        "-fx-border-width: 2px; "        // Border thickness
-        );
+        phase2Button.getStyleClass().add("phase2-button");
 
 
-        Button compareButton = new Button("Compare Phases");
-        compareButton.setOnAction(e -> startComparison(primaryStage));
-        compareButton.setPrefWidth(200);
-        compareButton.setPrefHeight(50);
+//        Button compareButton = new Button("Compare Phases");
+//        compareButton.setOnAction(e -> startComparison(primaryStage));
+//        compareButton.setPrefWidth(200);
+//        compareButton.setPrefHeight(50);
 
         ImageView imageView = new ImageView(new Image("Trading-Bot.jpg"));
         imageView.setPreserveRatio(true);
@@ -100,6 +88,9 @@ public class MainAppGUI extends Application {
         root.getChildren().addAll(imageView, menuLayout);
 
         mainMenuScene = new Scene(root, 1200, 1000);
+        // Reference to the style file to apply it into the main menu scene
+        mainMenuScene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("styles.css")).toExternalForm());
+
         primaryStage.setScene(mainMenuScene);
         primaryStage.setTitle("Market Simulator");
         primaryStage.show();
@@ -108,19 +99,22 @@ public class MainAppGUI extends Application {
 
     private TableView<Trader> createTraderTable() {
         TableView<Trader> table = new TableView<>(traderObservableList);
+        // to make column resize automatically
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
 
         TableColumn<Trader, String> nameColumn = new TableColumn<>("Trader Name");
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 
-        TableColumn<Trader, String> initialCashColumn = new TableColumn<>("Starting Cash");
+        TableColumn<Trader, String> initialCashColumn = new TableColumn<>("Starting Cash ($)");
         initialCashColumn.setCellValueFactory(cellData ->
                 new SimpleObjectProperty<>(cellData.getValue().initialCash).asString() // Directly access initialCash
         );
 
-        TableColumn<Trader, Double> cashColumn = new TableColumn<>("Current Cash");
+        TableColumn<Trader, Double> cashColumn = new TableColumn<>("Current Cash ($)");
         cashColumn.setCellValueFactory(new PropertyValueFactory<>("cash"));
 
-        TableColumn<Trader, Double> netWorthColumn = new TableColumn<>("Net Worth");
+        TableColumn<Trader, Double> netWorthColumn = new TableColumn<>("Net Worth ($)");
         netWorthColumn.setCellValueFactory(new PropertyValueFactory<>("netWorth"));
 
         TableColumn<Trader, String> traderTypeColumn = new TableColumn<>("Trader Type");
@@ -170,7 +164,7 @@ public class MainAppGUI extends Application {
         } else if (isPhase1) {
             initializePhase1(primaryStage); // Reload Phase 1
         } else {
-            startPhase2(primaryStage); // Reload Phase 2
+            initializePhase2(primaryStage); // Reload Phase 2
         }
 
          
@@ -183,6 +177,7 @@ public class MainAppGUI extends Application {
         eventsDisplay = new TextArea();
         eventsDisplay.setEditable(false);
         eventsDisplay.setPrefHeight(200);
+        eventsDisplay.getStyleClass().add("text-area");
 
         NumberAxis xAxis = new NumberAxis();
         xAxis.setLabel("Day");
@@ -192,6 +187,8 @@ public class MainAppGUI extends Application {
 
         lineChart = new LineChart<>(xAxis, yAxis);
         lineChart.setTitle("Trader Net Worth Over Time");
+        lineChart.getStyleClass().add("chart");
+
 
         for (Trader trader : mainApp.listOfTraders) {
             XYChart.Series<Number, Number> series = new XYChart.Series<>();
@@ -202,9 +199,13 @@ public class MainAppGUI extends Application {
 
         ToggleButton autoSimulateButton = new ToggleButton("Start Auto Simulation");
         autoSimulateButton.setOnAction(e -> toggleSimulation(autoSimulateButton));
+        autoSimulateButton.getStyleClass().add("phase1-inner-buttons");
+
 
         Button restartButton = new Button("Restart");
         restartButton.setOnAction(e -> ResetButton(primaryStage, false, true));
+        restartButton.getStyleClass().add("phase1-inner-buttons");
+
 
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
@@ -213,14 +214,23 @@ public class MainAppGUI extends Application {
             }
             ResetButton(primaryStage, true, true);
         });
+        backButton.getStyleClass().add("phase1-inner-buttons");
+
 
         TableView<Trader> table = createTraderTable();
+        table.getStyleClass().add("table-view");
+
 
         HBox buttonLayout = new HBox(10, autoSimulateButton, backButton, restartButton);
         VBox layout = new VBox(10, eventsDisplay, buttonLayout, lineChart, table);
         layout.setPrefSize(800, 600);
+        layout.getStyleClass().add("root");
 
         Scene scene = new Scene(layout);
+
+        // Reference to the style file to apply it into the scene
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("styles.css")).toExternalForm());
+
         primaryStage.setScene(scene);
         primaryStage.show();
          
@@ -229,7 +239,7 @@ public class MainAppGUI extends Application {
 
     }
 
-      private void startPhase2(Stage primaryStage) {
+      private void initializePhase2(Stage primaryStage) {
         primaryStage.setTitle("Market Simulation Phase 2");
 
         eventsDisplay = new TextArea();

@@ -165,11 +165,27 @@ public class MainAppGUI extends Application {
         Label cashLabel = new Label("Current Cash: $" + trader.getCash());
         Label netWorthLabel = new Label("Net Worth: $" + trader.getNetWorth());
 
-        // Add the labels to the layout
-        layout.getChildren().addAll(nameLabel, cashLabel, netWorthLabel);
+        // Create the portfolio table
+        TableView<Map.Entry<Stocks, Integer>> portfolioTable = new TableView<>();
+
+        // Columns for stock name and quantity
+        TableColumn<Map.Entry<Stocks, Integer>, String> stockNameColumn = new TableColumn<>("Stock Symbol");
+        stockNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getKey().getSymbol()));
+
+        TableColumn<Map.Entry<Stocks, Integer>, Integer> quantityColumn = new TableColumn<>("Quantity");
+        quantityColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getValue()));
+
+        // Add columns to the portfolio table
+        portfolioTable.getColumns().addAll(stockNameColumn, quantityColumn);
+
+        // Add portfolio data to the table directly from trader's stock portfolio
+        portfolioTable.getItems().addAll(trader.getStockPortfolio().entrySet());
+
+        // Add all elements to the layout
+        layout.getChildren().addAll(nameLabel, cashLabel, netWorthLabel, portfolioTable);
 
         // Set up the scene and show the window
-        Scene scene = new Scene(layout, 300, 200);
+        Scene scene = new Scene(layout, 400, 300);
         infoStage.setScene(scene);
         infoStage.show();
     }

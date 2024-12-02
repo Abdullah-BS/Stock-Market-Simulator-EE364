@@ -135,11 +135,48 @@ public class MainAppGUI extends Application {
 
         table.getColumns().addAll(nameColumn,initialCashColumn, cashColumn, netWorthColumn, traderTypeColumn);
 
+        // Add a row selection listener
+        table.setRowFactory(tv -> {
+            TableRow<Trader> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (!row.isEmpty() & event.getClickCount() == 2) {
+                    Trader selectedTrader = row.getItem();  // Get selected trader
+                    showTraderInfoWindow(selectedTrader);   // Open a new window to show details
+                }
+            });
+            return row;
+        });
+
+
         return table;
     }
 
 
-        private void ResetMainApp() {
+    private void showTraderInfoWindow(Trader trader) {
+        // Create a new Stage (window)
+        Stage infoStage = new Stage();
+        infoStage.setTitle("Trader Details");
+
+        // Create a VBox layout to display the trader's information
+        VBox layout = new VBox(10);
+
+        // Display trader details in labels
+        Label nameLabel = new Label("Trader Name: " + trader.getName());
+        Label cashLabel = new Label("Current Cash: $" + trader.getCash());
+        Label netWorthLabel = new Label("Net Worth: $" + trader.getNetWorth());
+
+        // Add the labels to the layout
+        layout.getChildren().addAll(nameLabel, cashLabel, netWorthLabel);
+
+        // Set up the scene and show the window
+        Scene scene = new Scene(layout, 300, 200);
+        infoStage.setScene(scene);
+        infoStage.show();
+    }
+
+
+
+    private void ResetMainApp() {
         mainApp = new MainApp();
     }
     private void ResetButton(Stage primaryStage, boolean navigateToMainMenu, boolean isPhase1) {

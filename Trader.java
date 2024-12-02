@@ -24,7 +24,8 @@ public abstract class Trader {
     }
 
     public double getCash() {
-        return Math.round(cash * 100.0) / 100.0;
+        cash = Math.round(cash * 100.0) / 100.0;
+        return cash;
     }
 
     public double getNetWorth() {

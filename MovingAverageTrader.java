@@ -2,9 +2,8 @@ import java.util.List;
 
 public class MovingAverageTrader extends Trader implements knowledgeableTrader {
 
-    private static final double DEFAULT_THRESHOLD = 0.015;
     private int period;
-    private double threshold = DEFAULT_THRESHOLD;
+    private double threshold = 0.015;
 
     public MovingAverageTrader(String name, int period, MarketSimulator market) {
         super(name, market);
@@ -31,6 +30,7 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader {
         double movingAverage = calculate(this.period, priceHistory);
         double currentPrice = stock.getPrice();
 
+        //SELL
         if (currentPrice > movingAverage * (1 + threshold) && getStockPortfolio().containsKey(stock)) {
             do {
                 if (getStockPortfolio().get(stock) >= quantity) {
@@ -45,7 +45,9 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader {
                     break;
                 }
             } while (true);
-        } else if (currentPrice < movingAverage * (1 - threshold)) {
+        }
+        //BUY
+        else if (currentPrice < movingAverage * (1 - threshold)) {
             if (getCash() >= quantity * currentPrice) {
                 buy(stock, quantity, currentPrice);
                 System.out.println("MAT:Bought " + quantity + " units of " + stock.getSymbol() +

@@ -11,21 +11,9 @@ public class RSITrader extends Trader implements knowledgeableTrader {
         this.period = period;
     }
 
-    public int getPeriod() {
-        return period;
-    }
-
-    public void setPeriod(int period) {
-        this.period = period;
-    }
 
     public double calculate(int period, List<Double> priceHistory) {
         // Ensure there is enough data for calculation
-        if (priceHistory.size() < period) {
-            System.out.println("Insufficient data for RSI calculation.");
-            return 50; // Neutral RSI value
-        }
-
         try {
             double gain = 0;
             double loss = 0;

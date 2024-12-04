@@ -24,8 +24,6 @@ public class MarketSimulator {
 
     public static void loadFiles(String path){
 
-//        listStock.clear();
-//        listEvent.clear();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
             
@@ -61,9 +59,8 @@ public class MarketSimulator {
 
     
     public void applyEventToStock(Stocks stock, Event event){
-        double random = Math.random();
-        random=0.01;
-        double priceChange = stock.getPrice() *(event.getImpact()+random);
+        double factor=0.01;
+        double priceChange = stock.getPrice() *(event.getImpact()+factor);
         stock.setPrice(stock.getPrice() + priceChange);
      }
 
@@ -103,15 +100,6 @@ public class MarketSimulator {
         return shuffledStocks.subList(0, count);
     }
 
-//    public void saveStocksToFile() {
-//        try (BufferedWriter writer = new BufferedWriter(new FileWriter(STOCK_CSV))) {
-//            for (Stocks stock : listStock) {
-//                writer.write(String.format("%s,%s,%.2f%n", stock.getSymbol(), stock.getCompanyName(), stock.getPrice()));
-//            }
-//        } catch (IOException e) {
-//            System.err.println("Error writing stock file: " + e.getMessage());
-//        }
-//    }
 
     public List<Stocks> getListStock() {
         return listStock;

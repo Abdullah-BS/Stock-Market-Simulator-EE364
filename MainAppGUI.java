@@ -29,10 +29,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.Node;
-
-
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -84,16 +81,12 @@ public class MainAppGUI extends Application {
 
 
         Button phase2Button = new Button("Phase 2");
-        phase2Button.setOnAction(e -> initializePhase2(primaryStage));
+//       Phase 2 yet to be implemented
+//       Phase2Button.setOnAction(e -> initializePhase2(primaryStage));
         phase2Button.setPrefWidth(200);
         phase2Button.setPrefHeight(50);
         phase2Button.getStyleClass().add("phase2-button");
 
-
-//        Button compareButton = new Button("Compare Phases");
-//        compareButton.setOnAction(e -> startComparison(primaryStage));
-//        compareButton.setPrefWidth(200);
-//        compareButton.setPrefHeight(50);
 
         ImageView imageView = new ImageView(new Image("Trading-Bot.jpg"));
         imageView.setPreserveRatio(true);
@@ -295,7 +288,7 @@ public class MainAppGUI extends Application {
         restartButton.setOnAction(e -> ResetButton(primaryStage, false, true));
         restartButton.getStyleClass().add("phase1-inner-buttons");
 
-//         downloadChart downloadResults
+
         Button downloadResultsButton =  new Button("Download Results");
         downloadResultsButton.getStyleClass().add("phase1-inner-buttons");
 
@@ -304,11 +297,6 @@ public class MainAppGUI extends Application {
 
         downloadChartButton.setOnAction(e -> downloadChart());
         downloadResultsButton.setOnAction(e -> downloadResults());
-
-
-
-
-
 
 
         Button backButton = new Button("Back");
@@ -344,7 +332,7 @@ public class MainAppGUI extends Application {
         initializeTimeline();
     }
 
-
+    // YET TO BE IMPLEMENTED
     private void initializePhase2(Stage primaryStage) {
         primaryStage.setTitle("Market Simulation Phase 2");
 
@@ -396,22 +384,6 @@ public class MainAppGUI extends Application {
         initializeTimeline();
     }
 
-    private void startComparison(Stage primaryStage) {
-        Button backButton = new Button("Back");
-        backButton.setOnAction(e -> initializeMainMenu(primaryStage));
-
-        VBox layout = new VBox(10);
-        layout.setStyle("-fx-alignment: center; -fx-padding: 20;");
-
-        TableView<Trader> table = createTraderTable();
-
-        layout.getChildren().addAll(table, backButton);
-
-        Scene comparisonScene = new Scene(layout, 800, 600);
-        primaryStage.setScene(comparisonScene);
-        primaryStage.setTitle("Market Comparison Report");
-        primaryStage.show();
-    }
 
     private void initializeTimeline() {
         simulationTimeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> simulateDay()));
@@ -467,13 +439,13 @@ public class MainAppGUI extends Application {
     }
 
     private HBox createTraderCircles() {
-        CircleLayout= new HBox(10); // Horizontal layout with spacing
+        CircleLayout= new HBox(10);
         CircleLayout.setStyle("-fx-alignment: center; -fx-padding: 20;");
 
         for (Trader trader : traderObservableList) {
 
-            Circle circle = new Circle(100); // Circle with a radius of 40
-            circle.setFill(Color.ORANGE); // Loss (ORANGE)
+            Circle circle = new Circle(100);
+            circle.setFill(Color.ORANGE);
 
             Text traderName = new Text(trader.getName());
             traderName.getStyleClass().add("circle-text");
@@ -481,7 +453,7 @@ public class MainAppGUI extends Application {
             // StackPane to center the text inside the circle
             StackPane traderCircle = new StackPane(circle, traderName);
             traderCircle.setStyle("-fx-alignment: center;");
-//            traderCircle.getStyleClass().add("phase1-button");
+
 
             CircleLayout.getChildren().add(traderCircle);
 

@@ -12,7 +12,7 @@ public class RandomTrader extends Trader {
 
     @Override
     public double calculate(int period, List<Double> priceHistory) {
-        // Generate a random value between 0 and 1 to fulfill the method requirement
+        // Generate a random value between 0 and 1 to fulfill the methods requirement for the Trader class
         return random.nextDouble();
     }
 

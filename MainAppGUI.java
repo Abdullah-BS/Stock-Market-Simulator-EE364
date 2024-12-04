@@ -174,18 +174,38 @@ public class MainAppGUI extends Application {
         Label cashLabel = new Label("Current Cash: $" + trader.getCash());
         Label netWorthLabel = new Label("Net Worth: $" + trader.getNetWorth());
 
+        // Create an ObservableList for the portfolio
+        ObservableList<Map.Entry<Stocks, Integer>> portfolioData = FXCollections.observableArrayList(trader.getStockPortfolio().entrySet());
+
         // Create the portfolio table
-        TableView<Map.Entry<Stocks, Integer>> portfolioTable = new TableView<>();
+        TableView<Map.Entry<Stocks, Integer>> portfolioTable = new TableView<>(portfolioData);
 
         // Columns for stock name and quantity
         TableColumn<Map.Entry<Stocks, Integer>, String> stockNameColumn = new TableColumn<>("Stock Symbol");
         stockNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getKey().getSymbol()));
 
+        // Column for stock price
+        TableColumn<Map.Entry<Stocks, Integer>, String> stockPriceColumn = new TableColumn<>("Stock Price");
+        stockPriceColumn.setCellValueFactory(cellData -> {
+            double price = cellData.getValue().getKey().getPrice();
+            return new SimpleStringProperty(String.format("$%.2f", price));
+        });
+
+
         TableColumn<Map.Entry<Stocks, Integer>, Integer> quantityColumn = new TableColumn<>("Quantity");
         quantityColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getValue()));
 
+        TableColumn<Map.Entry<Stocks, Integer>, String> stockWorthColumn = new TableColumn<>("Stock Worth");
+        stockWorthColumn.setCellValueFactory(cellData -> {
+            Stocks stock = cellData.getValue().getKey();
+            Integer quantity = cellData.getValue().getValue();
+            double worth = quantity * stock.getPrice(); // Calculate stock worth
+            return new SimpleStringProperty(String.format("$%.2f", worth));
+        });
+
+
         // Add columns to the portfolio table
-        portfolioTable.getColumns().addAll(stockNameColumn, quantityColumn);
+        portfolioTable.getColumns().addAll(stockNameColumn, stockPriceColumn, quantityColumn, stockWorthColumn);
 
         // Add portfolio data to the table directly from trader's stock portfolio
         portfolioTable.getItems().addAll(trader.getStockPortfolio().entrySet());
@@ -198,6 +218,7 @@ public class MainAppGUI extends Application {
         infoStage.setScene(scene);
         infoStage.show();
     }
+
 
 
 
@@ -445,6 +466,14 @@ public class MainAppGUI extends Application {
             traderCircle.setStyle("-fx-alignment: center;");
 
             CircleLayout.getChildren().add(traderCircle);
+
+            traderCircle.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2) { // Check for double click
+                    showTraderInfoWindow(trader); // Show trader info window
+                }
+            }
+            );
+
         }
 
         return CircleLayout;

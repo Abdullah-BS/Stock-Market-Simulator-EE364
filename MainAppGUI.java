@@ -8,17 +8,24 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -242,7 +249,6 @@ public class MainAppGUI extends Application {
         lineChart.setTitle("Trader Net Worth Over Time");
         lineChart.getStyleClass().add("chart");
 
-
         for (Trader trader : mainApp.listOfTraders) {
             XYChart.Series<Number, Number> series = new XYChart.Series<>();
             series.setName(trader.getName());
@@ -254,11 +260,9 @@ public class MainAppGUI extends Application {
         autoSimulateButton.setOnAction(e -> toggleSimulation(autoSimulateButton));
         autoSimulateButton.getStyleClass().add("phase1-inner-buttons");
 
-
         Button restartButton = new Button("Restart");
         restartButton.setOnAction(e -> ResetButton(primaryStage, false, true));
         restartButton.getStyleClass().add("phase1-inner-buttons");
-
 
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
@@ -269,30 +273,32 @@ public class MainAppGUI extends Application {
         });
         backButton.getStyleClass().add("phase1-inner-buttons");
 
+        Button showTableButton = new Button("Show Trader Table");
+        showTableButton.setOnAction(e -> showTraderTableWindow()); // New method for displaying the table
+        showTableButton.getStyleClass().add("phase1-inner-buttons");
 
-        TableView<Trader> table = createTraderTable();
-        table.getStyleClass().add("table-view");
+        // Creating circular representations for each trader
+        HBox circlesLayout = new HBox(20);
+        circlesLayout.setStyle("-fx-alignment: center;");
 
+        circlesLayout = createTraderCircles();
 
-        HBox buttonLayout = new HBox(10, autoSimulateButton, backButton, restartButton);
-        VBox layout = new VBox(10, eventsDisplay, buttonLayout, lineChart, table);
+        HBox buttonLayout = new HBox(10, autoSimulateButton, backButton, restartButton, showTableButton);
+        VBox layout = new VBox(10, eventsDisplay, buttonLayout, lineChart, circlesLayout);
         layout.setPrefSize(800, 600);
         layout.getStyleClass().add("root");
 
         Scene scene = new Scene(layout);
-
-        // Reference to the style file to apply it into the scene
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("styles.css")).toExternalForm());
 
         primaryStage.setScene(scene);
         primaryStage.show();
-         
 
         initializeTimeline();
-
     }
 
-      private void initializePhase2(Stage primaryStage) {
+
+    private void initializePhase2(Stage primaryStage) {
         primaryStage.setTitle("Market Simulation Phase 2");
 
         eventsDisplay = new TextArea();
@@ -385,6 +391,7 @@ public class MainAppGUI extends Application {
         double minNetWorth = Double.MAX_VALUE;
         double maxNetWorth = Double.MIN_VALUE;
 
+
         for (Trader trader : mainApp.listOfTraders) {
             double netWorth = trader.calculateNetWorth(trader.getStockPortfolio());
             XYChart.Series<Number, Number> series = traderSeriesMap.get(trader.getName());
@@ -409,4 +416,47 @@ public class MainAppGUI extends Application {
         // Update the observable list to refresh the TableView
         traderObservableList.setAll(mainApp.listOfTraders);
     }
+
+    private HBox createTraderCircles() {
+        HBox circleLayout = new HBox(10); // Horizontal layout with spacing
+        circleLayout.setStyle("-fx-alignment: center; -fx-padding: 20;");
+
+        for (Trader trader : traderObservableList) {
+            double netWorth = trader.getNetWorth();
+            double startingCash = trader.getCash();
+
+            Circle circle = new Circle(80); // Circle with a radius of 40
+
+            // Set color based on net worth compared to starting cash
+            if (netWorth >= startingCash) {
+                circle.setFill(Color.GREEN); // Profit (green)
+            } else {
+                circle.setFill(Color.RED); // Loss (red)
+            }
+
+            Text traderName = new Text(trader.getName());
+
+            // StackPane to center the text inside the circle
+            StackPane traderCircle = new StackPane(circle, traderName);
+            traderCircle.setStyle("-fx-alignment: center;");
+
+            circleLayout.getChildren().add(traderCircle);
+        }
+
+        return circleLayout;
+    }
+    private void showTraderTableWindow() {
+        Stage tableStage = new Stage();
+        tableStage.setTitle("Trader Details");
+
+        TableView<Trader> traderTable = createTraderTable();
+        VBox layout = new VBox(traderTable);
+        layout.setStyle("-fx-padding: 20;");
+
+        Scene scene = new Scene(layout, 800, 600);
+        tableStage.setScene(scene);
+        tableStage.show();
+    }
+
+
 }

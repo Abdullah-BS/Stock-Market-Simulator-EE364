@@ -5,7 +5,7 @@ public class RandomTrader extends Trader {
 
     private final Random random;
 
-    public RandomTrader(String name, double cash, MarketSimulator market) {
+    public RandomTrader(String name, MarketSimulator market) {
         super(name, market);
         this.random = new Random();
     }

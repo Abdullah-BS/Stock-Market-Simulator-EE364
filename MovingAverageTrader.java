@@ -6,7 +6,7 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader {
     private int period;
     private double threshold = DEFAULT_THRESHOLD;
 
-    public MovingAverageTrader(String name, double cash, int period, MarketSimulator market) {
+    public MovingAverageTrader(String name, double cash, MarketSimulator market) {
         super(name, market);
         this.period = period;
     }

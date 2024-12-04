@@ -447,23 +447,17 @@ public class MainAppGUI extends Application {
         CircleLayout.setStyle("-fx-alignment: center; -fx-padding: 20;");
 
         for (Trader trader : traderObservableList) {
-            double netWorth = trader.getNetWorth();
-            double startingCash = trader.getCash();
 
-            Circle circle = new Circle(80); // Circle with a radius of 40
-
-            // Set color based on net worth compared to starting cash
-            if (netWorth >= startingCash) {
-                circle.setFill(Color.GREEN); // Profit (green)
-            } else {
-                circle.setFill(Color.RED); // Loss (red)
-            }
+            Circle circle = new Circle(100); // Circle with a radius of 40
+            circle.setFill(Color.ORANGE); // Loss (ORANGE)
 
             Text traderName = new Text(trader.getName());
+            traderName.getStyleClass().add("circle-text");
 
             // StackPane to center the text inside the circle
             StackPane traderCircle = new StackPane(circle, traderName);
             traderCircle.setStyle("-fx-alignment: center;");
+//            traderCircle.getStyleClass().add("phase1-button");
 
             CircleLayout.getChildren().add(traderCircle);
 

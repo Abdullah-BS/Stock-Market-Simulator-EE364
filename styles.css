@@ -55,6 +55,16 @@
     -fx-padding: 10px;
 }
 
+.circle-text {
+    -fx-font-size: 14px;
+    -fx-border-color: #ccc;
+    -fx-border-width: 2px;
+    -fx-padding: 10px;
+    -fx-text-fill: black; /* Ensure the text color is black for contrast */
+    -fx-font-weight: bold; /* Optional: Make the text bold */
+}
+
+
 
 /* LineChart styling */
 .chart {

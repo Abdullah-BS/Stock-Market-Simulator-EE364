@@ -6,7 +6,7 @@ public class RSITrader extends Trader implements knowledgeableTrader {
 
     private int period;
 
-    public RSITrader(String name, double cash, int period, MarketSimulator market) {
+    public RSITrader(String name, double cash, MarketSimulator market) {
         super(name, market);
         this.period = period;
     }

@@ -1,53 +1,48 @@
 import java.util.List;
 import java.util.Random;
 
-public class RandomTrader extends Trader{
+public class RandomTrader extends Trader {
 
-    private double randomNumber;
+    private final Random random;
 
-    public RandomTrader(String name, MarketSimulator market) {
+    public RandomTrader(String name, double cash, MarketSimulator market) {
         super(name, market);
-        this.randomNumber = Math.random();  // 0 - 0.99
+        this.random = new Random();
     }
 
-    public double getRandomNumber() {return randomNumber;}
-
-    public void setRandomNumber(double randomNumber) {this.randomNumber = randomNumber;}
-
-    //  What is the use of Calculate in randomTrader??
+    @Override
     public double calculate(int period, List<Double> priceHistory) {
-        return randomNumber;
+        // Generate a random value between 0 and 1 to fulfill the method requirement
+        return random.nextDouble();
     }
 
-    // what to do with the period in Random????
+    @Override
     public void execute(Stocks stock, int quantity) {
-        List<Double> priceHistory = stock.getPriceHistory();
-        Random random=new Random();
-        boolean buyOrSell = random.nextBoolean() ;
-        
-            
-        // Check if the period is within the limit of the array then Execute
+        // Decide whether to buy or sell randomly
+        boolean buyOrSell = random.nextBoolean();
+        double currentPrice = stock.getPrice();
 
-//            double value = calculate(10, priceHistory);
-            double currentPrice = stock.getPrice();
-        
-            // needs editing
-            // buy and sell method must be boolean!!
-            if (buyOrSell) {
-
-                System.out.println("buying stock");
+        if (buyOrSell) {
+            // Buy logic: Ensure the trader has enough cash
+            if (getCash() >= quantity * currentPrice) {
                 buy(stock, quantity, currentPrice);
+                System.out.println("RandT:Bought " + quantity + " units of " + stock.getSymbol() +
+                                   " at price " + currentPrice);
+            } else {
+                System.out.println("RandT:Not enough cash to buy stock: " + stock.getSymbol());
             }
-            else {
-
-                System.out.println("selling stock");
+        } else {
+            // Sell logic: Ensure the trader has enough stock to sell
+            if (getStockPortfolio().getOrDefault(stock, 0) >= quantity) {
                 sell(stock, quantity, currentPrice);
-
+                System.out.println("RandT:Sold " + quantity + " units of " + stock.getSymbol() +
+                                   " at price " + currentPrice);
+            } else {
+                System.out.println("RandT:Not enough stock to sell: " + stock.getSymbol());
             }
+        }
     }
-
-
     public String getName() {
-        return super.getName() + "(Random Strategy)";
+        return super.getName() + " (Random Strategy)";
     }
 }

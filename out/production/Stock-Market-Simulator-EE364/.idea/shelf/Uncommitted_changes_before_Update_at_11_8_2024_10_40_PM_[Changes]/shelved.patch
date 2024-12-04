@@ -1,0 +1,58 @@
+Index: MovingAverageTrader.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import java.util.LinkedList;\r\nimport java.util.List;\r\nimport java.util.Queue;\r\n\r\npublic class MovingAverageTrader extends Trader implements knowledgeableTrader{\r\n\r\n    private int period;\r\n//    private Queue<Double> values;\r\n\r\n    public MovingAverageTrader(String name, double cash, int period) {\r\n        super(name, cash);\r\n        this.period = period;\r\n//        this.values = new LinkedList<>();\r\n\r\n    }\r\n   \r\n    public double calculate(int period, List<Double> priceHistory) {\r\n        if (priceHistory.size() < period) {\r\n            // إذا كانت عدد القيم أقل من الفترة المطلوبة، لا يمكننا حساب المتوسط\r\n            return 0.0;\r\n        }\r\n\r\n        double sum = 0.0;\r\n        for (double value : priceHistory) {\r\n            sum += value;\r\n        }\r\n        \r\n         return sum / period;\r\n    }\r\n\r\n   public void execute(Stocks stock) {\r\n        List<Double> priceHistory = stock.getPriceHistory();\r\n        double movingAverage = calculate(this.period, priceHistory);\r\n        double currentPrice = priceHistory.size() != 0.0 ? priceHistory.get(priceHistory.size() - 1) : 0.0;\r\n\r\n        if (currentPrice > movingAverage) {\r\n            System.out.println(\"Action: Sell stock, price is above the moving average.\");\r\n        } else {\r\n            System.out.println(\"Action: Buy stock, price is below or equal to the moving average.\");\r\n        }\r\n}\r\n\r\n    public String getName() { return \"MovingAverage Trading Strategy\";}\r\n}\r\n\r\n    // دالة لإضافة قيمة جديدة وتحديث القائمة\r\n//    public void addValue(double newValue) {\r\n//        if (values.size() == period) {\r\n//            values.poll(); // إزالة أقدم قيمة إذا كانت القائمة ممتلئة\r\n//        }\r\n//        values.add(newValue); // إضافة القيمة الجديدة\r\n//    }\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/MovingAverageTrader.java b/MovingAverageTrader.java
+--- a/MovingAverageTrader.java	(revision 17a747765d9fa0dd0cf093dbcf3d6b8a266a9678)
++++ b/MovingAverageTrader.java	(date 1730929549518)
+@@ -15,7 +15,7 @@
+     }
+    
+     public double calculate(int period, List<Double> priceHistory) {
+-        if (priceHistory.size() < period) {
++        if (priceHistory.size() < period + 1) {
+             // إذا كانت عدد القيم أقل من الفترة المطلوبة، لا يمكننا حساب المتوسط
+             return 0.0;
+         }
+@@ -31,7 +31,7 @@
+    public void execute(Stocks stock) {
+         List<Double> priceHistory = stock.getPriceHistory();
+         double movingAverage = calculate(this.period, priceHistory);
+-        double currentPrice = priceHistory.size() != 0.0 ? priceHistory.get(priceHistory.size() - 1) : 0.0;
++        double currentPrice = stock.getPrice();
+ 
+         if (currentPrice > movingAverage) {
+             System.out.println("Action: Sell stock, price is above the moving average.");
+Index: RandomTrader.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import java.util.List;\r\n\r\npublic class RandomTrader extends Trader{\r\n\r\n    private double randomNumber;\r\n\r\n    public RandomTrader(String name, double cash) {\r\n        super(name, cash);\r\n        this.randomNumber = Math.random();\r\n    }\r\n\r\n    public double getRandomNumber() {return randomNumber;}\r\n\r\n    public void setRandomNumber(double randomNumber) {this.randomNumber = randomNumber;}\r\n\r\n    //  What is the use of Calculate in randomTrader??\r\n    public double calculate(int period) {\r\n        return randomNumber;\r\n    }\r\n\r\n    // what to do with the period in Random????\r\n    public void execute(int period,Stocks stock, int quantity) {\r\n        List<Double> priceHistory = stock.getPriceHistory();\r\n        // Check if the period is within the limit of the array then Execute\r\n        if (stock.getPriceHistory().size() < period + 1) {\r\n\r\n            double value = calculate(period);\r\n            double currentPrice = stock.getPrice();\r\n\r\n            // needs editing\r\n            // buy and sell method must be boolean!!\r\n            if (buy(stock.getSymbol(), quantity, currentPrice)) {\r\n\r\n                System.out.println(\"buying stock\");\r\n                buy(stock.getSymbol(), quantity, currentPrice);\r\n            }\r\n            else if (sell(stock.getSymbol(), quantity, currentPrice)) {\r\n\r\n                System.out.println(\"selling stock\");\r\n                sell(stock.getSymbol(), quantity, currentPrice);\r\n\r\n            }\r\n            // editing ends here\r\n\r\n        } else {\r\n            System.out.println(\"Error\");\r\n        }\r\n    }\r\n\r\n    public String getName() {\r\n        return \" Random Trader \";\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RandomTrader.java b/RandomTrader.java
+--- a/RandomTrader.java	(revision 17a747765d9fa0dd0cf093dbcf3d6b8a266a9678)
++++ b/RandomTrader.java	(date 1731094517829)
+@@ -29,15 +29,15 @@
+ 
+             // needs editing
+             // buy and sell method must be boolean!!
+-            if (buy(stock.getSymbol(), quantity, currentPrice)) {
++            if (buy(stock, quantity, currentPrice)) {
+ 
+                 System.out.println("buying stock");
+-                buy(stock.getSymbol(), quantity, currentPrice);
++                buy(stock, quantity, currentPrice);
+             }
+-            else if (sell(stock.getSymbol(), quantity, currentPrice)) {
++            else if (sell(stock, quantity, currentPrice)) {
+ 
+                 System.out.println("selling stock");
+-                sell(stock.getSymbol(), quantity, currentPrice);
++                sell(stock, quantity, currentPrice);
+ 
+             }
+             // editing ends here

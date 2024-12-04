@@ -3,7 +3,9 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -12,11 +14,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -27,7 +31,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.Node;
 
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.List;
 
@@ -287,6 +295,22 @@ public class MainAppGUI extends Application {
         restartButton.setOnAction(e -> ResetButton(primaryStage, false, true));
         restartButton.getStyleClass().add("phase1-inner-buttons");
 
+//         downloadChart downloadResults
+        Button downloadResultsButton =  new Button("Download Results");
+        downloadResultsButton.getStyleClass().add("phase1-inner-buttons");
+
+        Button downloadChartButton =  new Button("Download Chart");
+        downloadChartButton.getStyleClass().add("phase1-inner-buttons");
+
+        downloadChartButton.setOnAction(e -> downloadChart());
+        downloadResultsButton.setOnAction(e -> downloadResults());
+
+
+
+
+
+
+
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
             if (simulationTimeline != null && simulationTimeline.getStatus() == Timeline.Status.RUNNING) {
@@ -306,7 +330,7 @@ public class MainAppGUI extends Application {
 
         circlesLayout = createTraderCircles();
 
-        HBox buttonLayout = new HBox(10, autoSimulateButton, backButton, restartButton, showTableButton);
+        HBox buttonLayout = new HBox(10, autoSimulateButton, backButton, restartButton, showTableButton,downloadResultsButton,downloadChartButton);
         VBox layout = new VBox(10, eventsDisplay, buttonLayout, lineChart, circlesLayout);
         layout.setPrefSize(800, 600);
         layout.getStyleClass().add("root");
@@ -527,6 +551,43 @@ public class MainAppGUI extends Application {
         tableStage.setScene(scene);
         tableStage.show();
     }
+    private void downloadResults() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Results");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", ".csv"));
+        File file = fileChooser.showSaveDialog(null);
 
+        if (file != null) {
+            try (PrintWriter writer = new PrintWriter(file)) {
+                writer.println("Trader Name,Net Worth");
+                for (Trader trader : mainApp.listOfTraders) {
+                    writer.printf("%s,%.2f%n", trader.getName(), trader.getNetWorth());
+                }
+                showAlert("Results saved successfully!");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    } private void downloadChart() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Chart");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG Files", ".png"));
+        File file = fileChooser.showSaveDialog(null);
+
+        if (file != null) {
+            WritableImage image = lineChart.snapshot(new SnapshotParameters(), null);
+            try {
+                ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+                showAlert("Chart saved successfully!");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 
 }

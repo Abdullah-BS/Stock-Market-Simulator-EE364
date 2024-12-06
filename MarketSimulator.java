@@ -101,7 +101,7 @@ public class MarketSimulator {
     }
 
 
-    public List<Stocks> getListStock() {
+    public ArrayList<Stocks> getListStock() {
         return listStock;
     }
 

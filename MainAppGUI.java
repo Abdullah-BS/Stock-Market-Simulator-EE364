@@ -1,7 +1,9 @@
+import com.sun.prism.MaskTextureGraphics;
 import javafx.application.Application;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Scene;
@@ -15,10 +17,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -49,6 +50,7 @@ public class MainAppGUI extends Application {
     private double globalMaxNetWorth = Double.MIN_VALUE;
     private Scene mainMenuScene;
     private HBox CircleLayout;
+    private GridPane stockGrid;
     // Starting page scene
 
     @Override
@@ -161,8 +163,38 @@ public class MainAppGUI extends Application {
         return table;
     }
 
+    private void populateStockGrid(GridPane stockGrid, ArrayList<Stocks> stockList) {
+        stockGrid.getChildren().clear();
 
-    private void showTraderInfoWindow(Trader trader) {
+        int column = 0;
+        int row = 0;
+
+        for (Stocks stock : stockList) {
+            if(stock.getPrice() >= stock.getPriceHistory().get(stock.getPriceHistory().size() - 2)) {
+                Label stockLabel = new Label(stock.getSymbol() + " - $" + stock.getPrice());
+                stockLabel.setStyle("-fx-background-color: lightgreen; -fx-padding: 5; -fx-font-size: 12;");
+                stockGrid.add(stockLabel, column, row);
+
+                column++;
+            }else{
+
+                Label stockLabel = new Label(stock.getSymbol() + " - $" + stock.getPrice());
+                stockLabel.setStyle("-fx-background-color:  #FF9999; -fx-padding: 5; -fx-font-size: 12;");
+                stockGrid.add(stockLabel, column, row);
+
+                column++;
+
+
+
+                }
+            if (column == 10) {
+                column = 0;
+                row++;
+            }
+        }
+    }
+
+        private void showTraderInfoWindow(Trader trader) {
         // Create a new Stage (window)
         Stage infoStage = new Stage();
         infoStage.setTitle("Trader Details");
@@ -318,9 +350,33 @@ public class MainAppGUI extends Application {
 
         circlesLayout = createTraderCircles();
 
+        stockGrid = new GridPane();
+        stockGrid.setHgap(10);
+        stockGrid.setVgap(10);
+        stockGrid.setStyle("-fx-padding: 20;");
+
+        for (int row = 0; row < 10; row++) {
+            for (int col = 0; col < 10; col++) {
+                Label emptyLabel = new Label("                   "); // Create an empty Label
+                emptyLabel.setFont(Font.font(12)); // Set font size (optional for empty Labels)
+                emptyLabel.setStyle("-fx-background-color: lightgray; -fx-padding: 5;"); // Styling
+                stockGrid.add(emptyLabel, col, row); // Add the Label to the GridPane
+            }
+        }
+
+
+
+        HBox TopLayout = new HBox(20, eventsDisplay,stockGrid );
+        TopLayout.setPrefWidth(1000);
+
+
+
+
+        TopLayout.setStyle("-fx-alignment: center;");
+
         HBox buttonLayout = new HBox(10, autoSimulateButton, backButton, restartButton, showTableButton,downloadResultsButton,downloadChartButton);
-        VBox layout = new VBox(10, eventsDisplay, buttonLayout, lineChart, circlesLayout);
-        layout.setPrefSize(800, 600);
+        VBox layout = new VBox(10, TopLayout, buttonLayout, lineChart, circlesLayout);
+        layout.setPrefSize(1080, 600);
         layout.getStyleClass().add("root");
 
         Scene scene = new Scene(layout);
@@ -435,6 +491,8 @@ public class MainAppGUI extends Application {
         // Update the observable list to refresh the TableView
         traderObservableList.setAll(mainApp.listOfTraders);
         ChangeCircleColors(CircleLayout);
+        ArrayList<Stocks> stockList = mainApp.marketSimulator.getListStock();
+        populateStockGrid(stockGrid, stockList);
 
     }
 

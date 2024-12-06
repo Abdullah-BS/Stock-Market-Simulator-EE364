@@ -18,7 +18,7 @@ public class Stocks{
     }
 
     public double getPrice(){
-        return this.price;
+        return Math.round(this.price * 100.0) / 100.0;
 }
 
     public List<Double> getPriceHistory() {

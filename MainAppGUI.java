@@ -1,43 +1,36 @@
-import com.sun.prism.MaskTextureGraphics;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.*;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.util.Duration;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
-import javafx.scene.Node;
 import javax.imageio.ImageIO;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.*;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class MainAppGUI extends Application {
 
@@ -52,7 +45,11 @@ public class MainAppGUI extends Application {
     private double globalMaxNetWorth = Double.MIN_VALUE;
     private Scene mainMenuScene;
     private HBox CircleLayout;
+    private VBox metricsPanel; // Metrics panel to display performance metrics
+    private Label dayCounterLabel; // Make it a class-level variable
+    private VBox mainLayout; // Main layout for Phase 1
     private GridPane stockGrid;
+    private Random random = new Random();
     // Starting page scene
 
     @Override
@@ -167,34 +164,33 @@ public class MainAppGUI extends Application {
 
     private void populateStockGrid(GridPane stockGrid, ArrayList<Stocks> stockList) {
         stockGrid.getChildren().clear();
-
+    
         int column = 0;
         int row = 0;
-
+    
         for (Stocks stock : stockList) {
-            if(stock.getPrice() >= stock.getPriceHistory().get(stock.getPriceHistory().size() - 2)) {
-                Label stockLabel = new Label(stock.getSymbol() + " - $" + stock.getPrice());
+            String formattedPrice = String.format("%.2f", stock.getPrice());
+            if (stock.getPrice() >= stock.getPriceHistory().get(stock.getPriceHistory().size() - 2)) {
+                Label stockLabel = new Label(stock.getSymbol() + " - $" + formattedPrice);
                 stockLabel.setStyle("-fx-background-color: lightgreen; -fx-padding: 5; -fx-font-size: 12;");
                 stockGrid.add(stockLabel, column, row);
-
+    
                 column++;
-            }else{
-
-                Label stockLabel = new Label(stock.getSymbol() + " - $" + stock.getPrice());
-                stockLabel.setStyle("-fx-background-color:  #FF9999; -fx-padding: 5; -fx-font-size: 12;");
+            } else {
+                Label stockLabel = new Label(stock.getSymbol() + " - $" + formattedPrice);
+                stockLabel.setStyle("-fx-background-color: #FF9999; -fx-padding: 5; -fx-font-size: 12;");
                 stockGrid.add(stockLabel, column, row);
-
+    
                 column++;
-
-
-
-                }
+            }
+    
             if (column == 10) {
                 column = 0;
                 row++;
             }
         }
     }
+    
 
         private void showTraderInfoWindow(Trader trader) {
         // Create a new Stage (window)
@@ -258,81 +254,78 @@ public class MainAppGUI extends Application {
 
 
     private void ResetMainApp() {
-        mainApp = new MainApp();
+        mainApp = new MainApp(); // Reinitialize the MainApp instance
     }
+    
     private void ResetButton(Stage primaryStage, boolean navigateToMainMenu, boolean isPhase1) {
-        // Stop any running simulations
         if (simulationTimeline != null && simulationTimeline.getStatus() == Timeline.Status.RUNNING) {
             simulationTimeline.stop();
         }
-
-   
+    
         ResetMainApp();
-
-        // Reset UI components
-        day = 0; // Reset the simulation day counter
-        traderSeriesMap.clear(); // Clear chart series
-        eventsDisplay.clear(); // Clear displayed events
-        lineChart.getData().clear(); // Clear the line chart data
-        traderObservableList.setAll(mainApp.listOfTraders); // Rebind observable list
-
-        // Reload the current phase (Phase 1 or Phase 2)
+    
+        day = 0; // Reset the day counter
+        traderSeriesMap.clear();
+        eventsDisplay.clear();
+        lineChart.getData().clear();
+        traderObservableList.setAll(mainApp.listOfTraders);
+    
+        // Reload the current phase or go to the main menu
         if (navigateToMainMenu) {
-            initializeMainMenu(primaryStage); // Go to the main menu
+            initializeMainMenu(primaryStage);
         } else if (isPhase1) {
-            initializePhase1(primaryStage); // Reload Phase 1
+            initializePhase1(primaryStage);
         } else {
-            initializePhase2(primaryStage); // Reload Phase 2
+            initializePhase2(primaryStage);
         }
-
-         
     }
+    
 
 
     private void initializePhase1(Stage primaryStage) {
         primaryStage.setTitle("Market Simulation Phase 1");
-
+    
+        dayCounterLabel = new Label("Day: 0"); // Initialize dayCounterLabel
+        dayCounterLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+    
         eventsDisplay = new TextArea();
         eventsDisplay.setEditable(false);
-        eventsDisplay.setPrefHeight(200);
+        eventsDisplay.setPrefHeight(300); // Increase height to accommodate more events
         eventsDisplay.getStyleClass().add("text-area");
-
+    
         NumberAxis xAxis = new NumberAxis();
         xAxis.setLabel("Day");
-
+    
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("Net Worth ($)");
-
+    
         lineChart = new LineChart<>(xAxis, yAxis);
         lineChart.setTitle("Trader Net Worth Over Time");
         lineChart.getStyleClass().add("chart");
-
+    
         for (Trader trader : mainApp.listOfTraders) {
             XYChart.Series<Number, Number> series = new XYChart.Series<>();
             series.setName(trader.getName());
             traderSeriesMap.put(trader.getName(), series);
             lineChart.getData().add(series);
         }
-
+    
         ToggleButton autoSimulateButton = new ToggleButton("Start Auto Simulation");
         autoSimulateButton.setOnAction(e -> toggleSimulation(autoSimulateButton));
         autoSimulateButton.getStyleClass().add("phase1-inner-buttons");
-
+    
         Button restartButton = new Button("Restart");
         restartButton.setOnAction(e -> ResetButton(primaryStage, false, true));
         restartButton.getStyleClass().add("phase1-inner-buttons");
-
-
-        Button downloadResultsButton =  new Button("Download Results");
-        downloadResultsButton.getStyleClass().add("phase1-inner-buttons");
-
-        Button downloadChartButton =  new Button("Download Chart");
-        downloadChartButton.getStyleClass().add("phase1-inner-buttons");
-
-        downloadChartButton.setOnAction(e -> downloadChart());
+    
+        Button downloadResultsButton = new Button("Download Results");
         downloadResultsButton.setOnAction(e -> downloadResults());
-
-
+        downloadResultsButton.getStyleClass().add("phase1-inner-buttons");
+    
+        Button downloadChartButton = new Button("Download Chart");
+        downloadChartButton.setOnAction(e -> downloadChart());
+        downloadChartButton.getStyleClass().add("phase1-inner-buttons");
+    
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
             if (simulationTimeline != null && simulationTimeline.getStatus() == Timeline.Status.RUNNING) {
@@ -341,54 +334,57 @@ public class MainAppGUI extends Application {
             ResetButton(primaryStage, true, true);
         });
         backButton.getStyleClass().add("phase1-inner-buttons");
-
+    
         Button showTableButton = new Button("Show Trader Table");
-        showTableButton.setOnAction(e -> showTraderTableWindow()); // New method for displaying the table
+        showTableButton.setOnAction(e -> showTraderTableWindow());
         showTableButton.getStyleClass().add("phase1-inner-buttons");
-
-        // Creating circular representations for each trader
-        HBox circlesLayout = new HBox(20);
-        circlesLayout.setStyle("-fx-alignment: center;");
-
-        circlesLayout = createTraderCircles();
-
+    
+        HBox circlesLayout = createTraderCircles();
+    
         stockGrid = new GridPane();
         stockGrid.setHgap(10);
         stockGrid.setVgap(10);
         stockGrid.setStyle("-fx-padding: 20;");
-
+    
         for (int row = 0; row < 10; row++) {
             for (int col = 0; col < 10; col++) {
-                Label emptyLabel = new Label("                   "); // Create an empty Label
-                emptyLabel.setFont(Font.font(12)); // Set font size (optional for empty Labels)
-                emptyLabel.setStyle("-fx-background-color: lightgray; -fx-padding: 5;"); // Styling
-                stockGrid.add(emptyLabel, col, row); // Add the Label to the GridPane
+                Label emptyLabel = new Label("                   ");
+                emptyLabel.setFont(Font.font(12));
+                emptyLabel.setStyle("-fx-background-color: lightgray; -fx-padding: 5;");
+                stockGrid.add(emptyLabel, col, row);
             }
         }
-
-
-
-        HBox TopLayout = new HBox(20, eventsDisplay,stockGrid );
-        TopLayout.setPrefWidth(1000);
-
-
-
-
+    
+        VBox eventsBox = new VBox(10, dayCounterLabel, eventsDisplay); // Include day counter with events display
+        eventsBox.setPrefWidth(400);
+    
+        HBox TopLayout = new HBox(20, eventsBox, stockGrid);
         TopLayout.setStyle("-fx-alignment: center;");
-
-        HBox buttonLayout = new HBox(10, autoSimulateButton, backButton, restartButton, showTableButton,downloadResultsButton,downloadChartButton);
-        VBox layout = new VBox(10, TopLayout, buttonLayout, lineChart, circlesLayout);
-        layout.setPrefSize(1080, 600);
-        layout.getStyleClass().add("root");
-
-        Scene scene = new Scene(layout);
+    
+        HBox buttonLayout = new HBox(10, autoSimulateButton, backButton, restartButton, showTableButton, downloadResultsButton, downloadChartButton);
+    
+        // Initialize metrics panel (empty at first)
+        metricsPanel = new VBox(10);
+        metricsPanel.setStyle("-fx-padding: 10; -fx-border-color: black; -fx-border-width: 1;");
+    
+        Label metricsTitle = new Label("Trader Performance Metrics");
+        metricsTitle.setStyle("-fx-font-weight: bold;");
+        metricsPanel.getChildren().add(metricsTitle); // Add title to the metrics panel
+    
+        mainLayout = new VBox(10, TopLayout, buttonLayout, lineChart, circlesLayout, metricsPanel); // Add metricsPanel to mainLayout
+        mainLayout.setPrefSize(1080, 600);
+        mainLayout.getStyleClass().add("root");
+    
+        Scene scene = new Scene(mainLayout);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("styles.css")).toExternalForm());
-
+    
         primaryStage.setScene(scene);
         primaryStage.show();
-
+    
         initializeTimeline();
     }
+    
+    
 
     // YET TO BE IMPLEMENTED
     private void initializePhase2(Stage primaryStage) {
@@ -461,74 +457,136 @@ public class MainAppGUI extends Application {
     private void simulateDay() {
         List<String> dailyEvents = mainApp.simulateDay();
         day++;
-
+        
+        // Update day counter
+        
         eventsDisplay.appendText("--- Day " + day + " ---\n");
         eventsDisplay.appendText(String.join("\n", dailyEvents) + "\n");
-
+        
         double minNetWorth = Double.MAX_VALUE;
         double maxNetWorth = Double.MIN_VALUE;
-
-
+    
         for (Trader trader : mainApp.listOfTraders) {
             double netWorth = trader.calculateNetWorth(trader.getStockPortfolio());
             XYChart.Series<Number, Number> series = traderSeriesMap.get(trader.getName());
             if (series != null) {
                 series.getData().add(new XYChart.Data<>(day, netWorth));
             }
-
             minNetWorth = Math.min(minNetWorth, netWorth);
             maxNetWorth = Math.max(maxNetWorth, netWorth);
-
-            globalMinNetWorth = Math.min(globalMinNetWorth, minNetWorth);
-            globalMaxNetWorth = Math.max(globalMaxNetWorth, maxNetWorth);
-
-            double padding = (globalMaxNetWorth - globalMinNetWorth) * 0.1;
-            if (padding == 0) padding = 500;
-            lineChart.getYAxis().setAutoRanging(false);
-            NumberAxis yAxis = (NumberAxis) lineChart.getYAxis();
-            yAxis.setLowerBound(Math.max(0, globalMinNetWorth - padding));
-            yAxis.setUpperBound(globalMaxNetWorth + padding);
+    
+            // Simulate trade results and update metrics
+            boolean isWinningTrade = random.nextBoolean(); // Simulate win/loss (replace with actual logic)
+            double profit = isWinningTrade ? 100 : -50;    // Simulate profit/loss
+            trader.updateMetrics(isWinningTrade, profit);
         }
-
-        // Update the observable list to refresh the TableView
+    
+        globalMinNetWorth = Math.min(globalMinNetWorth, minNetWorth);
+        globalMaxNetWorth = Math.max(globalMaxNetWorth, maxNetWorth);
+    
+        double padding = (globalMaxNetWorth - globalMinNetWorth) * 0.1;
+        if (padding == 0) padding = 500;
+        lineChart.getYAxis().setAutoRanging(false);
+        NumberAxis yAxis = (NumberAxis) lineChart.getYAxis();
+        yAxis.setLowerBound(Math.max(0, globalMinNetWorth - padding));
+        yAxis.setUpperBound(globalMaxNetWorth + padding);
+    
         traderObservableList.setAll(mainApp.listOfTraders);
         ChangeCircleColors(CircleLayout);
         ArrayList<Stocks> stockList = mainApp.marketSimulator.getListStock();
         populateStockGrid(stockGrid, stockList);
-
+        addTooltipsToChart();
+    
+        // Update metrics panel
+        metricsPanel.getChildren().clear(); // Clear previous metrics
+        Label metricsTitle = new Label("Trader Performance Metrics");
+        metricsTitle.setStyle("-fx-font-weight: bold;");
+        metricsPanel.getChildren().add(metricsTitle); // Re-add title
+    
+        for (Trader trader : traderObservableList) {
+            Label traderMetrics = new Label(trader.getName() +
+                    " - Total Trades: " + trader.getTotalTrades() +
+                    ", Win/Loss Ratio: " + String.format("%.2f", trader.getWinLossRatio()) +
+                    ", Avg Profit/Trade: $" + String.format("%.2f", trader.getAverageProfitPerTrade()));
+            metricsPanel.getChildren().add(traderMetrics);
+        }
     }
+    
+    
+    
+    private VBox createMetricsPanel() {
+        VBox metricsPanel = new VBox(10);
+        metricsPanel.setStyle("-fx-padding: 10; -fx-border-color: black; -fx-border-width: 1;");
+    
+        Label metricsTitle = new Label("Trader Performance Metrics");
+        metricsTitle.setStyle("-fx-font-weight: bold;");
+    
+        for (Trader trader : traderObservableList) {
+            Label traderMetrics = new Label(trader.getName() +
+                    " - Total Trades: " + trader.getTotalTrades() +
+                    ", Win/Loss Ratio: " + String.format("%.2f", trader.getWinLossRatio()) +
+                    ", Avg Profit/Trade: $" + String.format("%.2f", trader.getAverageProfitPerTrade()));
+            metricsPanel.getChildren().add(traderMetrics);
+        }
+    
+        return metricsPanel;
+    }
+    
 
     private HBox createTraderCircles() {
-        CircleLayout= new HBox(10);
+        CircleLayout = new HBox(10);
         CircleLayout.setStyle("-fx-alignment: center; -fx-padding: 20;");
-
+    
         for (Trader trader : traderObservableList) {
-
             Circle circle = new Circle(100);
             circle.setFill(Color.ORANGE);
-
+    
             Text traderName = new Text(trader.getName());
             traderName.getStyleClass().add("circle-text");
-
-            // StackPane to center the text inside the circle
+    
             StackPane traderCircle = new StackPane(circle, traderName);
             traderCircle.setStyle("-fx-alignment: center;");
-
-
+    
             CircleLayout.getChildren().add(traderCircle);
-
+    
             traderCircle.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2) { // Check for double click
-                    showTraderInfoWindow(trader); // Show trader info window
+                if (event.getClickCount() == 2) { // Double-click to show metrics
+                    showTraderPerformanceMetrics(trader);
                 }
-            }
-            );
-
+            });
         }
-
+    
         return CircleLayout;
     }
-
+    
+    private void addTooltipsToChart() {
+        for (Trader trader : mainApp.listOfTraders) {
+            XYChart.Series<Number, Number> series = traderSeriesMap.get(trader.getName());
+            if (series != null) {
+                for (XYChart.Data<Number, Number> data : series.getData()) {
+                    Platform.runLater(() -> {
+                        Node node = data.getNode();
+                        if (node != null) {
+                            Tooltip tooltip = new Tooltip(
+                                "Day: " + data.getXValue() +
+                                "\nNet Worth: $" + String.format("%.2f", data.getYValue()) +
+                                "\nTotal Trades: " + trader.getTotalTrades() +
+                                "\nAverage Profit: $" + String.format("%.2f", trader.getAverageProfitPerTrade()) +
+                                "\nWin/Loss Ratio: " + trader.getWinCount() + ":" + trader.getLossCount()
+                            );
+                            Tooltip.install(node, tooltip);
+    
+                            // Customize the node for better interaction
+                            node.setOnMouseEntered(e -> node.setStyle("-fx-scale: 1.2; -fx-cursor: hand;"));
+                            node.setOnMouseExited(e -> node.setStyle("-fx-scale: 1.0;"));
+                        }
+                    });
+                }
+            }
+        }
+    }
+    
+    
     private void ChangeCircleColors(HBox circleLayout) {
 
         int TraderIndex = 0;
@@ -583,6 +641,22 @@ public class MainAppGUI extends Application {
         tableStage.setScene(scene);
         tableStage.show();
     }
+    private void showTraderPerformanceMetrics(Trader trader) {
+        Stage metricsStage = new Stage();
+        metricsStage.setTitle(trader.getName() + " - Performance Metrics");
+    
+        Label totalTradesLabel = new Label("Total Trades: " + trader.getTotalTrades());
+        Label avgProfitLabel = new Label(String.format("Average Profit/Trade: $%.2f", trader.getAverageProfitPerTrade()));
+        Label winLossRatioLabel = new Label("Win/Loss Ratio: " + trader.getWinCount() + ":" + trader.getLossCount());
+    
+        VBox metricsBox = new VBox(10, totalTradesLabel, avgProfitLabel, winLossRatioLabel);
+        metricsBox.setStyle("-fx-padding: 20; -fx-border-color: gray; -fx-border-width: 1; -fx-border-radius: 5;");
+    
+        Scene scene = new Scene(metricsBox, 300, 200);
+        metricsStage.setScene(scene);
+        metricsStage.show();
+    }
+    
     private void downloadResults() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Results");
@@ -600,6 +674,7 @@ public class MainAppGUI extends Application {
                 e.printStackTrace();
             }
         }
+    
     } private void downloadChart() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Chart");

@@ -38,6 +38,13 @@ public class RSITrader extends Trader implements knowledgeableTrader {
     }
 
     public void execute(Stocks stock, int quantity) {
+        double random = Math.random();
+        if (random < 0.3) {
+            System.out.println(randomExcuses());
+        }
+        else {
+
+
         // Step 1: Calculate RSI for the current stock
         List<Double> priceHistory = stock.getPriceHistory();
         double buyRSI = calculate(this.period, priceHistory);
@@ -85,6 +92,7 @@ public class RSITrader extends Trader implements knowledgeableTrader {
                 }
             }
         }
+    }
     }
 
     public String getName() {

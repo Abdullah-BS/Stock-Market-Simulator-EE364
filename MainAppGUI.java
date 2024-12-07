@@ -1,5 +1,6 @@
 import com.sun.prism.MaskTextureGraphics;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -36,6 +37,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class MainAppGUI extends Application {
 

@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class MainApp {
 
@@ -93,6 +94,16 @@ public class MainApp {
             System.out.println(trader.getWorthHistory());
         }
     }
+
+//    private void printWithDelay(String message) {
+//        System.out.println(message);
+//        try {
+//            TimeUnit.MILLISECONDS.sleep(500); // 0.5 second delay
+//        } catch (InterruptedException e) {
+//            Thread.currentThread().interrupt();
+//        }
+//    }
+
     // initialize the app
     public static void main (String[] args){
             MainApp app = new MainApp();

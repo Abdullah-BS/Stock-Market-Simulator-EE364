@@ -14,6 +14,8 @@ public abstract class Trader {
     private double netWorth;
     private ArrayList<Double> worthHistory;
     public double initialCash = 10000;
+    private String[] excuses;
+
 
     public Trader(String name, MarketSimulator market) {
         this.name = name;
@@ -119,6 +121,24 @@ public abstract class Trader {
         }
     }
 
+    public String randomExcuses() {
+        this.excuses = new String[] {
+                this.name + " experienced an internet connection failure.",
+                this.name + " couldn't trade because the trading platform was temporarily unavailable.",
+                this.name + "'s system crashed during the trading process.",
+                this.name + " got distracted by a personal event.",
+                this.name + " hesitated, doubting the reliability of their strategy.",
+                this.name + " forgot to place the order due to being sidetracked.",
+                this.name + " missed the opportunity due to overthinking.",
+                this.name + " was stopped by fear of loss.",
+                this.name + " waited too long, overconfident about finding a better opportunity.",
+                "An emergency prevented " + this.name + " from executing the trade.",
+                "A power outage stopped " + this.name + " from accessing the trading platform.",
+                this.name + " missed the opportunity due to a delay."
+        };
 
+        String randomExcuse = excuses[(int) (Math.random() * excuses.length)];
+        return randomExcuse;
+    }
 }
 

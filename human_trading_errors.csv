@@ -1,0 +1,23 @@
+Error,Probability
+Internet connection failure,0.1
+Trading platform temporarily unavailable,0.08
+System crash during trading process,0.05
+Distracted by a personal event,0.12
+"Hesitation, doubting strategy reliability",0.15
+Forgot to place the order due to being sidetracked,0.1
+Missed the opportunity due to overthinking,0.09
+Stopped by fear of loss,0.07
+"Waited too long, overconfident about finding a better opportunity",0.1
+Emergency prevented trading,0.05
+Power outage stopped access to the platform,0.05
+Missed the opportunity due to a delay,0.04
+Misclicked on the wrong stock,0.07
+Fat-fingered the quantity while placing the order,0.06
+Overlooked a critical market update,0.08
+Failed to confirm the order in time,0.05
+Confused buy and sell orders,0.04
+Placed an order on the wrong market,0.03
+Ignored a stop-loss signal,0.06
+Overtrusted algorithmic trading suggestions,0.07
+Skipped reviewing the trading plan,0.05
+Reacted emotionally to a market drop,0.1

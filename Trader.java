@@ -66,7 +66,7 @@ public abstract class Trader {
     }
 
     // Get a random excuse based on defined probabilities
-    private String getRandomExcuse() {
+    private String randomExcuses() {
         double randomValue = random.nextDouble();
         double cumulativeProbability = 0.0;
         for (int i = 0; i < excuses.size(); i++) {

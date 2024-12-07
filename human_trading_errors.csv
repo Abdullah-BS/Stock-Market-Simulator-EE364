@@ -21,3 +21,11 @@ Ignored a stop-loss signal,0.06
 Overtrusted algorithmic trading suggestions,0.07
 Skipped reviewing the trading plan,0.05
 Reacted emotionally to a market drop,0.1
+Misinterpreted market signals,0.11
+Forgot to set stop-loss order,0.07
+Executed trade in the wrong direction,0.09
+Confused between similar stock symbols,0.04
+Fat-finger error: incorrect lot size,0.06
+Overlooked news impacting the market,0.08
+Delayed reaction to market changes,0.13
+Ignored risk management rules,0.1

@@ -57,7 +57,7 @@ public class RSITrader extends Trader implements knowledgeableTrader {
                 System.out.println(this.getName() + ":Bought " + quantity + " units of " + stock.getSymbol() +
                         " at price " + currentPrice);
             } else {
-                System.out.println(this.getName() + "Has no enough cash to buy stock " + stock.getSymbol());
+                System.out.println(this.getName() + " does not have enough cash to buy stock " + stock.getSymbol());
             }
         }
 
@@ -81,19 +81,24 @@ public class RSITrader extends Trader implements knowledgeableTrader {
         if (maxEntry != null) {
             Stocks maximumStock = maxEntry.getKey();
             double maximumRSI = maxEntry.getValue();
-            if (maximumRSI > 70) {
-                int stockQuantity = getStockPortfolio().getOrDefault(maximumStock, 0);
-                if (stockQuantity >= quantity) {
-                    sell(maximumStock, quantity, maximumStock.getPrice());
-                    System.out.println(this.getName() + ":Sold " + quantity + " units of " + stock.getSymbol() +
-                            " at price " + maximumStock.getPrice());
-                } else {
-                    System.out.println(this.getName() + ":Not enough stock to sell.");
-                }
+            int stockQuantity = getStockPortfolio().getOrDefault(maximumStock, 0);
+
+            while (stockQuantity < quantity && stockQuantity > 0) {
+                quantity--; // Reduce the quantity by 1
             }
+
+            if (stockQuantity >= quantity && maximumRSI > 70) {
+                sell(maximumStock, quantity, maximumStock.getPrice());
+                System.out.println(this.getName() + ": Sold " + quantity + " units of " + maximumStock.getSymbol() +
+                        " at price " + maximumStock.getPrice() + ". Remaining stock: " + stockQuantity);
+            } else {
+                System.out.println(this.getName() + ": Not enough stock to sell after reducing quantity.");
+            }
+
+        }
         }
     }
-    }
+
 
     public String getName() {
         return super.getName() + " (RSI)";

@@ -56,17 +56,25 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader {
 
             //BUY
             else if (currentPrice < movingAverage * (1 - threshold)) {
-                if (getCash() >= quantity * currentPrice) {
-                    buy(stock, quantity, currentPrice);
-                    System.out.println(this.getName() + ":Bought " + quantity + " units of " + stock.getSymbol() +
-                            " at price " + currentPrice);
-                } else {
-                    System.out.println(this.getName() + "Has no enough cash to buy stock " + stock.getSymbol());
-                }
+                do {
+                    if (getCash() >= quantity * currentPrice) {
+                        buy(stock, quantity, currentPrice);
+                        System.out.println(this.getName() + ": Bought " + quantity + " units of " + stock.getSymbol() +
+                                " at price " + currentPrice);
+                        break;
+                    }
 
+                    quantity--; // Reduce quantity by 1
+
+                    if (quantity <= 0) {
+                        System.out.println(this.getName() + ": Not enough cash to buy stock " + stock.getSymbol());
+                        break;
+                    }
+                } while (true);
             } else {
                 System.out.println(this.getName() + ": Hold stock, price is within the threshold range of the moving average.");
             }
+
 
 
         }

@@ -1,3 +1,4 @@
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -10,9 +11,7 @@ public abstract class Trader {
     private double netWorth; // Current net worth (cash + stock value)
     private ArrayList<Double> worthHistory; // History of net worth over time
     public double initialCash = 10000; // Initial cash allocated to the trader
-    private List<String> excuses; // List of excuses for human errors
-    private List<Double> probabilities; // Corresponding probabilities for each excuse
-    private double errorProbability = 0.1; // Probability of a human error (10%)
+    private String[] excuses; // List of excuses for human errors
     private Random random; // Random generator for simulating probabilities
 
     // Performance Metrics
@@ -26,15 +25,12 @@ public abstract class Trader {
         this.cash = initialCash;
         this.stockPortfolio = new HashMap<>();
         this.worthHistory = new ArrayList<>();
-        this.excuses = new ArrayList<>();
-        this.probabilities = new ArrayList<>();
         this.random = new Random();
         this.totalTrades = 0;
         this.winCount = 0;
         this.lossCount = 0;
         this.totalProfit = 0.0;
         initializeStockPortfolio(market); // Initialize portfolio with random stocks
-        loadHumanErrorsFromCSV("human_trading_errors.csv"); // Load errors from CSV
     }
 
     // Calculate and return the trader's cash (rounded to 2 decimal places)
@@ -53,42 +49,8 @@ public abstract class Trader {
         return worthHistory;
     }
 
-    // Load human errors and probabilities from a CSV file
-    private void loadHumanErrorsFromCSV(String filePath) {
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            br.readLine(); // Skip the header
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length == 2) {
-                    excuses.add(parts[0]); // Add the excuse
-                    probabilities.add(Double.parseDouble(parts[1])); // Add the corresponding probability
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Error reading human errors file: " + e.getMessage());
-        }
-    }
-
-    // Get a random excuse based on defined probabilities
-    public String randomExcuses() {
-        double randomValue = random.nextDouble();
-        double cumulativeProbability = 0.0;
-        for (int i = 0; i < excuses.size(); i++) {
-            cumulativeProbability += probabilities.get(i);
-            if (randomValue <= cumulativeProbability) {
-                return excuses.get(i); // Return the selected excuse
-            }
-        }
-        return "Unknown error occurred.";
-    }
-
     // Buy a stock with human error simulation
     public boolean buy(Stocks stock, int quantity, double price) {
-        if (random.nextDouble() < errorProbability) {
-            System.out.println(randomExcuses());
-            return false; // Buying failed due to human error
-        }
 
         double totalCost = price * quantity;
         if (cash >= totalCost) {
@@ -103,10 +65,6 @@ public abstract class Trader {
 
     // Sell a stock with human error simulation
     public boolean sell(Stocks stock, int quantity, double price) {
-        if (random.nextDouble() < errorProbability) {
-            System.out.println(randomExcuses());
-            return false; // Selling failed due to human error
-        }
 
         if (stockPortfolio.containsKey(stock)) {
             do {
@@ -171,12 +129,12 @@ public abstract class Trader {
             lossCount++;
         }
     }
-    
+
     // Get total trades
     public int getTotalTrades() {
         return totalTrades;
     }
-    
+
     // Get win/loss ratio
     public double getWinLossRatio() {
         if (lossCount == 0) {
@@ -184,7 +142,7 @@ public abstract class Trader {
         }
         return (double) winCount / lossCount;
     }
-    
+
     // Get average profit per trade
     public double getAverageProfitPerTrade() {
         if (totalTrades == 0) {
@@ -192,7 +150,7 @@ public abstract class Trader {
         }
         return totalProfit / totalTrades;
     }
-    
+
 
     public int getWinCount() {
         return winCount;
@@ -210,4 +168,25 @@ public abstract class Trader {
             stockPortfolio.put(stock, stockPortfolio.getOrDefault(stock, 0) + 1);
         }
     }
+
+    public String randomExcuses() {
+        this.excuses = new String[] {
+                this.name + " experienced an internet connection failure.",
+                this.name + " couldn't trade because the trading platform was temporarily unavailable.",
+                this.name + "'s system crashed during the trading process.",
+                this.name + " got distracted by a personal event.",
+                this.name + " hesitated, doubting the reliability of their strategy.",
+                this.name + " forgot to place the order due to being sidetracked.",
+                this.name + " missed the opportunity due to overthinking.",
+                this.name + " was stopped by fear of loss.",
+                this.name + " waited too long, overconfident about finding a better opportunity.",
+                "An emergency prevented " + this.name + " from executing the trade.",
+                "A power outage stopped " + this.name + " from accessing the trading platform.",
+                this.name + " missed the opportunity due to a delay."
+        };
+        String randomExcuse = excuses[(int) (Math.random() * excuses.length)];
+        return randomExcuse;
+    }
+
+
 }

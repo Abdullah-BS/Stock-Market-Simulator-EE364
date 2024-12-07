@@ -1,12 +1,7 @@
-// Trader.java
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public abstract class Trader {
     private String name; // Trader's name
@@ -20,6 +15,12 @@ public abstract class Trader {
     private double errorProbability = 0.1; // Probability of a human error (10%)
     private Random random; // Random generator for simulating probabilities
 
+    // Performance Metrics
+    private int totalTrades = 0; // Total number of trades
+    private int winCount = 0; // Total number of winning trades
+    private int lossCount = 0; // Total number of losing trades
+    private double totalProfit = 0; // Total profit from trades
+
     public Trader(String name, MarketSimulator market) {
         this.name = name;
         this.cash = initialCash;
@@ -28,9 +29,14 @@ public abstract class Trader {
         this.excuses = new ArrayList<>();
         this.probabilities = new ArrayList<>();
         this.random = new Random();
+        this.totalTrades = 0;
+        this.winCount = 0;
+        this.lossCount = 0;
+        this.totalProfit = 0.0;
         initializeStockPortfolio(market); // Initialize portfolio with random stocks
-        loadHumanErrorsFromCSV("path/to/human_trading_errors.csv"); // Load errors from CSV
+        loadHumanErrorsFromCSV("human_trading_errors.csv"); // Load errors from CSV
     }
+
     // Calculate and return the trader's cash (rounded to 2 decimal places)
     public double getCash() {
         cash = Math.round(cash * 100.0) / 100.0;
@@ -46,7 +52,6 @@ public abstract class Trader {
     public ArrayList<Double> getWorthHistory() {
         return worthHistory;
     }
-
 
     // Load human errors and probabilities from a CSV file
     private void loadHumanErrorsFromCSV(String filePath) {
@@ -66,7 +71,7 @@ public abstract class Trader {
     }
 
     // Get a random excuse based on defined probabilities
-    private String randomExcuses() {
+    public String randomExcuses() {
         double randomValue = random.nextDouble();
         double cumulativeProbability = 0.0;
         for (int i = 0; i < excuses.size(); i++) {
@@ -81,7 +86,7 @@ public abstract class Trader {
     // Buy a stock with human error simulation
     public boolean buy(Stocks stock, int quantity, double price) {
         if (random.nextDouble() < errorProbability) {
-            System.out.println(getRandomExcuse());
+            System.out.println(randomExcuses());
             return false; // Buying failed due to human error
         }
 
@@ -89,6 +94,7 @@ public abstract class Trader {
         if (cash >= totalCost) {
             cash -= totalCost;
             stockPortfolio.put(stock, stockPortfolio.getOrDefault(stock, 0) + quantity);
+            totalTrades++;
             return true; // Successful purchase
         } else {
             return false; // Not enough cash
@@ -98,7 +104,7 @@ public abstract class Trader {
     // Sell a stock with human error simulation
     public boolean sell(Stocks stock, int quantity, double price) {
         if (random.nextDouble() < errorProbability) {
-            System.out.println(getRandomExcuse());
+            System.out.println(randomExcuses());
             return false; // Selling failed due to human error
         }
 
@@ -106,13 +112,22 @@ public abstract class Trader {
             do {
                 if (getStockPortfolio().get(stock) >= quantity) {
                     double totalRevenue = price * quantity;
+                    double profit = totalRevenue - (stock.getPrice() * quantity);
                     cash += totalRevenue;
                     stockPortfolio.put(stock, stockPortfolio.get(stock) - quantity);
+
+                    if (profit > 0) {
+                        winCount++;
+                        totalProfit += profit;
+                    } else {
+                        lossCount++;
+                    }
 
                     if (stockPortfolio.get(stock) == 0) {
                         stockPortfolio.remove(stock); // Remove stock if no quantity left
                     }
 
+                    totalTrades++;
                     return true; // Successful sale
                 }
                 quantity--; // Reduce quantity if insufficient stocks are available
@@ -123,7 +138,7 @@ public abstract class Trader {
         }
     }
 
-   
+    // Calculate net worth
     public double calculateNetWorth(HashMap<Stocks, Integer> stockPortfolio) {
         netWorth = cash;
         for (Stocks stock : stockPortfolio.keySet()) {
@@ -144,6 +159,47 @@ public abstract class Trader {
 
     public String getName() {
         return name;
+    }
+
+    // Updates metrics based on the result of a trade
+    public void updateMetrics(boolean isWinningTrade, double profit) {
+        totalTrades++;
+        if (isWinningTrade) {
+            winCount++;
+            totalProfit += profit;
+        } else {
+            lossCount++;
+        }
+    }
+    
+    // Get total trades
+    public int getTotalTrades() {
+        return totalTrades;
+    }
+    
+    // Get win/loss ratio
+    public double getWinLossRatio() {
+        if (lossCount == 0) {
+            return winCount; // Avoid division by zero
+        }
+        return (double) winCount / lossCount;
+    }
+    
+    // Get average profit per trade
+    public double getAverageProfitPerTrade() {
+        if (totalTrades == 0) {
+            return 0; // Avoid division by zero
+        }
+        return totalProfit / totalTrades;
+    }
+    
+
+    public int getWinCount() {
+        return winCount;
+    }
+
+    public int getLossCount() {
+        return lossCount;
     }
 
     // Initialize stock portfolio with random stocks from the market

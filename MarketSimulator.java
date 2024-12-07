@@ -69,40 +69,40 @@ public class MarketSimulator {
     public List<String> simulateDay() {
         List<String> dailyReport = new ArrayList<>();
         dailyReport.add("Daily events:");
-    
+
         // Process ongoing events
         processOngoingEvents(dailyReport);
-    
+
         // Set to track stocks already affected today
         Set<Stocks> affectedToday = new HashSet<>();
-    
+
         // Add new daily events
         for (int i = 0; i < DAILY_EVENTS; i++) {
             Event dailyEvent = listEvent.get(random.nextInt(listEvent.size()));
             int affectedStocksCount = random.nextInt(MAX_AFFECTED_STOCKS - MIN_AFFECTED_STOCKS + 1) + MIN_AFFECTED_STOCKS;
             List<Stocks> affectedStocks = getRandomStocks(affectedStocksCount);
-    
+
             StringBuilder eventReport = new StringBuilder();
             eventReport.append((i + 1)).append(". ").append(dailyEvent.getName())
                     .append(" (Affected stocks: ");
-    
+
             for (int j = 0; j < affectedStocks.size(); j++) {
                 Stocks stock = affectedStocks.get(j);
-    
+
                 // Skip if the stock is already affected by another event
                 if (affectedToday.contains(stock)) {
                     continue;
                 }
-    
+
                 // Apply the event for the first day
                 applyEventToStock(stock, dailyEvent, 1.0);
-    
+
                 // Schedule the event for multiple days
                 scheduleEvent(stock, dailyEvent);
-    
+
                 // Mark this stock as affected
                 affectedToday.add(stock);
-    
+
                 eventReport.append(stock.getSymbol());
                 if (j < affectedStocks.size() - 1) {
                     eventReport.append(", ");
@@ -111,10 +111,10 @@ public class MarketSimulator {
             eventReport.append(")");
             dailyReport.add(eventReport.toString());
         }
-    
+
         return dailyReport;
     }
-    
+
 
     // Process ongoing events
     private void processOngoingEvents(List<String> dailyReport) {
@@ -125,13 +125,13 @@ public class MarketSimulator {
                 effect.decrementDaysLeft();
                 return effect.getDaysLeft() <= 0; // Remove if the event has ended
             });
-    
+
             if (effects.isEmpty()) {
                 ongoingEvents.remove(stock); // Remove stock if no more effects
             }
         }
     }
-    
+
 
     // Schedule an event to affect a stock for multiple days
     private void scheduleEvent(Stocks stock, Event event) {
@@ -155,9 +155,9 @@ public class MarketSimulator {
         double[] multipliers = {1.0, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1};
         return elapsedDays < multipliers.length ? multipliers[elapsedDays] : 0.1; // Default to 10% for days beyond the array
     }
-    
+
     // Inner class to track ongoing event effects
-  // Inner class to track ongoing event effects
+    // Inner class to track ongoing event effects
     private static class EventEffect {
         private final Event event;
         private final int initialDays; // Tracks the original duration of the event

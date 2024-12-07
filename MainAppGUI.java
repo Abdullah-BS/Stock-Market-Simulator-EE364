@@ -440,7 +440,7 @@ public class MainAppGUI extends Application {
 
 
     private void initializeTimeline() {
-        simulationTimeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> simulateDay()));
+        simulationTimeline = new Timeline(new KeyFrame(Duration.seconds(2), e -> simulateDay()));
         simulationTimeline.setCycleCount(Timeline.INDEFINITE);
     }
 
@@ -457,6 +457,7 @@ public class MainAppGUI extends Application {
     private void simulateDay() {
         List<String> dailyEvents = mainApp.simulateDay();
         day++;
+        dayCounterLabel.setText("Day: " + day);
 
         // Update day counter
 
@@ -538,7 +539,7 @@ public class MainAppGUI extends Application {
         CircleLayout.setStyle("-fx-alignment: center; -fx-padding: 20;");
 
         for (Trader trader : traderObservableList) {
-            Circle circle = new Circle(100);
+            Circle circle = new Circle(50);
             circle.setFill(Color.ORANGE);
 
             Text traderName = new Text(trader.getName());

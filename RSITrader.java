@@ -54,10 +54,10 @@ public class RSITrader extends Trader implements knowledgeableTrader {
         if (buyRSI < 30) {
             if (getCash() >= quantity * currentPrice) {
                 buy(stock, quantity, currentPrice);
-                System.out.println("RSIT:Bought " + quantity + " units of " + stock.getSymbol() +
-                                   " at price " + currentPrice);
+                System.out.println(this.getName() + ":Bought " + quantity + " units of " + stock.getSymbol() +
+                        " at price " + currentPrice);
             } else {
-                System.out.println("RSIT:Not enough cash to buy stock: " + stock.getSymbol());
+                System.out.println(this.getName() + "Has no enough cash to buy stock " + stock.getSymbol());
             }
         }
 
@@ -85,10 +85,10 @@ public class RSITrader extends Trader implements knowledgeableTrader {
                 int stockQuantity = getStockPortfolio().getOrDefault(maximumStock, 0);
                 if (stockQuantity >= quantity) {
                     sell(maximumStock, quantity, maximumStock.getPrice());
-                    System.out.println("RSIT: Sold " + quantity + " units of " + maximumStock.getSymbol() +
-                                       " at price " + maximumStock.getPrice());
+                    System.out.println(this.getName() + ":Sold " + quantity + " units of " + stock.getSymbol() +
+                            " at price " + maximumStock.getPrice());
                 } else {
-                    System.out.println("RSIT:Not enough stock to sell: " + maximumStock.getSymbol());
+                    System.out.println(this.getName() + ":Not enough stock to sell.");
                 }
             }
         }

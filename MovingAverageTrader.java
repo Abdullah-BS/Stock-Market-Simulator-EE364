@@ -32,7 +32,9 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader {
         double movingAverage = calculate(this.period, priceHistory);
         double currentPrice = stock.getPrice();
 
-        if (random > 0.3) {
+        if (random < 0.3) {
+            System.out.println(randomExcuses());
+        } else {
 
             //SELL
             if (currentPrice > movingAverage * (1 + threshold) && getStockPortfolio().containsKey(stock)) {
@@ -58,21 +60,17 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader {
                     buy(stock, quantity, currentPrice);
                     System.out.println(this.getName() + ":Bought " + quantity + " units of " + stock.getSymbol() +
                             " at price " + currentPrice);
-                }
-                else {
-                    System.out.println(this.getName() + ":Not enough cash to buy stock.");
+                } else {
+                    System.out.println(this.getName() + "Has no enough cash to buy stock " + stock.getSymbol());
                 }
 
             } else {
                 System.out.println(this.getName() + ": Hold stock, price is within the threshold range of the moving average.");
             }
-        }
 
-        else {
-            System.out.println(randomExcuses());
+
         }
     }
-
     public String getName() {
         return super.getName() + " (Moving Average)";
     }

@@ -3,10 +3,12 @@
     <CLASSES>
       <root url="file://$PROJECT_DIR$/../../../../../../../../Java/javafx-sdk-17.0.13/lib" />
       <root url="file://$PROJECT_DIR$/../../openjfx-23.0.1_windows-x64_bin-sdk/javafx-sdk-23.0.1/lib" />
+      <root url="file://D:/JavaFX/javafx-sdk-17.0.13/lib" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
     <jarDirectory url="file://$PROJECT_DIR$/../../../../../../../../Java/javafx-sdk-17.0.13/lib" recursive="false" />
     <jarDirectory url="file://$PROJECT_DIR$/../../openjfx-23.0.1_windows-x64_bin-sdk/javafx-sdk-23.0.1/lib" recursive="false" />
+    <jarDirectory url="file://D:/JavaFX/javafx-sdk-17.0.13/lib" recursive="false" />
   </library>
 </component>

@@ -11,6 +11,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
@@ -28,6 +29,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javax.imageio.ImageIO;
@@ -60,8 +62,13 @@ public class MainAppGUI extends Application {
 
         primaryStage.getIcons().add(new Image("LOGO.jpg"));
 
-        primaryStage.setWidth(1920);
-        primaryStage.setHeight(1080);
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+
+        // Set the stage size and position to fit within the screen
+        primaryStage.setX(screenBounds.getMinX());
+        primaryStage.setY(screenBounds.getMinY());
+        primaryStage.setWidth(screenBounds.getWidth());
+        primaryStage.setHeight(screenBounds.getHeight());
 
         // Initialize Main Menu
         initializeMainMenu(primaryStage);
@@ -377,6 +384,13 @@ public class MainAppGUI extends Application {
 
         Scene scene = new Scene(mainLayout);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("styles.css")).toExternalForm());
+
+
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        primaryStage.setX(screenBounds.getMinX());
+        primaryStage.setY(screenBounds.getMinY());
+        primaryStage.setWidth(screenBounds.getWidth());
+        primaryStage.setHeight(screenBounds.getHeight());
 
         primaryStage.setScene(scene);
         primaryStage.show();

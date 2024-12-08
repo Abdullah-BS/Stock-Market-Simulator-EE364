@@ -1,0 +1,345 @@
+Index: MarketSimulator.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import java.io.*;\r\nimport java.util.*;\r\n\r\npublic class MarketSimulator {\r\n    private static ArrayList<Stocks> listStock;\r\n    private static ArrayList<Event> listEvent;\r\n    private Random random = new Random();\r\n    private static final String EVENT_CSV = \"events.csv\";\r\n    private static final String STOCK_CSV = \"stocks.csv\";\r\n    private static final int DAILY_EVENTS = 5;\r\n    private static final int MIN_AFFECTED_STOCKS = 2;\r\n    private static final int MAX_AFFECTED_STOCKS = 3;\r\n    private static final int MIN_EVENT_DURATION = 5;\r\n    private static final int MAX_EVENT_DURATION = 10;\r\n\r\n    // Map to track ongoing events: key is the stock, value is a list of EventEffect\r\n    private Map<Stocks, List<EventEffect>> ongoingEvents;\r\n\r\n    public MarketSimulator() {\r\n        listStock = new ArrayList<>();\r\n        listEvent = new ArrayList<>();\r\n        ongoingEvents = new HashMap<>();\r\n        loadFiles(EVENT_CSV);\r\n        loadFiles(STOCK_CSV);\r\n    }\r\n\r\n    public static void loadFiles(String path) {\r\n        try (BufferedReader reader = new BufferedReader(new FileReader(path))) {\r\n            String line;\r\n            while ((line = reader.readLine()) != null) {\r\n                String[] parts = line.split(\",\");\r\n                if (parts.length > 2) {\r\n                    List<Double> priceHistory = new ArrayList<>();\r\n\r\n                    String symbol = parts[0];\r\n                    String company = parts[1];\r\n\r\n                    for (int i = 2; i < parts.length; i++) {\r\n                        priceHistory.add(Double.parseDouble(parts[i]));\r\n                    }\r\n\r\n                    listStock.add(new Stocks(symbol, company, priceHistory));\r\n\r\n                } else {\r\n                    listEvent.add(new Event(parts[0], Double.parseDouble(parts[1])));\r\n                }\r\n            }\r\n\r\n        } catch (IOException e) {\r\n            System.out.println(\"Error reading file: \" + e.getMessage());\r\n        }\r\n    }\r\n\r\n    // Apply an event's effect to a stock\r\n    // Apply an event's effect to a stock with capping\r\n    public void applyEventToStock(Stocks stock, Event event, double multiplier) {\r\n        double originalPrice = stock.getPrice();\r\n        double priceChange = originalPrice * event.getImpact() * multiplier;\r\n        double newPrice = stock.getPrice() + priceChange;\r\n\r\n        // Cap the new price to be at least 25% of the original price and at most 200% (double)\r\n        double cappedPrice = Math.max(originalPrice * 0.25, Math.min(originalPrice * 2.0, newPrice));\r\n\r\n        stock.setPrice(cappedPrice);\r\n    }\r\n\r\n\r\n    // Simulate a single day\r\n    public List<String> simulateDay() {\r\n        List<String> dailyReport = new ArrayList<>();\r\n        dailyReport.add(\"Daily events:\");\r\n\r\n        // Process ongoing events\r\n        processOngoingEvents(dailyReport);\r\n\r\n        // Set to track stocks already affected today\r\n        Set<Stocks> affectedToday = new HashSet<>();\r\n\r\n        // Add new daily events\r\n        for (int i = 0; i < DAILY_EVENTS; i++) {\r\n            Event dailyEvent = listEvent.get(random.nextInt(listEvent.size()));\r\n            int affectedStocksCount = random.nextInt(MAX_AFFECTED_STOCKS - MIN_AFFECTED_STOCKS + 1) + MIN_AFFECTED_STOCKS;\r\n            List<Stocks> affectedStocks = getRandomStocks(affectedStocksCount);\r\n\r\n            StringBuilder eventReport = new StringBuilder();\r\n            eventReport.append((i + 1)).append(\". \").append(dailyEvent.getName())\r\n                    .append(\" (Affected stocks: \");\r\n\r\n            for (int j = 0; j < affectedStocks.size(); j++) {\r\n                Stocks stock = affectedStocks.get(j);\r\n\r\n                // Skip if the stock is already affected by another event\r\n                if (affectedToday.contains(stock)) {\r\n                    continue;\r\n                }\r\n\r\n                // Apply the event for the first day\r\n                applyEventToStock(stock, dailyEvent, 1.0);\r\n\r\n                // Schedule the event for multiple days\r\n                scheduleEvent(stock, dailyEvent);\r\n\r\n                // Mark this stock as affected\r\n                affectedToday.add(stock);\r\n\r\n                eventReport.append(stock.getSymbol());\r\n                if (j < affectedStocks.size() - 1) {\r\n                    eventReport.append(\", \");\r\n                }\r\n            }\r\n            eventReport.append(\")\");\r\n            dailyReport.add(eventReport.toString());\r\n        }\r\n\r\n        return dailyReport;\r\n    }\r\n\r\n\r\n    // Process ongoing events\r\n    private void processOngoingEvents(List<String> dailyReport) {\r\n        for (Stocks stock : new ArrayList<>(ongoingEvents.keySet())) {\r\n            List<EventEffect> effects = ongoingEvents.get(stock);\r\n            effects.removeIf(effect -> {\r\n                applyEventToStock(stock, effect.getEvent(), getFadingMultiplier(effect.getInitialDays() - effect.getDaysLeft()));\r\n                effect.decrementDaysLeft();\r\n                return effect.getDaysLeft() <= 0; // Remove if the event has ended\r\n            });\r\n\r\n            if (effects.isEmpty()) {\r\n                ongoingEvents.remove(stock); // Remove stock if no more effects\r\n            }\r\n        }\r\n    }\r\n\r\n\r\n    // Schedule an event to affect a stock for multiple days\r\n    private void scheduleEvent(Stocks stock, Event event) {\r\n        int duration = random.nextInt(MAX_EVENT_DURATION - MIN_EVENT_DURATION + 1) + MIN_EVENT_DURATION;\r\n        EventEffect effect = new EventEffect(event, duration);\r\n\r\n        ongoingEvents.computeIfAbsent(stock, k -> new ArrayList<>()).add(effect);\r\n    }\r\n\r\n    // Get random stocks\r\n    public List<Stocks> getRandomStocks(int count) {\r\n        List<Stocks> shuffledStocks = new ArrayList<>(listStock);\r\n        Collections.shuffle(shuffledStocks);\r\n        return shuffledStocks.subList(0, count);\r\n    }\r\n\r\n    public ArrayList<Stocks> getListStock() {\r\n        return listStock;\r\n    }\r\n    private double getFadingMultiplier(int elapsedDays) {\r\n        double[] multipliers = {1.0, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1};\r\n        return elapsedDays < multipliers.length ? multipliers[elapsedDays] : 0.1; // Default to 10% for days beyond the array\r\n    }\r\n\r\n    // Inner class to track ongoing event effects\r\n    // Inner class to track ongoing event effects\r\n    private static class EventEffect {\r\n        private final Event event;\r\n        private final int initialDays; // Tracks the original duration of the event\r\n        private int daysLeft;\r\n\r\n        public EventEffect(Event event, int daysLeft) {\r\n            this.event = event;\r\n            this.daysLeft = daysLeft;\r\n            this.initialDays = daysLeft; // Store the initial duration\r\n        }\r\n\r\n        public Event getEvent() {\r\n            return event;\r\n        }\r\n\r\n        public int getDaysLeft() {\r\n            return daysLeft;\r\n        }\r\n\r\n        public void decrementDaysLeft() {\r\n            daysLeft--;\r\n        }\r\n\r\n        public int getInitialDays() {\r\n            return initialDays; // Return the original duration\r\n        }\r\n    }\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/MarketSimulator.java b/MarketSimulator.java
+--- a/MarketSimulator.java	(revision 106d668b88715ea20b56e63fef4ed4c23b342625)
++++ b/MarketSimulator.java	(date 1733607198880)
+@@ -1,5 +1,8 @@
+ import java.io.*;
+-import java.util.*;
++import java.util.ArrayList;
++import java.util.Collections;
++import java.util.List;
++import java.util.Random;
+ 
+ public class MarketSimulator {
+     private static ArrayList<Stocks> listStock;
+@@ -8,26 +11,25 @@
+     private static final String EVENT_CSV = "events.csv";
+     private static final String STOCK_CSV = "stocks.csv";
+     private static final int DAILY_EVENTS = 5;
+-    private static final int MIN_AFFECTED_STOCKS = 2;
+-    private static final int MAX_AFFECTED_STOCKS = 3;
+-    private static final int MIN_EVENT_DURATION = 5;
+-    private static final int MAX_EVENT_DURATION = 10;
+-
+-    // Map to track ongoing events: key is the stock, value is a list of EventEffect
+-    private Map<Stocks, List<EventEffect>> ongoingEvents;
++    private static final int MIN_AFFECTED_STOCKS = 3;
++    private static final int MAX_AFFECTED_STOCKS = 6;
+ 
+     public MarketSimulator() {
+         listStock = new ArrayList<>();
+         listEvent = new ArrayList<>();
+-        ongoingEvents = new HashMap<>();
+         loadFiles(EVENT_CSV);
+         loadFiles(STOCK_CSV);
+     }
+ 
+-    public static void loadFiles(String path) {
++
++    public static void loadFiles(String path){
++
++
+         try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
++            
+             String line;
+             while ((line = reader.readLine()) != null) {
++                
+                 String[] parts = line.split(",");
+                 if (parts.length > 2) {
+                     List<Double> priceHistory = new ArrayList<>();
+@@ -39,44 +41,34 @@
+                         priceHistory.add(Double.parseDouble(parts[i]));
+                     }
+ 
+-                    listStock.add(new Stocks(symbol, company, priceHistory));
++                    listStock.add(new Stocks(symbol,company,priceHistory));
+ 
+-                } else {
++
++                }
++                else {
+                     listEvent.add(new Event(parts[0], Double.parseDouble(parts[1])));
+                 }
++
+             }
+-
++            
+         } catch (IOException e) {
+             System.out.println("Error reading file: " + e.getMessage());
+         }
+-    }
+-
+-    // Apply an event's effect to a stock
+-    // Apply an event's effect to a stock with capping
+-    public void applyEventToStock(Stocks stock, Event event, double multiplier) {
+-        double originalPrice = stock.getPrice();
+-        double priceChange = originalPrice * event.getImpact() * multiplier;
+-        double newPrice = stock.getPrice() + priceChange;
++        
++    }
+ 
+-        // Cap the new price to be at least 25% of the original price and at most 200% (double)
+-        double cappedPrice = Math.max(originalPrice * 0.25, Math.min(originalPrice * 2.0, newPrice));
+-
+-        stock.setPrice(cappedPrice);
+-    }
++    
++    public void applyEventToStock(Stocks stock, Event event){
++        double factor=0.01;
++        double priceChange = stock.getPrice() *(event.getImpact()+factor);
++        stock.setPrice(stock.getPrice() + priceChange);
++     }
+ 
+ 
+-    // Simulate a single day
+     public List<String> simulateDay() {
+         List<String> dailyReport = new ArrayList<>();
+         dailyReport.add("Daily events:");
+ 
+-        // Process ongoing events
+-        processOngoingEvents(dailyReport);
+-
+-        // Set to track stocks already affected today
+-        Set<Stocks> affectedToday = new HashSet<>();
+-
+-        // Add new daily events
+         for (int i = 0; i < DAILY_EVENTS; i++) {
+             Event dailyEvent = listEvent.get(random.nextInt(listEvent.size()));
+             int affectedStocksCount = random.nextInt(MAX_AFFECTED_STOCKS - MIN_AFFECTED_STOCKS + 1) + MIN_AFFECTED_STOCKS;
+@@ -88,21 +80,7 @@
+ 
+             for (int j = 0; j < affectedStocks.size(); j++) {
+                 Stocks stock = affectedStocks.get(j);
+-
+-                // Skip if the stock is already affected by another event
+-                if (affectedToday.contains(stock)) {
+-                    continue;
+-                }
+-
+-                // Apply the event for the first day
+-                applyEventToStock(stock, dailyEvent, 1.0);
+-
+-                // Schedule the event for multiple days
+-                scheduleEvent(stock, dailyEvent);
+-
+-                // Mark this stock as affected
+-                affectedToday.add(stock);
+-
++                applyEventToStock(stock, dailyEvent);
+                 eventReport.append(stock.getSymbol());
+                 if (j < affectedStocks.size() - 1) {
+                     eventReport.append(", ");
+@@ -116,74 +94,15 @@
+     }
+ 
+ 
+-    // Process ongoing events
+-    private void processOngoingEvents(List<String> dailyReport) {
+-        for (Stocks stock : new ArrayList<>(ongoingEvents.keySet())) {
+-            List<EventEffect> effects = ongoingEvents.get(stock);
+-            effects.removeIf(effect -> {
+-                applyEventToStock(stock, effect.getEvent(), getFadingMultiplier(effect.getInitialDays() - effect.getDaysLeft()));
+-                effect.decrementDaysLeft();
+-                return effect.getDaysLeft() <= 0; // Remove if the event has ended
+-            });
+-
+-            if (effects.isEmpty()) {
+-                ongoingEvents.remove(stock); // Remove stock if no more effects
+-            }
+-        }
+-    }
+-
+-
+-    // Schedule an event to affect a stock for multiple days
+-    private void scheduleEvent(Stocks stock, Event event) {
+-        int duration = random.nextInt(MAX_EVENT_DURATION - MIN_EVENT_DURATION + 1) + MIN_EVENT_DURATION;
+-        EventEffect effect = new EventEffect(event, duration);
+-
+-        ongoingEvents.computeIfAbsent(stock, k -> new ArrayList<>()).add(effect);
+-    }
+-
+-    // Get random stocks
+     public List<Stocks> getRandomStocks(int count) {
+         List<Stocks> shuffledStocks = new ArrayList<>(listStock);
+         Collections.shuffle(shuffledStocks);
+         return shuffledStocks.subList(0, count);
+     }
+ 
++
+     public ArrayList<Stocks> getListStock() {
+         return listStock;
+     }
+-    private double getFadingMultiplier(int elapsedDays) {
+-        double[] multipliers = {1.0, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1};
+-        return elapsedDays < multipliers.length ? multipliers[elapsedDays] : 0.1; // Default to 10% for days beyond the array
+-    }
+-
+-    // Inner class to track ongoing event effects
+-    // Inner class to track ongoing event effects
+-    private static class EventEffect {
+-        private final Event event;
+-        private final int initialDays; // Tracks the original duration of the event
+-        private int daysLeft;
+-
+-        public EventEffect(Event event, int daysLeft) {
+-            this.event = event;
+-            this.daysLeft = daysLeft;
+-            this.initialDays = daysLeft; // Store the initial duration
+-        }
+-
+-        public Event getEvent() {
+-            return event;
+-        }
+-
+-        public int getDaysLeft() {
+-            return daysLeft;
+-        }
+-
+-        public void decrementDaysLeft() {
+-            daysLeft--;
+-        }
+ 
+-        public int getInitialDays() {
+-            return initialDays; // Return the original duration
+-        }
+-    }
+-
+-}
+\ No newline at end of file
++}
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"c6ff5412-655a-4591-a952-7c650bc3c03e\" name=\"Changes\" comment=\"phase 1 disscusion\">\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/MainAppGUI.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/MainAppGUI.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/MarketSimulator.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/MarketSimulator.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/MovingAverageTrader.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/MovingAverageTrader.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/RSITrader.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/RSITrader.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/RandomTrader.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/RandomTrader.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/Trader.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/Trader.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MainAppGUI.class\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MainAppGUI.class\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MarketSimulator.class\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MarketSimulator.class\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MovingAverageTrader.class\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MovingAverageTrader.class\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/RSITrader.class\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/RSITrader.class\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/RandomTrader.class\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/RandomTrader.class\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/Trader.class\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/Trader.class\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Class\" />\r\n        <option value=\"CSS File\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n    <option name=\"ROOT_SYNC\" value=\"SYNC\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;Ahmed-018&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">{\r\n  &quot;selectedUrlAndAccountId&quot;: {\r\n    &quot;url&quot;: &quot;https://github.com/Abdullah-BS/Stock-Market-Simulator-EE364.git&quot;,\r\n    &quot;accountId&quot;: &quot;3478dadd-4c00-4447-a95d-4d572d001da0&quot;\r\n  }\r\n}</component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 0\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"2oUQeCGW2gzL5ovFOyPZsLfmBzl\" />\r\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">{\r\n  &quot;keyToString&quot;: {\r\n    &quot;Application.Java.executor&quot;: &quot;Run&quot;,\r\n    &quot;Application.MainApp.executor&quot;: &quot;Run&quot;,\r\n    &quot;Application.MainAppGUI.executor&quot;: &quot;Run&quot;,\r\n    &quot;Application.test.executor&quot;: &quot;Run&quot;,\r\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\r\n    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,\r\n    &quot;git-widget-placeholder&quot;: &quot;main&quot;,\r\n    &quot;ignore.preview.features.used&quot;: &quot;true&quot;,\r\n    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,\r\n    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,\r\n    &quot;last_opened_file_path&quot;: &quot;C:/Program Files/Java/javafx-sdk-23.0.1/lib/javafx.web.jar&quot;,\r\n    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,\r\n    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,\r\n    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,\r\n    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,\r\n    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,\r\n    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,\r\n    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,\r\n    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,\r\n    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,\r\n    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.editor&quot;,\r\n    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;\r\n  }\r\n}</component>\r\n  <component name=\"RunManager\">\r\n    <configuration name=\"Java\" type=\"Application\" factoryName=\"Application\">\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"MainAppGUI\" />\r\n      <module name=\"Stock-Market-Simulator-EE364\" />\r\n      <option name=\"VM_PARAMETERS\" value=\"--module-path &quot;C:\\Java\\javafx-sdk-17.0.13\\lib&quot; --add-modules javafx.controls,javafx.fxml\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n  </component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-jdk-9823dce3aa75-b114ca120d71-intellij.indexing.shared.core-IU-242.21829.227\" />\r\n        <option value=\"bundled-js-predefined-d6986cc7102b-7c0b70fcd90d-JavaScript-IU-242.21829.227\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"c6ff5412-655a-4591-a952-7c650bc3c03e\" name=\"Changes\" comment=\"\" />\r\n      <created>1730921768028</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1730921768028</updated>\r\n      <workItem from=\"1730921769074\" duration=\"4304000\" />\r\n      <workItem from=\"1731280355538\" duration=\"294000\" />\r\n      <workItem from=\"1731280705898\" duration=\"23000\" />\r\n      <workItem from=\"1731280748333\" duration=\"105000\" />\r\n      <workItem from=\"1731280866712\" duration=\"724000\" />\r\n      <workItem from=\"1731281689966\" duration=\"136000\" />\r\n      <workItem from=\"1731281831640\" duration=\"2676000\" />\r\n      <workItem from=\"1731284694579\" duration=\"22000\" />\r\n      <workItem from=\"1731337820198\" duration=\"881000\" />\r\n      <workItem from=\"1731345704540\" duration=\"596000\" />\r\n      <workItem from=\"1731356818308\" duration=\"8003000\" />\r\n      <workItem from=\"1731694059187\" duration=\"541000\" />\r\n      <workItem from=\"1731694689469\" duration=\"3950000\" />\r\n      <workItem from=\"1732197320341\" duration=\"2556000\" />\r\n      <workItem from=\"1732272110688\" duration=\"11241000\" />\r\n      <workItem from=\"1732897279142\" duration=\"8618000\" />\r\n      <workItem from=\"1733128039735\" duration=\"8538000\" />\r\n      <workItem from=\"1733533075508\" duration=\"7002000\" />\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"phase 1 disscusion\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1733335116783</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1733335116783</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"2\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"TypeScriptGeneratedFilesManager\">\r\n    <option name=\"version\" value=\"3\" />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"phase 1 disscusion\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"phase 1 disscusion\" />\r\n  </component>\r\n  <component name=\"XSLT-Support.FileAssociations.UIState\">\r\n    <expand />\r\n    <select />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 106d668b88715ea20b56e63fef4ed4c23b342625)
++++ b/.idea/workspace.xml	(date 1733607218135)
+@@ -5,19 +5,9 @@
+   </component>
+   <component name="ChangeListManager">
+     <list default="true" id="c6ff5412-655a-4591-a952-7c650bc3c03e" name="Changes" comment="phase 1 disscusion">
++      <change afterPath="$PROJECT_DIR$/human_trading_errors.csv" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/MainAppGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/MainAppGUI.java" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/MarketSimulator.java" beforeDir="false" afterPath="$PROJECT_DIR$/MarketSimulator.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/MovingAverageTrader.java" beforeDir="false" afterPath="$PROJECT_DIR$/MovingAverageTrader.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/RSITrader.java" beforeDir="false" afterPath="$PROJECT_DIR$/RSITrader.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/RandomTrader.java" beforeDir="false" afterPath="$PROJECT_DIR$/RandomTrader.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Trader.java" beforeDir="false" afterPath="$PROJECT_DIR$/Trader.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MainAppGUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MainAppGUI.class" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MarketSimulator.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MarketSimulator.class" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MovingAverageTrader.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MovingAverageTrader.class" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/RSITrader.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/RSITrader.class" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/RandomTrader.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/RandomTrader.class" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/Trader.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/Trader.class" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -57,32 +47,32 @@
+     <option name="hideEmptyMiddlePackages" value="true" />
+     <option name="showLibraryContents" value="true" />
+   </component>
+-  <component name="PropertiesComponent">{
+-  &quot;keyToString&quot;: {
+-    &quot;Application.Java.executor&quot;: &quot;Run&quot;,
+-    &quot;Application.MainApp.executor&quot;: &quot;Run&quot;,
+-    &quot;Application.MainAppGUI.executor&quot;: &quot;Run&quot;,
+-    &quot;Application.test.executor&quot;: &quot;Run&quot;,
+-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+-    &quot;ignore.preview.features.used&quot;: &quot;true&quot;,
+-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+-    &quot;last_opened_file_path&quot;: &quot;C:/Program Files/Java/javafx-sdk-23.0.1/lib/javafx.web.jar&quot;,
+-    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+-    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
+-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.editor&quot;,
+-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
++  <component name="PropertiesComponent"><![CDATA[{
++  "keyToString": {
++    "Application.Java.executor": "Run",
++    "Application.MainApp.executor": "Run",
++    "Application.MainAppGUI.executor": "Run",
++    "Application.test.executor": "Run",
++    "RunOnceActivity.ShowReadmeOnStart": "true",
++    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
++    "git-widget-placeholder": "Merging main",
++    "ignore.preview.features.used": "true",
++    "ignore.virus.scanning.warn.message": "true",
++    "kotlin-language-version-configured": "true",
++    "last_opened_file_path": "C:/Program Files/Java/javafx-sdk-23.0.1/lib/javafx.web.jar",
++    "list.type.of.created.stylesheet": "CSS",
++    "node.js.detected.package.eslint": "true",
++    "node.js.detected.package.tslint": "true",
++    "node.js.selected.package.eslint": "(autodetect)",
++    "node.js.selected.package.tslint": "(autodetect)",
++    "nodejs_package_manager_path": "npm",
++    "project.structure.last.edited": "Libraries",
++    "project.structure.proportion": "0.15",
++    "project.structure.side.proportion": "0.2",
++    "settings.editor.selected.configurable": "preferences.editor",
++    "vue.rearranger.settings.migration": "true"
+   }
+-}</component>
++}]]></component>
+   <component name="RunManager">
+     <configuration name="Java" type="Application" factoryName="Application">
+       <option name="MAIN_CLASS_NAME" value="MainAppGUI" />
+Index: human_trading_errors.csv
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/human_trading_errors.csv b/human_trading_errors.csv
+new file mode 100644
+--- /dev/null	(date 1733607039862)
++++ b/human_trading_errors.csv	(date 1733607039862)
+@@ -0,0 +1,31 @@
++Error,Probability
++Internet connection failure,0.1
++Trading platform temporarily unavailable,0.08
++System crash during trading process,0.05
++Distracted by a personal event,0.12
++"Hesitation, doubting strategy reliability",0.15
++Forgot to place the order due to being sidetracked,0.1
++Missed the opportunity due to overthinking,0.09
++Stopped by fear of loss,0.07
++"Waited too long, overconfident about finding a better opportunity",0.1
++Emergency prevented trading,0.05
++Power outage stopped access to the platform,0.05
++Missed the opportunity due to a delay,0.04
++Misclicked on the wrong stock,0.07
++Fat-fingered the quantity while placing the order,0.06
++Overlooked a critical market update,0.08
++Failed to confirm the order in time,0.05
++Confused buy and sell orders,0.04
++Placed an order on the wrong market,0.03
++Ignored a stop-loss signal,0.06
++Overtrusted algorithmic trading suggestions,0.07
++Skipped reviewing the trading plan,0.05
++Reacted emotionally to a market drop,0.1
++Misinterpreted market signals,0.11
++Forgot to set stop-loss order,0.07
++Executed trade in the wrong direction,0.09
++Confused between similar stock symbols,0.04
++Fat-finger error: incorrect lot size,0.06
++Overlooked news impacting the market,0.08
++Delayed reaction to market changes,0.13
++Ignored risk management rules,0.1

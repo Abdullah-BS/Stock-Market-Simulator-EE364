@@ -15,6 +15,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -179,19 +180,19 @@ public class MainAppGUI extends Application {
             String formattedPrice = String.format("%.2f", stock.getPrice());
             if (stock.getPrice() >= stock.getPriceHistory().get(stock.getPriceHistory().size() - 2)) {
                 Label stockLabel = new Label(stock.getSymbol() + " - $" + formattedPrice);
-                stockLabel.setStyle("-fx-background-color: lightgreen; -fx-padding: 5; -fx-font-size: 12;");
+                stockLabel.setStyle("-fx-background-color: lightgreen; -fx-padding: 5; -fx-font-size: 12;-fx-border-color: white;-fx-border-width: 2;-fx-min-width: 110");
                 stockGrid.add(stockLabel, column, row);
 
                 column++;
             } else {
                 Label stockLabel = new Label(stock.getSymbol() + " - $" + formattedPrice);
-                stockLabel.setStyle("-fx-background-color: #FF9999; -fx-padding: 5; -fx-font-size: 12;");
+                stockLabel.setStyle("-fx-background-color: #FF9999; -fx-padding: 5; -fx-font-size: 12;-fx-border-color: white;-fx-border-width: 2; -fx-min-width: 110");
                 stockGrid.add(stockLabel, column, row);
 
                 column++;
             }
 
-            if (column == 10) {
+            if (column == 11) {
                 column = 0;
                 row++;
             }
@@ -305,10 +306,14 @@ public class MainAppGUI extends Application {
 
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("Net Worth ($)");
+        yAxis.setForceZeroInRange(false);
 
         lineChart = new LineChart<>(xAxis, yAxis);
         lineChart.setTitle("Trader Net Worth Over Time");
         lineChart.getStyleClass().add("chart");
+        lineChart.setMinSize(1500,400);
+        lineChart.setLayoutY(100);
+        lineChart.setMaxHeight(400);
 
         for (Trader trader : mainApp.listOfTraders) {
             XYChart.Series<Number, Number> series = new XYChart.Series<>();
@@ -316,6 +321,33 @@ public class MainAppGUI extends Application {
             traderSeriesMap.put(trader.getName(), series);
             lineChart.getData().add(series);
         }
+
+        Label traderActionsTitle = new Label("Trader Actions vs Metrics Advises");
+        traderActionsTitle.setStyle("-fx-font-weight: bold;-fx-font-size: 16px;");
+
+        Label Tname = new Label("Ahmed \"RSI Trader\"");
+        Tname.setStyle("-fx-font-weight: bold;");
+        Label RSIsug = new Label("RSI Advise:    \"RSI Advise\"");
+        RSIsug.setStyle("-fx-font-weight: bold;");
+        Label RSIAction = new Label("RSI Trader Action:    \"Trader Action\"");
+        RSIAction.setStyle("-fx-font-weight: bold;");
+
+        Label MAsug = new Label("MA Advise:    \"MA Advise\"");
+        MAsug.setStyle("-fx-font-weight: bold;");
+        Label MAAction = new Label("MA Trader Action:    \"Trader Action\"");
+        MAAction.setStyle("-fx-font-weight: bold;");
+
+        Label RSAction= new Label("RS Action:    \"Trader Action\"");
+        RSAction.setStyle("-fx-font-weight: bold;");
+
+        VBox infoPanel = new VBox(15);
+        infoPanel.setMinSize(350,200);
+        infoPanel.setStyle("-fx-padding: 10; -fx-border-color: black; -fx-border-width: 1;-fx-background-color: WHITE;");
+        infoPanel.getChildren().addAll(traderActionsTitle,Tname,RSIsug,RSIAction,MAsug,MAAction,RSAction);
+
+        HBox middleLayout = new HBox(10,lineChart,infoPanel);
+
+
 
         ToggleButton autoSimulateButton = new ToggleButton("Start Auto Simulation");
         autoSimulateButton.setOnAction(e -> toggleSimulation(autoSimulateButton));
@@ -351,34 +383,41 @@ public class MainAppGUI extends Application {
         stockGrid = new GridPane();
         stockGrid.setHgap(10);
         stockGrid.setVgap(10);
+        stockGrid.setMaxSize(10000,100);
         stockGrid.setStyle("-fx-padding: 20;");
+        stockGrid.setStyle("-fx-background-color: black; -fx-hgap: 2; -fx-vgap: 2; -fx-border-color: black; -fx-border-width: 4;");
 
-        for (int row = 0; row < 10; row++) {
-            for (int col = 0; col < 10; col++) {
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 11; col++) {
                 Label emptyLabel = new Label("                   ");
                 emptyLabel.setFont(Font.font(12));
-                emptyLabel.setStyle("-fx-background-color: lightgray; -fx-padding: 5;");
+                emptyLabel.setStyle("-fx-background-color: lightgray; -fx-padding: 5;-fx-min-width: 110;");
                 stockGrid.add(emptyLabel, col, row);
             }
         }
 
         VBox eventsBox = new VBox(10, dayCounterLabel, eventsDisplay); // Include day counter with events display
-        eventsBox.setPrefWidth(400);
+        eventsBox.setMinSize(400,100);
+        eventsBox.setMaxHeight(200);
 
-        HBox TopLayout = new HBox(20, eventsBox, stockGrid);
+
+        HBox TopLayout = new HBox(10, eventsBox, stockGrid);
         TopLayout.setStyle("-fx-alignment: center;");
 
         HBox buttonLayout = new HBox(10, autoSimulateButton, backButton, restartButton, showTableButton, downloadResultsButton, downloadChartButton);
 
         // Initialize metrics panel (empty at first)
         metricsPanel = new VBox(10);
-        metricsPanel.setStyle("-fx-padding: 10; -fx-border-color: black; -fx-border-width: 1;");
+        metricsPanel.setMinSize(800,200);
+        metricsPanel.setStyle("-fx-padding: 10; -fx-border-color: black; -fx-border-width: 1;-fx-background-color: white");
 
         Label metricsTitle = new Label("Trader Performance Metrics");
         metricsTitle.setStyle("-fx-font-weight: bold;");
         metricsPanel.getChildren().add(metricsTitle); // Add title to the metrics panel
 
-        mainLayout = new VBox(10, TopLayout, buttonLayout, lineChart, circlesLayout, metricsPanel); // Add metricsPanel to mainLayout
+        HBox bottomLayout = new HBox(10, circlesLayout,metricsPanel);
+
+        mainLayout = new VBox(10, TopLayout, buttonLayout, middleLayout, bottomLayout); // Add metricsPanel to mainLayout
         mainLayout.setPrefSize(1080, 600);
         mainLayout.getStyleClass().add("root");
 
@@ -545,6 +584,7 @@ public class MainAppGUI extends Application {
         }
 
         return metricsPanel;
+
     }
 
 
@@ -553,7 +593,7 @@ public class MainAppGUI extends Application {
         CircleLayout.setStyle("-fx-alignment: center; -fx-padding: 20;");
 
         for (Trader trader : traderObservableList) {
-            Circle circle = new Circle(50);
+            Circle circle = new Circle(100);
             circle.setFill(Color.ORANGE);
 
             Text traderName = new Text(trader.getName());

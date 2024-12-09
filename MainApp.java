@@ -34,11 +34,11 @@ public class MainApp {
         }
 
         else if (randomNum == 1){
-            listOfTraders.add(new MovingAverageTrader(traderName, random.nextInt(10) + 1,this.marketSimulator));
+            listOfTraders.add(new MovingAverageTrader(traderName, 3,this.marketSimulator));
         }
 
         else {
-            listOfTraders.add(new RSITrader(traderName, random.nextInt(10) + 1, this.marketSimulator));
+            listOfTraders.add(new RSITrader(traderName, 3, this.marketSimulator));
         }
 
         }

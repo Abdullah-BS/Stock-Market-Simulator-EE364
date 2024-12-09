@@ -1,0 +1,19 @@
+<changelist name="Uncommitted_changes_before_Update_at_12_9_2024_7_38_PM_[Changes]1" date="1733762337676" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_12_9_2024_7_38_PM_[Changes]1/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Update at 12/9/2024 7:38 PM [Changes]" />
+  <binary>
+    <option name="BEFORE_PATH" value="out/production/Stock-Market-Simulator-EE364/Trader.class" />
+    <option name="AFTER_PATH" value="out/production/Stock-Market-Simulator-EE364/Trader.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_12_9_2024_7_38_PM_[Changes]1/Trader.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="out/production/Stock-Market-Simulator-EE364/RandomTrader.class" />
+    <option name="AFTER_PATH" value="out/production/Stock-Market-Simulator-EE364/RandomTrader.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_12_9_2024_7_38_PM_[Changes]1/RandomTrader.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="out/production/Stock-Market-Simulator-EE364/MainAppGUI.class" />
+    <option name="AFTER_PATH" value="out/production/Stock-Market-Simulator-EE364/MainAppGUI.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_12_9_2024_7_38_PM_[Changes]1/MainAppGUI.class" />
+  </binary>
+</changelist>

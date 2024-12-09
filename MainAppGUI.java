@@ -127,20 +127,24 @@ public class MainAppGUI extends Application {
         HBox TopLayout = new HBox(10, eventsBox, stockGrid);
         TopLayout.setStyle("-fx-alignment: center;");
 
-        //create the Middle Layout
-        metricsPanel = createMetricTable();
+
+        //create the Right Layout
         LineChart<Number, Number> lineChart=createLineChart();
-
-        HBox middleLayout = new HBox(10,lineChart,metricsPanel);
-
-        //create the Bottom Layout
         HBox circlesLayout = createTraderCircles();
-        VBox infoPanel=createInfoPanel();
 
-        HBox bottomLayout = new HBox(10, circlesLayout,infoPanel);
+        VBox Rightlayout = new VBox(10,lineChart,circlesLayout);
+
+        //create the Left Layout
+        VBox infoPanel=createInfoPanel();
+        TableView<Trader> metricsTable = createMetricTable();
+
+        VBox Leftlayout = new VBox(10,metricsTable,infoPanel);
+
+        //create the Middle Layout
+        HBox BottomLayout = new HBox(10,Leftlayout,Rightlayout);
 
         // Create the Main layout using the above Layouts
-        mainLayout = new VBox(10, TopLayout, buttonLayout, middleLayout, bottomLayout); // Add metricsPanel to mainLayout
+        mainLayout = new VBox(10, TopLayout, buttonLayout, BottomLayout); // Add metricsPanel to mainLayout
         mainLayout.setPrefSize(1080, 600);
         mainLayout.getStyleClass().add("root");
 
@@ -176,20 +180,24 @@ public class MainAppGUI extends Application {
         HBox TopLayout = new HBox(10, eventsBox, stockGrid);
         TopLayout.setStyle("-fx-alignment: center;");
 
-        //create the Middle Layout
-        metricsPanel = createMetricTable();
+
+        //create the Right Layout
         LineChart<Number, Number> lineChart=createLineChart();
-
-        HBox middleLayout = new HBox(10,lineChart,metricsPanel);
-
-        //create the Bottom Layout
         HBox circlesLayout = createTraderCircles();
-        VBox infoPanel=createInfoPanel();
 
-        HBox bottomLayout = new HBox(10, circlesLayout,infoPanel);
+        VBox Rightlayout = new VBox(10,lineChart,circlesLayout);
+
+        //create the Left Layout
+        VBox infoPanel=createInfoPanel();
+        TableView<Trader> metricsTable = createMetricTable();
+
+        VBox Leftlayout = new VBox(10,metricsTable,infoPanel);
+
+        //create the Middle Layout
+        HBox BottomLayout = new HBox(10,Leftlayout,Rightlayout);
 
         // Create the Main layout using the above Layouts
-        mainLayout = new VBox(10, TopLayout, buttonLayout, middleLayout, bottomLayout); // Add metricsPanel to mainLayout
+        mainLayout = new VBox(10, TopLayout, buttonLayout, BottomLayout); // Add metricsPanel to mainLayout
         mainLayout.setPrefSize(1080, 600);
         mainLayout.getStyleClass().add("root");
 
@@ -208,7 +216,6 @@ public class MainAppGUI extends Application {
         primaryStage.show();
 
         initializeTimeline();
-
     }
     private VBox createEventDisplay(){
 
@@ -221,7 +228,7 @@ public class MainAppGUI extends Application {
         eventsDisplay.getStyleClass().add("text-area");
 
         VBox eventsBox = new VBox(10, dayCounterLabel, eventsDisplay); // Include day counter with events display
-        eventsBox.setMinSize(400,100);
+        eventsBox.setMinSize(580,100);
         eventsBox.setMaxHeight(200);
         return eventsBox;
     }
@@ -236,7 +243,7 @@ public class MainAppGUI extends Application {
         lineChart = new LineChart<>(xAxis, yAxis);
         lineChart.setTitle("Trader Net Worth Over Time");
         lineChart.getStyleClass().add("chart");
-        lineChart.setMinSize(1500,400);
+        lineChart.setMinSize(1245,400);
         lineChart.setLayoutY(100);
         lineChart.setMaxHeight(400);
 
@@ -290,7 +297,7 @@ public class MainAppGUI extends Application {
         Label traderActionsTitle = new Label("Trader Actions vs Metrics Advises");
         traderActionsTitle.setStyle("-fx-font-weight: bold;-fx-font-size: 16px;");
 
-        Label Tname = new Label("Ahmed \"RSI Trader\"");
+        Label Tname = new Label("Ahmed \"RSI Trader\"\n WHAT UP");
         Tname.setStyle("-fx-font-weight: bold;");
         Label RSIsug = new Label("RSI Advise:    \"RSI Advise\"");
         RSIsug.setStyle("-fx-font-weight: bold;");
@@ -306,49 +313,21 @@ public class MainAppGUI extends Application {
         RSAction.setStyle("-fx-font-weight: bold;");
 
         VBox infoPanel = new VBox(15);
-        infoPanel.setMinSize(350,200);
+
         infoPanel.setStyle("-fx-padding: 10; -fx-border-color: black; -fx-border-width: 1;-fx-background-color: WHITE;");
         infoPanel.getChildren().addAll(traderActionsTitle,Tname,RSIsug,RSIAction,MAsug,MAAction,RSAction);
         // not FIXED
 
-
+        infoPanel.setMinSize(600,400);
         return infoPanel;
     }
 
-    private VBox createMetricTable(){
-        metricsPanel = new VBox(10);
-        metricsPanel.setMinSize(800,200);
-        metricsPanel.setStyle("-fx-padding: 10; -fx-border-color: black; -fx-border-width: 1;-fx-background-color: white");
+    private TableView<Trader>  createTraderTable(){
 
-        Label metricsTitle = new Label("Trader Performance Metrics");
-        metricsTitle.setStyle("-fx-font-weight: bold;");
-        metricsPanel.getChildren().add(metricsTitle); // Add title to the metrics panel
-        return metricsPanel;
-    }
 
-    private GridPane creatStockGrid() {
-        stockGrid = new GridPane();
-        stockGrid.setHgap(10);
-        stockGrid.setVgap(10);
-        stockGrid.setMaxSize(10000,100);
-        stockGrid.setStyle("-fx-padding: 20;");
-        stockGrid.setStyle("-fx-background-color: black; -fx-hgap: 2; -fx-vgap: 2; -fx-border-color: black; -fx-border-width: 4;");
-
-        for (int row = 0; row < 9; row++) {
-            for (int col = 0; col < 11; col++) {
-                Label emptyLabel = new Label("                   ");
-                emptyLabel.setFont(Font.font(12));
-                emptyLabel.setStyle("-fx-background-color: lightgray; -fx-padding: 5;-fx-min-width: 110;");
-                stockGrid.add(emptyLabel, col, row);
-            }
-        }
-        return stockGrid;
-    }
-
-    private TableView<Trader> createTraderTable() {
         TableView<Trader> table = new TableView<>(traderObservableList);
         // to make column resize automatically
-        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
 
 
         TableColumn<Trader, String> nameColumn = new TableColumn<>("Trader Name");
@@ -399,6 +378,68 @@ public class MainAppGUI extends Application {
         return table;
     }
 
+
+    private TableView<Trader> createMetricTable() {
+        TableView<Trader> metricTable = new TableView<>(traderObservableList);
+        // to make column resize automatically
+        metricTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        metricTable.setMinHeight(150);
+
+
+
+        TableColumn<Trader, String> nameColumn = new TableColumn<>("Trader Name");
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        TableColumn<Trader, String> totalTradesColumn = new TableColumn<>("Total Trades");
+        totalTradesColumn.setCellValueFactory(new PropertyValueFactory<>("totalTrades"));
+
+        TableColumn<Trader, Double> WinColumn = new TableColumn<>("Win Ratio");
+        WinColumn.setCellValueFactory(new PropertyValueFactory<>("winCount"));
+
+        TableColumn<Trader, Double> LossColumn = new TableColumn<>("Loss Ratio");
+        LossColumn.setCellValueFactory(new PropertyValueFactory<>("lossCount"));
+
+        TableColumn<Trader, Double> AvgProfitColumn = new TableColumn<>("Avg Profit/Trade");
+        AvgProfitColumn.setCellValueFactory(new PropertyValueFactory<>("averageProfit"));
+
+
+        metricTable.getColumns().addAll(nameColumn,totalTradesColumn, WinColumn, LossColumn,AvgProfitColumn);
+
+        // Add a row selection listener
+        metricTable.setRowFactory(tv -> {
+            TableRow<Trader> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (!row.isEmpty() & event.getClickCount() == 2) {
+                    Trader selectedTrader = row.getItem();  // Get selected trader
+                    showTraderInfoWindow(selectedTrader);   // Open a new window to show details
+                }
+            });
+            return row;
+        });
+
+        metricTable.setMinWidth(580);
+        return metricTable;
+    }
+
+    private GridPane creatStockGrid() {
+        stockGrid = new GridPane();
+        stockGrid.setHgap(10);
+        stockGrid.setVgap(10);
+        stockGrid.setMaxSize(10000,100);
+        stockGrid.setStyle("-fx-padding: 20;");
+        stockGrid.setStyle("-fx-background-color: black; -fx-hgap: 2; -fx-vgap: 2; -fx-border-color: black; -fx-border-width: 4;");
+
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 11; col++) {
+                Label emptyLabel = new Label("                   ");
+                emptyLabel.setFont(Font.font(12));
+                emptyLabel.setStyle("-fx-background-color: lightgray; -fx-padding: 5;-fx-min-width: 110;");
+                stockGrid.add(emptyLabel, col, row);
+            }
+        }
+        return stockGrid;
+    }
+
     private void populateStockGrid(GridPane stockGrid, ArrayList<Stocks> stockList) {
         stockGrid.getChildren().clear();
 
@@ -447,7 +488,7 @@ public class MainAppGUI extends Application {
 
         // Create the portfolio table
         TableView<Map.Entry<Stocks, Integer>> portfolioTable = new TableView<>(portfolioData);
-
+        portfolioTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         // Columns for stock name and quantity
         TableColumn<Map.Entry<Stocks, Integer>, String> stockNameColumn = new TableColumn<>("Stock Symbol");
         stockNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getKey().getSymbol()));

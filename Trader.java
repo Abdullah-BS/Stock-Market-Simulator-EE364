@@ -1,4 +1,8 @@
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -13,7 +17,7 @@ public abstract class Trader {
     public double initialCash = 10000; // Initial cash allocated to the trader
     private String[] excuses; // List of excuses for human errors
     private Random random; // Random generator for simulating probabilities
-    protected HashMap<String, String> advice_VS_action;
+    protected ObservableMap<String, String> advice_VS_action;
 
     // Performance Metrics
     private int totalTrades = 0; // Total number of trades
@@ -26,7 +30,7 @@ public abstract class Trader {
     public Trader(String name, MarketSimulator market) {
         this.name = name;
         this.cash = initialCash;
-        this.advice_VS_action = new HashMap<>();
+        this.advice_VS_action = FXCollections.observableHashMap();
         this.stockPortfolio = new HashMap<>();
         this.worthHistory = new ArrayList<>();
         this.random = new Random();
@@ -114,7 +118,8 @@ public abstract class Trader {
     public HashMap<Stocks, Integer> getStockPortfolio() {
         return stockPortfolio;
     }
-    public HashMap<String, String> getAdvice_VS_action() {
+
+    public ObservableMap<String, String> getAdvice_VS_action() {
         return advice_VS_action;
     }
 

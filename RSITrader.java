@@ -39,75 +39,131 @@ public class RSITrader extends Trader implements knowledgeableTrader {
         }
     }
 
-    @Override
     public void execute(Stocks stock, int quantity) {
         double random = Math.random();
+        String advice;
+        String action;
+
+        // Step 1: Calculate RSI for the current stock
+        List<Double> priceHistory = stock.getPriceHistory();
+        double RSI = calculate(this.period, priceHistory);
+        double currentPrice = stock.getPrice();
+
+        // Step 2: Determine advice based on RSI
+        if (RSI < 30) {
+            advice = "Buy";
+        } else if (RSI > 70) {
+            advice = "Sell";
+        } else {
+            advice = "Hold";
+        }
+
+
+        // Step 3: Random excuses or actual execution
         if (random < 0.3) {
             System.out.println(randomExcuses());
-        } else {
-            // Step 1: Calculate RSI for the current stock
-            List<Double> priceHistory = stock.getPriceHistory();
-            double buyRSI = calculate(this.period, priceHistory);
-            double currentPrice = stock.getPrice();
+            action = randomExcuses();
+        }
 
-            // Step 2: Buy if RSI is below 30 and cash is sufficient
-            if (buyRSI < 30) {
-                if (getCash() >= quantity * currentPrice) {
-                    buy(stock, quantity, currentPrice);
-                    System.out.println(this.getName() + ": Bought " + quantity + " units of " + stock.getSymbol() +
-                            " at price " + currentPrice);
-                } else {
-                    System.out.println(this.getName() + " does not have enough cash to buy stock " + stock.getSymbol());
-                }
-            }
-
-            // Step 3: Make a copy of the portfolio to safely iterate
-            Map<Stocks, Integer> portfolioCopy = new HashMap<>(getStockPortfolio());
-
-            for (Map.Entry<Stocks, Integer> entry : portfolioCopy.entrySet()) {
-                Stocks portfolioStock = entry.getKey();
-                int ownedQuantity = entry.getValue();
-                double purchasePrice = portfolioStock.getPrice(); // Assuming we track purchase price
-                double profitPercentage = (currentPrice - purchasePrice) / purchasePrice;
-
-                // Stop-loss logic
-                if (profitPercentage <= -STOP_LOSS_PERCENTAGE) {
-                    sell(portfolioStock, ownedQuantity, currentPrice);
-                    System.out.println(this.getName() + ": Sold (Stop Loss) " + ownedQuantity + " units of " +
-                            portfolioStock.getSymbol());
-                }
-                // Profit-grab logic
-                else if (profitPercentage >= PROFIT_GRAB_PERCENTAGE) {
-                    sell(portfolioStock, ownedQuantity, currentPrice);
-                    System.out.println(this.getName() + ": Sold (Profit Grab) " + ownedQuantity + " units of " +
-                            portfolioStock.getSymbol());
-                }
-            }
-
-            // Step 4: Sell stocks with RSI > 70 if sufficient quantity
-            double maxRSI = 0.0;
-            Stocks stockToSell = null;
-
-            for (Stocks portfolioStock : portfolioCopy.keySet()) {
-                List<Double> portfolioPriceHistory = portfolioStock.getPriceHistory();
-                if (portfolioPriceHistory.size() >= this.period) {
-                    double rsi = calculate(this.period, portfolioPriceHistory);
-                    if (rsi > maxRSI) {
-                        maxRSI = rsi;
-                        stockToSell = portfolioStock;
+        //BUY
+        else if (advice.equals("Buy")) {
+                do{
+                    if (getCash() >= quantity * currentPrice){
+                        buy(stock, quantity, currentPrice);
+                        action = "Bought " + quantity + " units of " + stock.getSymbol() +
+                                " at price " + currentPrice;
+                        System.out.println(this.getName() + ": Bought " + quantity + " units of " + stock.getSymbol() +
+                                " at price " + currentPrice);
+                        break;
                     }
+                    quantity--; // Reduce quantity by 1
+
+                    if (quantity <= 0) {
+                        System.out.println(this.getName() + ": Not enough cash to buy stock " + stock.getSymbol());
+                        action = "Not enough cash to buy stock " + stock.getSymbol();
+                        break;
+                    }
+                } while (true);
+                }
+
+        //SELL
+        else if (advice.equals("Sell") && getStockPortfolio().containsKey(stock)) {
+            do {
+                if (getStockPortfolio().get(stock) >= quantity) {
+                        sell(stock, quantity, currentPrice);
+
+                        action = "Sold " + quantity + " units of " + stock.getSymbol() +
+                                " at price " + currentPrice;
+                        System.out.println(this.getName() + ": Sold " + quantity + " units of " + stock.getSymbol() +
+                                " at price " + currentPrice);
+                        break;
+                }
+                quantity--;
+
+                if (quantity <= 0) {
+                    System.out.println("Not enough stock to sell.");
+                    action = "Not enough stock to sell";
+                    break;
+                }
+            } while (true);
+        }
+        else {
+            action = "Hold";
+            System.out.println(this.getName() + ": Hold stock, price is within the threshold range of the moving average.");
+        }
+
+
+        // Step 4: Stop-loss and profit-grab logic
+        applyStopLossAndProfitGrab(currentPrice ,quantity);
+
+        // Step 5: Store advice and action in the hashmap
+        advice_VS_action.put(advice, action);
+}
+
+    // Helper method to process stop-loss and profit-grab logic
+    private void applyStopLossAndProfitGrab(double currentPrice, int quantity) {
+        Map<Stocks, Integer> portfolioCopy = new HashMap<>(getStockPortfolio());
+        for (Map.Entry<Stocks, Integer> entry : portfolioCopy.entrySet()) {
+            Stocks portfolioStock = entry.getKey();
+            int ownedQuantity = entry.getValue();
+            double purchasePrice = portfolioStock.getPrice(); // Assuming we track purchase price
+            double profitPercentage = (currentPrice - purchasePrice) / purchasePrice;
+
+            // Stop-loss logic
+            if (profitPercentage <= -STOP_LOSS_PERCENTAGE) {
+                sell(portfolioStock, ownedQuantity, currentPrice);
+                System.out.println(this.getName() + ": Sold (Stop Loss) " + ownedQuantity + " units of " +
+                        portfolioStock.getSymbol());
+            }
+            // Profit-grab logic
+            else if (profitPercentage >= PROFIT_GRAB_PERCENTAGE) {
+                sell(portfolioStock, ownedQuantity, currentPrice);
+                System.out.println(this.getName() + ": Sold (Profit Grab) " + ownedQuantity + " units of " +
+                        portfolioStock.getSymbol());
+            }
+        }
+        double maxRSI = 0.0;
+        Stocks stockToSell = null;
+
+        for (Stocks portfolioStock : portfolioCopy.keySet()) {
+            List<Double> portfolioPriceHistory = portfolioStock.getPriceHistory();
+            if (portfolioPriceHistory.size() >= this.period) {
+                double rsi = calculate(this.period, portfolioPriceHistory);
+                if (rsi > maxRSI) {
+                    maxRSI = rsi;
+                    stockToSell = portfolioStock;
                 }
             }
+        }
 
-            if (stockToSell != null && maxRSI > 70) {
-                int ownedQuantity = getStockPortfolio().getOrDefault(stockToSell, 0);
-                if (ownedQuantity >= quantity) {
-                    sell(stockToSell, quantity, stockToSell.getPrice());
-                    System.out.println(this.getName() + ": Sold " + quantity + " units of " + stockToSell.getSymbol() +
-                            " at price " + stockToSell.getPrice());
-                } else {
-                    System.out.println(this.getName() + ": Not enough stock to sell.");
-                }
+        if (stockToSell != null && maxRSI > 70) {
+            int ownedQuantity = getStockPortfolio().getOrDefault(stockToSell, 0);
+            if (ownedQuantity >= quantity) {
+                sell(stockToSell, quantity, stockToSell.getPrice());
+                System.out.println(this.getName() + ": Sold " + quantity + " units of " + stockToSell.getSymbol() +
+                        " at price " + stockToSell.getPrice());
+            } else {
+                System.out.println(this.getName() + ": Not enough stock to sell.");
             }
         }
     }

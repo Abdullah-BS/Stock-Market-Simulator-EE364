@@ -15,7 +15,6 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -91,7 +90,7 @@ public class MainAppGUI extends Application {
 
         Button phase2Button = new Button("Phase 2");
 //       Phase 2 yet to be implemented
-//       Phase2Button.setOnAction(e -> initializePhase2(primaryStage));
+        phase2Button.setOnAction(e -> initializePhase2(primaryStage));
         phase2Button.setPrefWidth(200);
         phase2Button.setPrefHeight(50);
         phase2Button.getStyleClass().add("phase2-button");
@@ -114,6 +113,236 @@ public class MainAppGUI extends Application {
         primaryStage.setTitle("Market Simulator");
         primaryStage.show();
 
+    }
+    private void initializePhase1(Stage primaryStage) {
+        primaryStage.setTitle("Market Simulation Phase 1");
+
+        // create the Buttons layout
+        HBox buttonLayout= creatButtonLayout(primaryStage);
+
+        //create the Top Layout
+        VBox eventsBox = createEventDisplay();
+        stockGrid=creatStockGrid();
+
+        HBox TopLayout = new HBox(10, eventsBox, stockGrid);
+        TopLayout.setStyle("-fx-alignment: center;");
+
+        //create the Middle Layout
+        metricsPanel = createMetricTable();
+        LineChart<Number, Number> lineChart=createLineChart();
+
+        HBox middleLayout = new HBox(10,lineChart,metricsPanel);
+
+        //create the Bottom Layout
+        HBox circlesLayout = createTraderCircles();
+        VBox infoPanel=createInfoPanel();
+
+        HBox bottomLayout = new HBox(10, circlesLayout,infoPanel);
+
+        // Create the Main layout using the above Layouts
+        mainLayout = new VBox(10, TopLayout, buttonLayout, middleLayout, bottomLayout); // Add metricsPanel to mainLayout
+        mainLayout.setPrefSize(1080, 600);
+        mainLayout.getStyleClass().add("root");
+
+        //create the Scene
+        Scene scene = new Scene(mainLayout);
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("styles.css")).toExternalForm());
+
+
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        primaryStage.setX(screenBounds.getMinX());
+        primaryStage.setY(screenBounds.getMinY());
+        primaryStage.setWidth(screenBounds.getWidth());
+        primaryStage.setHeight(screenBounds.getHeight());
+
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+        initializeTimeline();
+    }
+
+
+    // YET TO BE IMPLEMENTED
+    private void initializePhase2(Stage primaryStage) {
+        primaryStage.setTitle("Market Simulation Phase 2");
+
+        // create the Buttons layout
+        HBox buttonLayout= creatButtonLayout(primaryStage);
+
+        //create the Top Layout
+        VBox eventsBox = createEventDisplay();
+        stockGrid=creatStockGrid();
+
+        HBox TopLayout = new HBox(10, eventsBox, stockGrid);
+        TopLayout.setStyle("-fx-alignment: center;");
+
+        //create the Middle Layout
+        metricsPanel = createMetricTable();
+        LineChart<Number, Number> lineChart=createLineChart();
+
+        HBox middleLayout = new HBox(10,lineChart,metricsPanel);
+
+        //create the Bottom Layout
+        HBox circlesLayout = createTraderCircles();
+        VBox infoPanel=createInfoPanel();
+
+        HBox bottomLayout = new HBox(10, circlesLayout,infoPanel);
+
+        // Create the Main layout using the above Layouts
+        mainLayout = new VBox(10, TopLayout, buttonLayout, middleLayout, bottomLayout); // Add metricsPanel to mainLayout
+        mainLayout.setPrefSize(1080, 600);
+        mainLayout.getStyleClass().add("root");
+
+        //create the Scene
+        Scene scene = new Scene(mainLayout);
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("styles.css")).toExternalForm());
+
+
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        primaryStage.setX(screenBounds.getMinX());
+        primaryStage.setY(screenBounds.getMinY());
+        primaryStage.setWidth(screenBounds.getWidth());
+        primaryStage.setHeight(screenBounds.getHeight());
+
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+        initializeTimeline();
+
+    }
+    private VBox createEventDisplay(){
+
+        dayCounterLabel = new Label("Day: 0"); // Initialize dayCounterLabel
+        dayCounterLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+
+        eventsDisplay = new TextArea();
+        eventsDisplay.setEditable(false);
+        eventsDisplay.setPrefHeight(300); // Increase height to accommodate more events
+        eventsDisplay.getStyleClass().add("text-area");
+
+        VBox eventsBox = new VBox(10, dayCounterLabel, eventsDisplay); // Include day counter with events display
+        eventsBox.setMinSize(400,100);
+        eventsBox.setMaxHeight(200);
+        return eventsBox;
+    }
+    private LineChart<Number, Number> createLineChart(){
+        NumberAxis xAxis = new NumberAxis();
+        xAxis.setLabel("Day");
+
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Net Worth ($)");
+        yAxis.setForceZeroInRange(false);
+
+        lineChart = new LineChart<>(xAxis, yAxis);
+        lineChart.setTitle("Trader Net Worth Over Time");
+        lineChart.getStyleClass().add("chart");
+        lineChart.setMinSize(1500,400);
+        lineChart.setLayoutY(100);
+        lineChart.setMaxHeight(400);
+
+        for (Trader trader : mainApp.listOfTraders) {
+            XYChart.Series<Number, Number> series = new XYChart.Series<>();
+            series.setName(trader.getName());
+            traderSeriesMap.put(trader.getName(), series);
+            lineChart.getData().add(series);
+        }
+        return lineChart;
+    }
+
+    private HBox creatButtonLayout(Stage primaryStage){
+        ToggleButton autoSimulateButton = new ToggleButton("Start Auto Simulation");
+        autoSimulateButton.setOnAction(e -> toggleSimulation(autoSimulateButton));
+        autoSimulateButton.getStyleClass().add("phase1-inner-buttons");
+
+        Button restartButton = new Button("Restart");
+        restartButton.setOnAction(e -> ResetButton(primaryStage, false, true));
+        restartButton.getStyleClass().add("phase1-inner-buttons");
+
+        Button downloadResultsButton = new Button("Download Results");
+        downloadResultsButton.setOnAction(e -> downloadResults());
+        downloadResultsButton.getStyleClass().add("phase1-inner-buttons");
+
+        Button downloadChartButton = new Button("Download Chart");
+        downloadChartButton.setOnAction(e -> downloadChart());
+        downloadChartButton.getStyleClass().add("phase1-inner-buttons");
+
+        Button backButton = new Button("Back");
+        backButton.setOnAction(e -> {
+            if (simulationTimeline != null && simulationTimeline.getStatus() == Timeline.Status.RUNNING) {
+                simulationTimeline.stop();
+            }
+            ResetButton(primaryStage, true, true);
+        });
+        backButton.getStyleClass().add("phase1-inner-buttons");
+
+        Button showTableButton = new Button("Show Trader Table");
+        showTableButton.setOnAction(e -> showTraderTableWindow());
+        showTableButton.getStyleClass().add("phase1-inner-buttons");
+
+        HBox buttonLayout = new HBox(10, autoSimulateButton, backButton, restartButton, showTableButton, downloadResultsButton, downloadChartButton);
+        return buttonLayout;
+    }
+
+
+    private VBox createInfoPanel(){
+
+        //Not FIXED
+        Label traderActionsTitle = new Label("Trader Actions vs Metrics Advises");
+        traderActionsTitle.setStyle("-fx-font-weight: bold;-fx-font-size: 16px;");
+
+        Label Tname = new Label("Ahmed \"RSI Trader\"");
+        Tname.setStyle("-fx-font-weight: bold;");
+        Label RSIsug = new Label("RSI Advise:    \"RSI Advise\"");
+        RSIsug.setStyle("-fx-font-weight: bold;");
+        Label RSIAction = new Label("RSI Trader Action:    \"Trader Action\"");
+        RSIAction.setStyle("-fx-font-weight: bold;");
+
+        Label MAsug = new Label("MA Advise:    \"MA Advise\"");
+        MAsug.setStyle("-fx-font-weight: bold;");
+        Label MAAction = new Label("MA Trader Action:    \"Trader Action\"");
+        MAAction.setStyle("-fx-font-weight: bold;");
+
+        Label RSAction= new Label("RS Action:    \"Trader Action\"");
+        RSAction.setStyle("-fx-font-weight: bold;");
+
+        VBox infoPanel = new VBox(15);
+        infoPanel.setMinSize(350,200);
+        infoPanel.setStyle("-fx-padding: 10; -fx-border-color: black; -fx-border-width: 1;-fx-background-color: WHITE;");
+        infoPanel.getChildren().addAll(traderActionsTitle,Tname,RSIsug,RSIAction,MAsug,MAAction,RSAction);
+        // not FIXED
+
+
+        return infoPanel;
+    }
+
+    private VBox createMetricTable(){
+        metricsPanel = new VBox(10);
+        metricsPanel.setMinSize(800,200);
+        metricsPanel.setStyle("-fx-padding: 10; -fx-border-color: black; -fx-border-width: 1;-fx-background-color: white");
+
+        Label metricsTitle = new Label("Trader Performance Metrics");
+        metricsTitle.setStyle("-fx-font-weight: bold;");
+        metricsPanel.getChildren().add(metricsTitle); // Add title to the metrics panel
+        return metricsPanel;
+    }
+
+    private GridPane creatStockGrid() {
+        stockGrid = new GridPane();
+        stockGrid.setHgap(10);
+        stockGrid.setVgap(10);
+        stockGrid.setMaxSize(10000,100);
+        stockGrid.setStyle("-fx-padding: 20;");
+        stockGrid.setStyle("-fx-background-color: black; -fx-hgap: 2; -fx-vgap: 2; -fx-border-color: black; -fx-border-width: 4;");
+
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 11; col++) {
+                Label emptyLabel = new Label("                   ");
+                emptyLabel.setFont(Font.font(12));
+                emptyLabel.setStyle("-fx-background-color: lightgray; -fx-padding: 5;-fx-min-width: 110;");
+                stockGrid.add(emptyLabel, col, row);
+            }
+        }
+        return stockGrid;
     }
 
     private TableView<Trader> createTraderTable() {
@@ -289,209 +518,6 @@ public class MainAppGUI extends Application {
     }
 
 
-
-    private void initializePhase1(Stage primaryStage) {
-        primaryStage.setTitle("Market Simulation Phase 1");
-
-        dayCounterLabel = new Label("Day: 0"); // Initialize dayCounterLabel
-        dayCounterLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-
-        eventsDisplay = new TextArea();
-        eventsDisplay.setEditable(false);
-        eventsDisplay.setPrefHeight(300); // Increase height to accommodate more events
-        eventsDisplay.getStyleClass().add("text-area");
-
-        NumberAxis xAxis = new NumberAxis();
-        xAxis.setLabel("Day");
-
-        NumberAxis yAxis = new NumberAxis();
-        yAxis.setLabel("Net Worth ($)");
-        yAxis.setForceZeroInRange(false);
-
-        lineChart = new LineChart<>(xAxis, yAxis);
-        lineChart.setTitle("Trader Net Worth Over Time");
-        lineChart.getStyleClass().add("chart");
-        lineChart.setMinSize(1500,400);
-        lineChart.setLayoutY(100);
-        lineChart.setMaxHeight(400);
-
-        for (Trader trader : mainApp.listOfTraders) {
-            XYChart.Series<Number, Number> series = new XYChart.Series<>();
-            series.setName(trader.getName());
-            traderSeriesMap.put(trader.getName(), series);
-            lineChart.getData().add(series);
-        }
-
-        Label traderActionsTitle = new Label("Trader Actions vs Metrics Advises");
-        traderActionsTitle.setStyle("-fx-font-weight: bold;-fx-font-size: 16px;");
-
-        Label Tname = new Label("Ahmed \"RSI Trader\"");
-        Tname.setStyle("-fx-font-weight: bold;");
-        Label RSIsug = new Label("RSI Advise:    \"RSI Advise\"");
-        RSIsug.setStyle("-fx-font-weight: bold;");
-        Label RSIAction = new Label("RSI Trader Action:    \"Trader Action\"");
-        RSIAction.setStyle("-fx-font-weight: bold;");
-
-        Label MAsug = new Label("MA Advise:    \"MA Advise\"");
-        MAsug.setStyle("-fx-font-weight: bold;");
-        Label MAAction = new Label("MA Trader Action:    \"Trader Action\"");
-        MAAction.setStyle("-fx-font-weight: bold;");
-
-        Label RSAction= new Label("RS Action:    \"Trader Action\"");
-        RSAction.setStyle("-fx-font-weight: bold;");
-
-        VBox infoPanel = new VBox(15);
-        infoPanel.setMinSize(350,200);
-        infoPanel.setStyle("-fx-padding: 10; -fx-border-color: black; -fx-border-width: 1;-fx-background-color: WHITE;");
-        infoPanel.getChildren().addAll(traderActionsTitle,Tname,RSIsug,RSIAction,MAsug,MAAction,RSAction);
-
-        HBox middleLayout = new HBox(10,lineChart,infoPanel);
-
-
-
-        ToggleButton autoSimulateButton = new ToggleButton("Start Auto Simulation");
-        autoSimulateButton.setOnAction(e -> toggleSimulation(autoSimulateButton));
-        autoSimulateButton.getStyleClass().add("phase1-inner-buttons");
-
-        Button restartButton = new Button("Restart");
-        restartButton.setOnAction(e -> ResetButton(primaryStage, false, true));
-        restartButton.getStyleClass().add("phase1-inner-buttons");
-
-        Button downloadResultsButton = new Button("Download Results");
-        downloadResultsButton.setOnAction(e -> downloadResults());
-        downloadResultsButton.getStyleClass().add("phase1-inner-buttons");
-
-        Button downloadChartButton = new Button("Download Chart");
-        downloadChartButton.setOnAction(e -> downloadChart());
-        downloadChartButton.getStyleClass().add("phase1-inner-buttons");
-
-        Button backButton = new Button("Back");
-        backButton.setOnAction(e -> {
-            if (simulationTimeline != null && simulationTimeline.getStatus() == Timeline.Status.RUNNING) {
-                simulationTimeline.stop();
-            }
-            ResetButton(primaryStage, true, true);
-        });
-        backButton.getStyleClass().add("phase1-inner-buttons");
-
-        Button showTableButton = new Button("Show Trader Table");
-        showTableButton.setOnAction(e -> showTraderTableWindow());
-        showTableButton.getStyleClass().add("phase1-inner-buttons");
-
-        HBox circlesLayout = createTraderCircles();
-
-        stockGrid = new GridPane();
-        stockGrid.setHgap(10);
-        stockGrid.setVgap(10);
-        stockGrid.setMaxSize(10000,100);
-        stockGrid.setStyle("-fx-padding: 20;");
-        stockGrid.setStyle("-fx-background-color: black; -fx-hgap: 2; -fx-vgap: 2; -fx-border-color: black; -fx-border-width: 4;");
-
-        for (int row = 0; row < 9; row++) {
-            for (int col = 0; col < 11; col++) {
-                Label emptyLabel = new Label("                   ");
-                emptyLabel.setFont(Font.font(12));
-                emptyLabel.setStyle("-fx-background-color: lightgray; -fx-padding: 5;-fx-min-width: 110;");
-                stockGrid.add(emptyLabel, col, row);
-            }
-        }
-
-        VBox eventsBox = new VBox(10, dayCounterLabel, eventsDisplay); // Include day counter with events display
-        eventsBox.setMinSize(400,100);
-        eventsBox.setMaxHeight(200);
-
-
-        HBox TopLayout = new HBox(10, eventsBox, stockGrid);
-        TopLayout.setStyle("-fx-alignment: center;");
-
-        HBox buttonLayout = new HBox(10, autoSimulateButton, backButton, restartButton, showTableButton, downloadResultsButton, downloadChartButton);
-
-        // Initialize metrics panel (empty at first)
-        metricsPanel = new VBox(10);
-        metricsPanel.setMinSize(800,200);
-        metricsPanel.setStyle("-fx-padding: 10; -fx-border-color: black; -fx-border-width: 1;-fx-background-color: white");
-
-        Label metricsTitle = new Label("Trader Performance Metrics");
-        metricsTitle.setStyle("-fx-font-weight: bold;");
-        metricsPanel.getChildren().add(metricsTitle); // Add title to the metrics panel
-
-        HBox bottomLayout = new HBox(10, circlesLayout,metricsPanel);
-
-        mainLayout = new VBox(10, TopLayout, buttonLayout, middleLayout, bottomLayout); // Add metricsPanel to mainLayout
-        mainLayout.setPrefSize(1080, 600);
-        mainLayout.getStyleClass().add("root");
-
-        Scene scene = new Scene(mainLayout);
-        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("styles.css")).toExternalForm());
-
-
-        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-        primaryStage.setX(screenBounds.getMinX());
-        primaryStage.setY(screenBounds.getMinY());
-        primaryStage.setWidth(screenBounds.getWidth());
-        primaryStage.setHeight(screenBounds.getHeight());
-
-        primaryStage.setScene(scene);
-        primaryStage.show();
-
-        initializeTimeline();
-    }
-
-
-
-    // YET TO BE IMPLEMENTED
-    private void initializePhase2(Stage primaryStage) {
-        primaryStage.setTitle("Market Simulation Phase 2");
-
-        eventsDisplay = new TextArea();
-        eventsDisplay.setEditable(false);
-        eventsDisplay.setPrefHeight(200);
-
-        NumberAxis xAxis = new NumberAxis();
-        xAxis.setLabel("Day");
-
-        NumberAxis yAxis = new NumberAxis();
-        yAxis.setLabel("Net Worth ($)");
-
-        lineChart = new LineChart<>(xAxis, yAxis);
-        lineChart.setTitle("Trader Net Worth Over Time");
-
-        for (Trader trader : mainApp.listOfTraders) {
-            XYChart.Series<Number, Number> series = new XYChart.Series<>();
-            series.setName(trader.getName());
-            traderSeriesMap.put(trader.getName(), series);
-            lineChart.getData().add(series);
-        }
-
-        ToggleButton autoSimulateButton = new ToggleButton("Start Auto Simulation");
-        autoSimulateButton.setOnAction(e -> toggleSimulation(autoSimulateButton));
-
-        Button restartButton = new Button("Restart");
-        restartButton.setOnAction(e -> ResetButton(primaryStage, false, false));
-
-        Button backButton = new Button("Back");
-        backButton.setOnAction(e -> {
-            if (simulationTimeline != null && simulationTimeline.getStatus() == Timeline.Status.RUNNING) {
-                simulationTimeline.stop(); // Stop the simulation timeline
-            }
-            ResetButton(primaryStage, true, false);
-        });
-
-        TableView<Trader> table = createTraderTable();
-
-        HBox buttonLayout = new HBox(10, autoSimulateButton, backButton, restartButton);
-        VBox layout = new VBox(10, eventsDisplay, buttonLayout, lineChart, table);
-        layout.setPrefSize(800, 600);
-
-        Scene scene = new Scene(layout);
-        primaryStage.setScene(scene);
-        primaryStage.show();
-
-
-        initializeTimeline();
-    }
-
-
     private void initializeTimeline() {
         simulationTimeline = new Timeline(new KeyFrame(Duration.seconds(2), e -> simulateDay()));
         simulationTimeline.setCycleCount(Timeline.INDEFINITE);
@@ -567,25 +593,6 @@ public class MainAppGUI extends Application {
     }
 
 
-
-    private VBox createMetricsPanel() {
-        VBox metricsPanel = new VBox(10);
-        metricsPanel.setStyle("-fx-padding: 10; -fx-border-color: black; -fx-border-width: 1;");
-
-        Label metricsTitle = new Label("Trader Performance Metrics");
-        metricsTitle.setStyle("-fx-font-weight: bold;");
-
-        for (Trader trader : traderObservableList) {
-            Label traderMetrics = new Label(trader.getName() +
-                    " - Total Trades: " + trader.getTotalTrades() +
-                    ", Win/Loss Ratio: " + String.format("%.2f", trader.getWinLossRatio()) +
-                    ", Avg Profit/Trade: $" + String.format("%.2f", trader.getAverageProfitPerTrade()));
-            metricsPanel.getChildren().add(traderMetrics);
-        }
-
-        return metricsPanel;
-
-    }
 
 
     private HBox createTraderCircles() {

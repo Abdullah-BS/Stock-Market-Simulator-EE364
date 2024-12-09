@@ -13,6 +13,7 @@ public abstract class Trader {
     public double initialCash = 10000; // Initial cash allocated to the trader
     private String[] excuses; // List of excuses for human errors
     private Random random; // Random generator for simulating probabilities
+    protected HashMap<String, String> advice_VS_action;
 
     // Performance Metrics
     private int totalTrades = 0; // Total number of trades
@@ -24,6 +25,7 @@ public abstract class Trader {
         this.name = name;
         this.cash = initialCash;
         this.stockPortfolio = new HashMap<>();
+        this.advice_VS_action = new HashMap<>();
         this.worthHistory = new ArrayList<>();
         this.random = new Random();
         this.totalTrades = 0;
@@ -109,6 +111,10 @@ public abstract class Trader {
 
     public HashMap<Stocks, Integer> getStockPortfolio() {
         return stockPortfolio;
+    }
+
+    public HashMap<String, String> getAdvice_VS_action() {
+        return advice_VS_action;
     }
 
     public abstract double calculate(int period, List<Double> priceHistory);

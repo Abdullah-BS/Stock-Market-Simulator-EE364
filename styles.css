@@ -112,3 +112,10 @@
     -fx-border-color: #8f1b1b;    /* Darker border when clicked */
 }
 
+.InfoPanel{
+-fx-padding: 20;
+    -fx-border-color: black;
+    -fx-border-width: 1;
+    -fx-background-color: WHITE;
+}
+

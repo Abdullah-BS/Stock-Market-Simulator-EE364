@@ -6,7 +6,9 @@ public class RSITrader extends Trader implements knowledgeableTrader {
 
     private int period;
     private static final double STOP_LOSS_PERCENTAGE = 0.10; // 10% stop-loss
-    private static final double PROFIT_GRAB_PERCENTAGE = 0.35; // 15% profit-grab
+    private static final double PROFIT_GRAB_PERCENTAGE = 0.35; // 35% profit-grab
+    private static final int MAX_TRADES_PER_DAY = 3; // Max trades allowed per day
+    private int dailyTradeCount = 0; // Counter for daily trades
 
     public RSITrader(String name, int period, MarketSimulator market) {
         super(name, market);
@@ -39,7 +41,13 @@ public class RSITrader extends Trader implements knowledgeableTrader {
         }
     }
 
+    @Override
     public void execute(Stocks stock, int quantity) {
+        if (dailyTradeCount >= MAX_TRADES_PER_DAY) {
+            System.out.println(this.getName() + ": Daily trade limit reached.");
+            return;
+        }
+
         double random = Math.random();
         String advice;
         String action;
@@ -58,118 +66,89 @@ public class RSITrader extends Trader implements knowledgeableTrader {
             advice = "Hold";
         }
 
-
         // Step 3: Random excuses or actual execution
         if (random < 0.3) {
             System.out.println(randomExcuses());
             action = randomExcuses();
         }
 
-        //BUY
+        // BUY
         else if (advice.equals("Buy")) {
-                do{
-                    if (getCash() >= quantity * currentPrice){
-                        buy(stock, quantity, currentPrice);
-                        action = "Bought " + quantity + " units of " + stock.getSymbol() +
-                                " at price " + currentPrice;
-                        System.out.println(this.getName() + ": Bought " + quantity + " units of " + stock.getSymbol() +
-                                " at price " + currentPrice);
-                        break;
-                    }
-                    quantity--; // Reduce quantity by 1
+            if (getCash() >= quantity * currentPrice) {
+                buy(stock, quantity, currentPrice);
+                dailyTradeCount++;
+                action = "Bought " + quantity + " units of " + stock.getSymbol() +
+                        " at price " + currentPrice;
+                System.out.println(this.getName() + ": Bought " + quantity + " units of " + stock.getSymbol() +
+                        " at price " + currentPrice);
+            } else {
+                action = "Not enough cash to buy stock";
+                System.out.println(this.getName() + ": Not enough cash to buy stock " + stock.getSymbol());
+            }
+        }
 
-                    if (quantity <= 0) {
-                        System.out.println(this.getName() + ": Not enough cash to buy stock " + stock.getSymbol());
-                        action = "Not enough cash to buy stock " + stock.getSymbol();
-                        break;
-                    }
-                } while (true);
-                }
-
-        //SELL
+        // SELL
         else if (advice.equals("Sell") && getStockPortfolio().containsKey(stock)) {
-            do {
-                if (getStockPortfolio().get(stock) >= quantity) {
-                        sell(stock, quantity, currentPrice);
-
-                        action = "Sold " + quantity + " units of " + stock.getSymbol() +
-                                " at price " + currentPrice;
-                        System.out.println(this.getName() + ": Sold " + quantity + " units of " + stock.getSymbol() +
-                                " at price " + currentPrice);
-                        break;
-                }
-                quantity--;
-
-                if (quantity <= 0) {
-                    System.out.println("Not enough stock to sell.");
-                    action = "Not enough stock to sell";
-                    break;
-                }
-            } while (true);
-        }
-        else {
+            int ownedQuantity = getStockPortfolio().getOrDefault(stock, 0);
+            if (ownedQuantity >= quantity) {
+                sell(stock, quantity, currentPrice);
+                dailyTradeCount++;
+                action = "Sold " + quantity + " units of " + stock.getSymbol() +
+                        " at price " + currentPrice;
+                System.out.println(this.getName() + ": Sold " + quantity + " units of " + stock.getSymbol() +
+                        " at price " + currentPrice);
+            } else {
+                action = "Not enough stock to sell";
+                System.out.println(this.getName() + ": Not enough stock to sell.");
+            }
+        } else {
             action = "Hold";
-            System.out.println(this.getName() + ": Hold stock, price is within the threshold range of the moving average.");
+            System.out.println(this.getName() + ": Holding stock.");
         }
-
 
         // Step 4: Stop-loss and profit-grab logic
-        applyStopLossAndProfitGrab(currentPrice ,quantity);
+        applyStopLossAndProfitGrab();
 
         // Step 5: Store advice and action in the hashmap
         advice_VS_action.put(advice, action);
-}
+    }
 
     // Helper method to process stop-loss and profit-grab logic
-    private void applyStopLossAndProfitGrab(double currentPrice, int quantity) {
+    private void applyStopLossAndProfitGrab() {
         Map<Stocks, Integer> portfolioCopy = new HashMap<>(getStockPortfolio());
+
         for (Map.Entry<Stocks, Integer> entry : portfolioCopy.entrySet()) {
+            if (dailyTradeCount >= MAX_TRADES_PER_DAY) break;
+
             Stocks portfolioStock = entry.getKey();
             int ownedQuantity = entry.getValue();
-            double purchasePrice = portfolioStock.getPrice(); // Assuming we track purchase price
+            double currentPrice = portfolioStock.getPrice();
+            double purchasePrice = portfolioStock.getPriceHistory().get(0); // Assume first price is purchase price
             double profitPercentage = (currentPrice - purchasePrice) / purchasePrice;
 
             // Stop-loss logic
             if (profitPercentage <= -STOP_LOSS_PERCENTAGE) {
                 sell(portfolioStock, ownedQuantity, currentPrice);
+                dailyTradeCount++;
                 System.out.println(this.getName() + ": Sold (Stop Loss) " + ownedQuantity + " units of " +
-                        portfolioStock.getSymbol());
+                        portfolioStock.getSymbol() + " at price " + currentPrice);
             }
             // Profit-grab logic
             else if (profitPercentage >= PROFIT_GRAB_PERCENTAGE) {
                 sell(portfolioStock, ownedQuantity, currentPrice);
+                dailyTradeCount++;
                 System.out.println(this.getName() + ": Sold (Profit Grab) " + ownedQuantity + " units of " +
-                        portfolioStock.getSymbol());
-            }
-        }
-        double maxRSI = 0.0;
-        Stocks stockToSell = null;
-
-        for (Stocks portfolioStock : portfolioCopy.keySet()) {
-            List<Double> portfolioPriceHistory = portfolioStock.getPriceHistory();
-            if (portfolioPriceHistory.size() >= this.period) {
-                double rsi = calculate(this.period, portfolioPriceHistory);
-                if (rsi > maxRSI) {
-                    maxRSI = rsi;
-                    stockToSell = portfolioStock;
-                }
-            }
-        }
-
-        if (stockToSell != null && maxRSI > 70) {
-            int ownedQuantity = getStockPortfolio().getOrDefault(stockToSell, 0);
-            if (ownedQuantity >= quantity) {
-                sell(stockToSell, quantity, stockToSell.getPrice());
-                System.out.println(this.getName() + ": Sold " + quantity + " units of " + stockToSell.getSymbol() +
-                        " at price " + stockToSell.getPrice());
-            } else {
-                System.out.println(this.getName() + ": Not enough stock to sell.");
+                        portfolioStock.getSymbol() + " at price " + currentPrice);
             }
         }
     }
 
+    public void resetDailyTradeCount() {
+        dailyTradeCount = 0;
+    }
+
     @Override
     public String getName() {
-        return super.getName() + " (RSI Strategy)";
+        return super.getName() + " (RSI Strategy with Trade Limit)";
     }
 }

@@ -17,6 +17,8 @@ public abstract class Trader {
 
     // Performance Metrics
     private int totalTrades = 0; // Total number of trades
+    private double winLossRatio;
+    private double averageProfit=0;
     private int winCount = 0; // Total number of winning trades
     private int lossCount = 0; // Total number of losing trades
     private double totalProfit = 0; // Total profit from trades
@@ -24,8 +26,8 @@ public abstract class Trader {
     public Trader(String name, MarketSimulator market) {
         this.name = name;
         this.cash = initialCash;
-        this.stockPortfolio = new HashMap<>();
         this.advice_VS_action = new HashMap<>();
+        this.stockPortfolio = new HashMap<>();
         this.worthHistory = new ArrayList<>();
         this.random = new Random();
         this.totalTrades = 0;
@@ -112,10 +114,10 @@ public abstract class Trader {
     public HashMap<Stocks, Integer> getStockPortfolio() {
         return stockPortfolio;
     }
-
     public HashMap<String, String> getAdvice_VS_action() {
         return advice_VS_action;
     }
+
 
     public abstract double calculate(int period, List<Double> priceHistory);
 
@@ -143,20 +145,26 @@ public abstract class Trader {
 
     // Get win/loss ratio
     public double getWinLossRatio() {
-        if (lossCount == 0) {
-            return winCount; // Avoid division by zero
-        }
-        return (double) winCount / lossCount;
-    }
 
+        if (lossCount == 0) {
+            return winCount ; // Avoid division by zero
+        }
+
+        return  (double) winCount / lossCount;
+    }
     // Get average profit per trade
     public double getAverageProfitPerTrade() {
         if (totalTrades == 0) {
-            return 0; // Avoid division by zero
+            return averageProfit; // Avoid division by zero
         }
-        return totalProfit / totalTrades;
+
+        return averageProfit = totalProfit / totalTrades;
     }
 
+    public double getAverageProfit() {
+        averageProfit = Math.round(averageProfit * 100.0)/100.0 ;
+        return averageProfit;
+    }
 
     public int getWinCount() {
         return winCount;

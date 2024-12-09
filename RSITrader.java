@@ -5,13 +5,15 @@ import java.util.Map;
 public class RSITrader extends Trader implements knowledgeableTrader {
 
     private int period;
+    private static final double STOP_LOSS_PERCENTAGE = 0.10; // 10% stop-loss
+    private static final double PROFIT_GRAB_PERCENTAGE = 0.35; // 15% profit-grab
 
     public RSITrader(String name, int period, MarketSimulator market) {
         super(name, market);
         this.period = period;
     }
 
-
+    @Override
     public double calculate(int period, List<Double> priceHistory) {
         // Ensure there is enough data for calculation
         try {
@@ -37,70 +39,81 @@ public class RSITrader extends Trader implements knowledgeableTrader {
         }
     }
 
+    @Override
     public void execute(Stocks stock, int quantity) {
         double random = Math.random();
         if (random < 0.3) {
             System.out.println(randomExcuses());
-        }
-        else {
+        } else {
+            // Step 1: Calculate RSI for the current stock
+            List<Double> priceHistory = stock.getPriceHistory();
+            double buyRSI = calculate(this.period, priceHistory);
+            double currentPrice = stock.getPrice();
 
-
-        // Step 1: Calculate RSI for the current stock
-        List<Double> priceHistory = stock.getPriceHistory();
-        double buyRSI = calculate(this.period, priceHistory);
-        double currentPrice = stock.getPrice();
-
-        // Step 2: Buy if RSI is below 30 and cash is sufficient
-        if (buyRSI < 30) {
-            if (getCash() >= quantity * currentPrice) {
-                buy(stock, quantity, currentPrice);
-                System.out.println(this.getName() + ":Bought " + quantity + " units of " + stock.getSymbol() +
-                        " at price " + currentPrice);
-            } else {
-                System.out.println(this.getName() + " does not have enough cash to buy stock " + stock.getSymbol());
-            }
-        }
-
-        // Step 3: Calculate RSI for all portfolio stocks and identify the one with max RSI
-        HashMap<Stocks, Double> stockRSIMap = new HashMap<>();
-        for (Stocks portfolioStock : super.getStockPortfolio().keySet()) {
-            List<Double> portfolioPriceHistory = portfolioStock.getPriceHistory();
-            if (portfolioPriceHistory.size() >= this.period) {
-                double rsi = calculate(this.period, portfolioPriceHistory);
-                stockRSIMap.put(portfolioStock, rsi);
-            }
-        }
-
-        // Step 4: Find stock with the maximum RSI
-        Map.Entry<Stocks, Double> maxEntry = stockRSIMap.entrySet()
-                .stream()
-                .max(Map.Entry.comparingByValue())
-                .orElse(null);
-
-        // Step 5: Sell if the maximum RSI is above 70 and quantity is sufficient
-        if (maxEntry != null) {
-            Stocks maximumStock = maxEntry.getKey();
-            double maximumRSI = maxEntry.getValue();
-            int stockQuantity = getStockPortfolio().getOrDefault(maximumStock, 0);
-
-            while (stockQuantity < quantity && stockQuantity > 0) {
-                quantity--; // Reduce the quantity by 1
+            // Step 2: Buy if RSI is below 30 and cash is sufficient
+            if (buyRSI < 30) {
+                if (getCash() >= quantity * currentPrice) {
+                    buy(stock, quantity, currentPrice);
+                    System.out.println(this.getName() + ": Bought " + quantity + " units of " + stock.getSymbol() +
+                            " at price " + currentPrice);
+                } else {
+                    System.out.println(this.getName() + " does not have enough cash to buy stock " + stock.getSymbol());
+                }
             }
 
-            if (stockQuantity >= quantity && maximumRSI > 70) {
-                sell(maximumStock, quantity, maximumStock.getPrice());
-                System.out.println(this.getName() + ": Sold " + quantity + " units of " + maximumStock.getSymbol() +
-                        " at price " + maximumStock.getPrice() + ". Remaining stock: " + stockQuantity);
-            } else {
-                System.out.println(this.getName() + ": Not enough stock to sell after reducing quantity.");
+            // Step 3: Make a copy of the portfolio to safely iterate
+            Map<Stocks, Integer> portfolioCopy = new HashMap<>(getStockPortfolio());
+
+            for (Map.Entry<Stocks, Integer> entry : portfolioCopy.entrySet()) {
+                Stocks portfolioStock = entry.getKey();
+                int ownedQuantity = entry.getValue();
+                double purchasePrice = portfolioStock.getPrice(); // Assuming we track purchase price
+                double profitPercentage = (currentPrice - purchasePrice) / purchasePrice;
+
+                // Stop-loss logic
+                if (profitPercentage <= -STOP_LOSS_PERCENTAGE) {
+                    sell(portfolioStock, ownedQuantity, currentPrice);
+                    System.out.println(this.getName() + ": Sold (Stop Loss) " + ownedQuantity + " units of " +
+                            portfolioStock.getSymbol());
+                }
+                // Profit-grab logic
+                else if (profitPercentage >= PROFIT_GRAB_PERCENTAGE) {
+                    sell(portfolioStock, ownedQuantity, currentPrice);
+                    System.out.println(this.getName() + ": Sold (Profit Grab) " + ownedQuantity + " units of " +
+                            portfolioStock.getSymbol());
+                }
             }
 
-        }
+            // Step 4: Sell stocks with RSI > 70 if sufficient quantity
+            double maxRSI = 0.0;
+            Stocks stockToSell = null;
+
+            for (Stocks portfolioStock : portfolioCopy.keySet()) {
+                List<Double> portfolioPriceHistory = portfolioStock.getPriceHistory();
+                if (portfolioPriceHistory.size() >= this.period) {
+                    double rsi = calculate(this.period, portfolioPriceHistory);
+                    if (rsi > maxRSI) {
+                        maxRSI = rsi;
+                        stockToSell = portfolioStock;
+                    }
+                }
+            }
+
+            if (stockToSell != null && maxRSI > 70) {
+                int ownedQuantity = getStockPortfolio().getOrDefault(stockToSell, 0);
+                if (ownedQuantity >= quantity) {
+                    sell(stockToSell, quantity, stockToSell.getPrice());
+                    System.out.println(this.getName() + ": Sold " + quantity + " units of " + stockToSell.getSymbol() +
+                            " at price " + stockToSell.getPrice());
+                } else {
+                    System.out.println(this.getName() + ": Not enough stock to sell.");
+                }
+            }
         }
     }
 
-
+    @Override
     public String getName() {
-        return super.getName() + " (RSI)";
+        return super.getName() + " (RSI Strategy)";
     }
 }

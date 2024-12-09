@@ -9,7 +9,9 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
@@ -291,43 +293,109 @@ public class MainAppGUI extends Application {
     }
 
 
-    private VBox createInfoPanel(){
+    private VBox createInfoPanel() {
+        VBox infoPanel = new VBox(18);
+        infoPanel.getStyleClass().add("InfoPanel");
+        infoPanel.setPrefSize(200, 500);
 
-        //Not FIXED
-        Label traderActionsTitle = new Label("Trader Actions vs Metrics Advises");
+        Label traderActionsTitle = new Label("Metrics Advices vs Trader Actions");
         traderActionsTitle.setStyle("-fx-font-weight: bold;-fx-font-size: 16px;");
+        infoPanel.getChildren().add(traderActionsTitle);
 
-        Label Tname = new Label("Ahmed \"RSI Trader\"\n WHAT UP");
-        Tname.setStyle("-fx-font-weight: bold;");
-        Label RSIsug = new Label("RSI Advise:    \"RSI Advise\"");
-        RSIsug.setStyle("-fx-font-weight: bold;");
-        Label RSIAction = new Label("RSI Trader Action:    \"Trader Action\"");
-        RSIAction.setStyle("-fx-font-weight: bold;");
+        // A map to hold the existing labels (for updating purposes)
+        Map<Trader, List<Label>> traderLabelMap = new HashMap<>();
 
-        Label MAsug = new Label("MA Advise:    \"MA Advise\"");
-        MAsug.setStyle("-fx-font-weight: bold;");
-        Label MAAction = new Label("MA Trader Action:    \"Trader Action\"");
-        MAAction.setStyle("-fx-font-weight: bold;");
+        for (Trader trader : mainApp.listOfTraders) {
+            VBox traderBox = new VBox(1);  // This VBox will hold the trader's data
 
-        Label RSAction= new Label("RS Action:    \"Trader Action\"");
-        RSAction.setStyle("-fx-font-weight: bold;");
+            ObservableMap<String, String> adviceVsAction = trader.getAdvice_VS_action();
 
-        VBox infoPanel = new VBox(15);
+            // Trader name
+            Label traderName = new Label("Trader: " + trader.getName());
+            traderName.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+            traderBox.getChildren().add(traderName);  // Add the trader name to this specific VBox
 
-        infoPanel.setStyle("-fx-padding: 10; -fx-border-color: black; -fx-border-width: 1;-fx-background-color: WHITE;");
-        infoPanel.getChildren().addAll(traderActionsTitle,Tname,RSIsug,RSIAction,MAsug,MAAction,RSAction);
-        // not FIXED
+            // Store initial labels for each trader
+            List<Label> traderLabels = new ArrayList<>();
+            traderLabelMap.put(trader, traderLabels);
 
-        infoPanel.setMinSize(600,400);
+            // Add the placeholder label for "No data"
+            Label noDataLabel = new Label("No advice or actions recorded yet.");
+            noDataLabel.setStyle("-fx-font-style: italic; -fx-text-fill: gray;");
+            traderBox.getChildren().add(noDataLabel);  // Add the placeholder to the trader's VBox
+
+            // Listener to update the panel when the map changes
+            adviceVsAction.addListener((MapChangeListener<String, String>) change -> {
+                // Debug log to check if the listener is being triggered
+                System.out.println("Advice map changed for trader: " + trader.getName());
+                refreshTraderInfo(infoPanel, traderLabels, adviceVsAction, trader, noDataLabel, traderBox);
+            });
+
+            // If there's existing data, update immediately
+            if (!adviceVsAction.isEmpty()) {
+                System.out.println("Initializing trader data: " + trader.getName());
+                refreshTraderInfo(infoPanel, traderLabels, adviceVsAction, trader, noDataLabel, traderBox);
+            }
+
+            // Add the trader's VBox (containing the trader's data) to the main panel
+            infoPanel.getChildren().add(traderBox);
+
+            // Add a separator for clarity
+            Separator separator = new Separator();
+            infoPanel.getChildren().add(separator);
+        }
+
         return infoPanel;
     }
+
+    private void refreshTraderInfo(VBox infoPanel, List<Label> traderLabels, ObservableMap<String, String> adviceVsAction, Trader trader, Label noDataLabel, VBox traderBox) {
+        // Remove the placeholder label if data is present
+        if (!adviceVsAction.isEmpty()) {
+            traderBox.getChildren().remove(noDataLabel);
+        }
+
+        // Clear the previous labels for the trader
+        traderBox.getChildren().removeAll(traderLabels);
+
+        // Get the last advice and action (the latest entry in the map)
+        Map.Entry<String, String> lastEntry = null;
+        for (Map.Entry<String, String> entry : adviceVsAction.entrySet()) {
+            lastEntry = entry;  // The last entry will overwrite this value in the loop
+        }
+
+        // Debug log to verify the last entry
+        if (lastEntry != null) {
+            System.out.println("Last advice: " + lastEntry.getKey() + ", Last action: " + lastEntry.getValue());
+        }
+
+        // If a last entry exists, display the advice and action
+        if (lastEntry != null) {
+            String advice = lastEntry.getKey();
+            String action = lastEntry.getValue();
+
+            Label adviceLabel = new Label("Advice: " + advice);
+            adviceLabel.setStyle("-fx-font-style: italic;");
+            Label actionLabel = new Label("Action: " + action);
+            actionLabel.setStyle("-fx-font-style: italic;");
+
+            // Add the last advice and action to the trader's VBox
+            traderLabels.add(adviceLabel);
+            traderLabels.add(actionLabel);
+
+            // Add them to the trader's VBox
+            Platform.runLater(() -> {
+                traderBox.getChildren().addAll(adviceLabel, actionLabel);
+            });
+        }
+    }
+
 
     private TableView<Trader>  createTraderTable(){
 
 
         TableView<Trader> table = new TableView<>(traderObservableList);
         // to make column resize automatically
-        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
 
         TableColumn<Trader, String> nameColumn = new TableColumn<>("Trader Name");
@@ -382,7 +450,7 @@ public class MainAppGUI extends Application {
     private TableView<Trader> createMetricTable() {
         TableView<Trader> metricTable = new TableView<>(traderObservableList);
         // to make column resize automatically
-        metricTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        metricTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         metricTable.setMinHeight(150);
 
 
@@ -488,7 +556,7 @@ public class MainAppGUI extends Application {
 
         // Create the portfolio table
         TableView<Map.Entry<Stocks, Integer>> portfolioTable = new TableView<>(portfolioData);
-        portfolioTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        portfolioTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         // Columns for stock name and quantity
         TableColumn<Map.Entry<Stocks, Integer>, String> stockNameColumn = new TableColumn<>("Stock Symbol");
         stockNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getKey().getSymbol()));

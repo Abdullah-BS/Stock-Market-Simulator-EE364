@@ -8,8 +8,7 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader {
     private double threshold = 0.015;
     private static final double STOP_LOSS_PERCENTAGE = 0.10; // 10% stop-loss
     private static final double PROFIT_GRAB_PERCENTAGE = 0.45; // 45% profit-grab
-    private static final int MAX_TRADES_PER_DAY = 3; // Max trades allowed per day
-    private int dailyTradeCount = 0; // Counter for daily trades
+    private static final int MAX_TRADES_PER_DAY = 2; // Max trades allowed per day
 
     public MovingAverageTrader(String name, int period, MarketSimulator market) {
         super(name, market);
@@ -33,7 +32,7 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader {
     }
 
     public void execute(MarketSimulator market,Stocks stock, int quantity) {
-        if (dailyTradeCount >= MAX_TRADES_PER_DAY) {
+        if (dailyTradeCount  >= MAX_TRADES_PER_DAY) {
             System.out.println(this.getName() + ": Daily trade limit reached.");
             return;
         }
@@ -64,28 +63,29 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader {
             double profitPercentage = (currentPrice - purchasePrice) / purchasePrice;
 
             // Stop-loss logic
-            if (profitPercentage <= -STOP_LOSS_PERCENTAGE) {
-                sell(portfolioStock, ownedQuantity, currentPrice);
-                dailyTradeCount++;
-                System.out.println(this.getName() + ": Sold (Stop Loss) " + ownedQuantity + " units of " +
-                        portfolioStock.getSymbol() + " at price " + currentPrice);
-                return; // Exit after executing stop-loss
-            }
-
-            // Profit-grab logic
-            if (profitPercentage >= PROFIT_GRAB_PERCENTAGE) {
-                sell(portfolioStock, ownedQuantity, currentPrice);
-                dailyTradeCount++;
-                System.out.println(this.getName() + ": Sold (Profit Grab) " + ownedQuantity + " units of " +
-                        portfolioStock.getSymbol() + " at price " + currentPrice);
-                return; // Exit after executing profit-grab
-            }
+//            if (profitPercentage <= -STOP_LOSS_PERCENTAGE) {
+//                sell(portfolioStock, ownedQuantity, currentPrice);
+//                dailyTradeCount++;
+//                System.out.println(this.getName() + ": Sold (Stop Loss) " + ownedQuantity + " units of " +
+//                        portfolioStock.getSymbol() + " at price " + currentPrice);
+//                return; // Exit after executing stop-loss
+//            }
+//
+//            // Profit-grab logic
+//            if (profitPercentage >= PROFIT_GRAB_PERCENTAGE) {
+//                sell(portfolioStock, ownedQuantity, currentPrice);
+//                dailyTradeCount++;
+//                System.out.println(this.getName() + ": Sold (Profit Grab) " + ownedQuantity + " units of " +
+//                        portfolioStock.getSymbol() + " at price " + currentPrice);
+//                return; // Exit after executing profit-grab
+//            }
         }
 
         // Simulate trader's action (random excuse or actual action)
-        if (random < 0.3) {
+        if (random < 0.1) {
             System.out.println(randomExcuses());
             action = randomExcuses();
+            return;
         } else {
             // SELL
             if (advice.equals("Sell") && getStockPortfolio().containsKey(stock)) {
@@ -138,10 +138,6 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader {
         }
 
         getAdvice_VS_action().put(advice, action);
-    }
-
-    public void resetDailyTradeCount() {
-        dailyTradeCount = 0;
     }
 
     public String getName() {

@@ -6,12 +6,12 @@ import java.util.concurrent.TimeUnit;
 
 public class MainApp {
 
-
+    public int period=5;
     public MarketSimulator marketSimulator;
     public ArrayList<Trader> listOfTraders;
     public String[] traderNames = {"Abdullah", "Ahmed", "Yamin", "Saud", "Mohanned"};
     public int dayCounter = 0;
-    public int quantity;
+    public int quantity = 1;
     public Random random = new Random();
 
     // Constructor: Make the market, create the list of traders
@@ -35,16 +35,16 @@ public class MainApp {
         }
 
         else if (index == 1){
-            listOfTraders.add(new MovingAverageTrader(traderName, 3,this.marketSimulator));
+            listOfTraders.add(new MovingAverageTrader(traderName, period,this.marketSimulator));
             index++;
         }
         else if (index == 0){
-            listOfTraders.add(new TradingBotTrader(traderName, 3, this.marketSimulator));
+            listOfTraders.add(new TradingBotTrader(traderName, period, this.marketSimulator));
             index++;
 
         }
         else {
-            listOfTraders.add(new RSITrader(traderName, 3, this.marketSimulator));
+            listOfTraders.add(new RSITrader(traderName, period, this.marketSimulator));
             index++;
         }
 
@@ -52,10 +52,15 @@ public class MainApp {
     }
 
     public List<String> simulateDay() {
-        quantity = random.nextInt(10);
+
 
         dayCounter++;
         System.out.println("\n--- Day " + dayCounter + " ---");
+
+        for (Trader trader : listOfTraders) {
+            trader.resetDailyTradeCount();
+        }
+
 
         // Simulate daily market events and collect them
         List<String> dailyReport = marketSimulator.simulateDay();       // this method return the daily report
@@ -67,22 +72,25 @@ public class MainApp {
         List<Stocks> listOfStocks = marketSimulator.getListStock();
         for (Trader trader : listOfTraders) {
             Stocks randomStock = listOfStocks.get(random.nextInt(listOfStocks.size()));
-            if(trader instanceof TradingBotTrader){
-                trader.execute(marketSimulator,randomStock, quantity);
-                ((TradingBotTrader) trader).resetDailyTradeFlag();
+            Stocks portStock = null;
 
-
+            if (!trader.stockPortfolio.isEmpty()) {
+                List<Stocks> stocksList = new ArrayList<>(trader.stockPortfolio.keySet());
+                portStock = stocksList.get(random.nextInt(stocksList.size()));
+                trader.execute(marketSimulator, portStock, quantity);
             }
-            trader.execute(marketSimulator,randomStock, quantity);
+
             try {
-                List<Stocks> stocksList = new ArrayList<Stocks>(trader.stockPortfolio.keySet());
-                Stocks portStock = stocksList.get(random.nextInt(listOfStocks.size()));
-                trader.execute(marketSimulator,portStock, quantity);
-            }catch (Exception e){
-                System.out.println("NO Stock in portfolio");
-            }
+                trader.execute(marketSimulator, randomStock, quantity);
 
+                if (portStock != null) {
+                    trader.execute(marketSimulator, portStock, quantity);
+                }
+            } catch (Exception e) {
+                System.out.println(trader.getName() + ": NO Stock in portfolio");
+            }
         }
+
 
 
 

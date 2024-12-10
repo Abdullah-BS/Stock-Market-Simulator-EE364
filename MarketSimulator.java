@@ -64,12 +64,30 @@ public class MarketSimulator {
         stock.setPrice(cappedPrice);
     }
 
+    private double simulateTrendChange() {
+        double dailyBias = 0.001; // Example: 0.1% daily trend up or down
+        return random.nextBoolean() ? dailyBias : -dailyBias;
+    }
+
+    // Simulate a daily trend effect on a given stock
+    public void applyDailyTrend(Stocks stock) {
+        double currentPrice = stock.getPrice();
+        double trendChange = simulateTrendChange();
+
+        // Apply a small bias to simulate up or down market trend
+        double newPrice = currentPrice * (1 + trendChange);
+        stock.setPrice(newPrice);
+    }
 
     // Simulate a single day
     public List<String> simulateDay() {
         List<String> dailyReport = new ArrayList<>();
         dailyReport.add("Daily events:");
 
+        // Apply daily trends to all stocks
+        for (Stocks stock : listStock) {
+            applyDailyTrend(stock);
+        }
         // Process ongoing events
         processOngoingEvents(dailyReport);
 

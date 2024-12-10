@@ -9,6 +9,9 @@ public class TradingBotTrader extends Trader {
     private double gains;
     private double losses;
     private boolean hasTraded = false;
+    private static final double STOP_LOSS_PERCENTAGE = 0.10;
+    private static final double PROFIT_GRAB_PERCENTAGE = 0.35;
+    private static final int MAX_TRADES_PER_DAY = 1;
     //</editor-fold>
 
     //<editor-fold desc="Constructors">
@@ -107,56 +110,63 @@ public class TradingBotTrader extends Trader {
     }
     //<editor-fold desc="Execute">
     public void execute(MarketSimulator market,Stocks stock, int quantity) {
-
-        if (hasTraded) {
-            return; // Prevent further trades if already traded today
+        if (dailyTradeCount >= MAX_TRADES_PER_DAY) {
+            return;
         }
-        List<Stocks> stocksList= market.getListStock();
+        List<Stocks> stocksList = market.getListStock();
 
-        Stocks buyStock= stocksList.get(0);
-        double comparelineBuy = Double.MIN_VALUE;
+        Stocks buyStock = null;
+        double highestBuyScore = Double.NEGATIVE_INFINITY;
         for (Stocks oneStock : stocksList) {
+            double RSI = calculateRSI(period, oneStock.getPriceHistory());
+            double MovingAverage = calculateMovingAverage(period, oneStock.getPriceHistory());
 
-            double RSI = calculateRSI(period,oneStock.getPriceHistory());
-            double MovingAverage = calculateMovingAverage(period,oneStock.getPriceHistory());
-
-            double line = Math.abs(oneStock.getPrice() - MovingAverage*(1+0.015));
-            if (RSI < 30 && line > comparelineBuy) {
-
-                comparelineBuy = line;
-                buyStock = oneStock;
-
-            }
-        }
-        double comparelineSell = Double.MIN_VALUE;
-
-        if (comparelineSell > 0) {
-            buy(buyStock, quantity, buyStock.getPrice());
-        }
-        List<Stocks> stocksPortList = new ArrayList<Stocks>(stockPortfolio.keySet());
-        Stocks sellStock= stocksList.get(0);
-        for (Stocks oneStock : stocksPortList) {
-
-            double RSI = calculateRSI(period,oneStock.getPriceHistory());
-            double MovingAverage = calculateMovingAverage(period,oneStock.getPriceHistory());
-
-            double line = Math.abs(oneStock.getPrice() - MovingAverage*(1+0.015));
-            if (RSI > 70 && line < comparelineSell) {
-                comparelineSell = line;
-                if(buyStock!=oneStock) {
-                    sellStock = oneStock;
+            // Assess buy opportunity
+            if (RSI < 30 && oneStock.getPrice() < MovingAverage) {
+                double buyScore = (30 - RSI) + (MovingAverage - oneStock.getPrice()); // Example scoring mechanism
+                if (buyScore > highestBuyScore) {
+                    highestBuyScore = buyScore;
+                    buyStock = oneStock;
                 }
             }
         }
-        if (comparelineSell > 0 && buyStock != sellStock) {
-            sell(sellStock, quantity, sellStock.getPrice());
+        if (buyStock != null && getCash() >= buyStock.getPrice() * quantity) {
+            buy(buyStock, 1, buyStock.getPrice());
+            dailyTradeCount++;
         }
-        hasTraded = true;
+        List<Stocks> stocksPortList = new ArrayList<>(stockPortfolio.keySet());
+        Stocks sellStock = null;
+        double lowestSellScore = Double.POSITIVE_INFINITY;
+        for (Stocks oneStock : stocksPortList) {
+            double RSI = calculateRSI(period, oneStock.getPriceHistory());
+            double MovingAverage = calculateMovingAverage(period, oneStock.getPriceHistory());
+
+            // Assess sell opportunity
+            if (RSI > 50 && oneStock.getPrice() > MovingAverage) {
+                double sellScore = (oneStock.getPrice() - MovingAverage * (1 + 0.015)); // Example scoring mechanism
+                if (sellScore < lowestSellScore) {
+                    lowestSellScore = sellScore;
+                    sellStock = oneStock;
+                    System.out.println(sellStock);
+                }
+            }
+        }
+        do {
+            if (stockPortfolio.getOrDefault(sellStock, 0) >= quantity) {
+                sell(sellStock, quantity, sellStock.getPrice());
+                dailyTradeCount++;
+                quantity=3;
+                break;
+            }
+            quantity--;
+        } while (quantity > 0);
     }
+
+
 
     public String getName(){
 
-        return "TradingBotTrader";
+        return super.getName()+"TradingBotTrader";
     }
     //</editor-fold>
 }

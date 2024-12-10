@@ -18,6 +18,7 @@ public abstract class Trader {
     private String[] excuses; // List of excuses for human errors
     private Random random; // Random generator for simulating probabilities
     protected ObservableMap<String, String> advice_VS_action;
+    public int dailyTradeCount = 0;
 
     // Performance Metrics
     private int totalTrades = 0; // Total number of trades
@@ -209,5 +210,8 @@ public abstract class Trader {
         return randomExcuse;
     }
 
+    public void resetDailyTradeCount() {
+        dailyTradeCount = 0;
+    }
 
 }

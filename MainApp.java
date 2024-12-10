@@ -9,46 +9,58 @@ public class MainApp {
     public int period=5;
     public MarketSimulator marketSimulator;
     public ArrayList<Trader> listOfTraders;
-    public String[] traderNames = {"Abdullah", "Ahmed", "Yamin", "Saud", "Mohanned"};
+    public String[] traderNames = {"Abdullah", "Ahmed", "Yamin"};
     public int dayCounter = 0;
     public int quantity = 1;
     public Random random = new Random();
 
     // Constructor: Make the market, create the list of traders
-    public MainApp(){
+    public MainApp(Boolean isPhase1){
         this.marketSimulator = new MarketSimulator();
         this.listOfTraders = new ArrayList<>();
-        createListOfTraders();
+        createListOfTraders(isPhase1);
 
     }
 
-    public void createListOfTraders(){
+    public void createListOfTraders(Boolean isPhase1){
+        if (isPhase1 == false) {
         int index=0;
-        for (String traderName : traderNames){
+            this.traderNames = new String[] {"Abdullah", "Ahmed", "Yamin", "Saud"};
+            for (String traderName : traderNames){
+                if (index == 0){
+                    listOfTraders.add(new TradingBotTrader(traderName, period,this.marketSimulator));
+                    index++;
+                }
+                else if (index == 1){
+                    listOfTraders.add(new MovingAverageTrader(traderName, period,this.marketSimulator));
+                    index++;
+                }
+                else if (index == 2){
+                    listOfTraders.add(new RSITrader(traderName, period, this.marketSimulator));
+                    index++;
 
+                }
+                else {
+                    listOfTraders.add(new RandomTrader(traderName, this.marketSimulator));
+                    index++;
+                }
 
-               //temp
-
-        if (index == 2){
-            listOfTraders.add(new RandomTrader(traderName, this.marketSimulator));
-            index++;
+            }
+        } else {
+            int index = 0;
+            for (String traderName : traderNames) {
+                if (index == 0) {
+                    listOfTraders.add(new RSITrader(traderName, period, this.marketSimulator));
+                    index++;
+                } else if (index == 1) {
+                    listOfTraders.add(new MovingAverageTrader(traderName, period, this.marketSimulator));
+                    index++;
+                } else {
+                    listOfTraders.add(new RandomTrader(traderName, this.marketSimulator));
+                    index++;
+            }
         }
-
-        else if (index == 1){
-            listOfTraders.add(new MovingAverageTrader(traderName, period,this.marketSimulator));
-            index++;
-        }
-        else if (index == 0){
-            listOfTraders.add(new TradingBotTrader(traderName, period, this.marketSimulator));
-            index++;
-
-        }
-        else {
-            listOfTraders.add(new RSITrader(traderName, period, this.marketSimulator));
-            index++;
-        }
-
-        }
+    }
     }
 
     public List<String> simulateDay() {
@@ -139,7 +151,7 @@ public class MainApp {
 
 
     public static void main (String[] args){
-            MainApp app = new MainApp();
+            MainApp app = new MainApp(true);
             app.runSimulation();
 
     }

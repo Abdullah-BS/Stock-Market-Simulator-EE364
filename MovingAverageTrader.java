@@ -141,6 +141,6 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader {
     }
 
     public String getName() {
-        return super.getName() + " (Moving Average Strategy)";
+        return super.getName() + " (Moving Average)";
     }
 }

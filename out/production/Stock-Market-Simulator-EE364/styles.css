@@ -112,6 +112,26 @@
     -fx-border-color: #8f1b1b;    /* Darker border when clicked */
 }
 
+.phase2-inner-buttons {
+    -fx-background-color: #ff3232;;
+    -fx-border-color: #8f1b1b;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-border-width: 2px;
+    -fx-cursor: hand;
+}
+
+.phase2-inner-buttons:hover {
+    -fx-background-color: #b02222;;
+    -fx-border-color: #8f1b1b;
+}
+
+.phase2-inner-buttons:pressed {
+    -fx-background-color: #b02222;;
+    -fx-border-color: #8f1b1b;    /* Darker border when clicked */
+}
+
+
 .InfoPanel{
 -fx-padding: 20;
     -fx-border-color: black;

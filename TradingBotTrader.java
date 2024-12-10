@@ -166,7 +166,7 @@ public class TradingBotTrader extends Trader {
 
     public String getName(){
 
-        return super.getName()+"TradingBotTrader";
+        return super.getName()+" (Trading Bot)";
     }
     //</editor-fold>
 }

@@ -58,9 +58,9 @@ public class MainAppGUI extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        mainApp = new MainApp();
-        traderSeriesMap = new HashMap<>();
-        traderObservableList = FXCollections.observableArrayList(mainApp.listOfTraders);
+//        mainApp = new MainApp();
+//        traderSeriesMap = new HashMap<>();
+//        traderObservableList = FXCollections.observableArrayList(mainApp.listOfTraders);
 
         primaryStage.getIcons().add(new Image("LOGO.jpg"));
 
@@ -117,10 +117,14 @@ public class MainAppGUI extends Application {
 
     }
     private void initializePhase1(Stage primaryStage) {
+        mainApp = new MainApp(true);
+        traderSeriesMap = new HashMap<>();
+        traderObservableList = FXCollections.observableArrayList(mainApp.listOfTraders);
+
         primaryStage.setTitle("Market Simulation Phase 1");
 
         // create the Buttons layout
-        HBox buttonLayout= creatButtonLayout(primaryStage);
+        HBox buttonLayout= creatButtonLayout(primaryStage, true);
 
         //create the Top Layout
         VBox eventsBox = createEventDisplay();
@@ -170,10 +174,14 @@ public class MainAppGUI extends Application {
 
     // YET TO BE IMPLEMENTED
     private void initializePhase2(Stage primaryStage) {
+        mainApp = new MainApp(false);
+        traderSeriesMap = new HashMap<>();
+        traderObservableList = FXCollections.observableArrayList(mainApp.listOfTraders);
+
         primaryStage.setTitle("Market Simulation Phase 2");
 
         // create the Buttons layout
-        HBox buttonLayout= creatButtonLayout(primaryStage);
+        HBox buttonLayout= creatButtonLayout(primaryStage, false);
 
         //create the Top Layout
         VBox eventsBox = createEventDisplay();
@@ -258,35 +266,48 @@ public class MainAppGUI extends Application {
         return lineChart;
     }
 
-    private HBox creatButtonLayout(Stage primaryStage){
+    private HBox creatButtonLayout(Stage primaryStage, Boolean isphase1){
         ToggleButton autoSimulateButton = new ToggleButton("Start Auto Simulation");
         autoSimulateButton.setOnAction(e -> toggleSimulation(autoSimulateButton));
-        autoSimulateButton.getStyleClass().add("phase1-inner-buttons");
 
         Button restartButton = new Button("Restart");
         restartButton.setOnAction(e -> ResetButton(primaryStage, false, true));
-        restartButton.getStyleClass().add("phase1-inner-buttons");
 
         Button downloadResultsButton = new Button("Download Results");
         downloadResultsButton.setOnAction(e -> downloadResults());
-        downloadResultsButton.getStyleClass().add("phase1-inner-buttons");
 
         Button downloadChartButton = new Button("Download Chart");
         downloadChartButton.setOnAction(e -> downloadChart());
-        downloadChartButton.getStyleClass().add("phase1-inner-buttons");
 
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
             if (simulationTimeline != null && simulationTimeline.getStatus() == Timeline.Status.RUNNING) {
                 simulationTimeline.stop();
             }
-            ResetButton(primaryStage, true, true);
+            ResetButton(primaryStage, true, isphase1);
         });
-        backButton.getStyleClass().add("phase1-inner-buttons");
 
         Button showTableButton = new Button("Show Trader Table");
         showTableButton.setOnAction(e -> showTraderTableWindow());
-        showTableButton.getStyleClass().add("phase1-inner-buttons");
+
+
+        if (!isphase1){
+            autoSimulateButton.getStyleClass().add("phase2-inner-buttons");
+            restartButton.getStyleClass().add("phase2-inner-buttons");
+            downloadResultsButton.getStyleClass().add("phase2-inner-buttons");
+            downloadChartButton.getStyleClass().add("phase2-inner-buttons");
+            backButton.getStyleClass().add("phase2-inner-buttons");
+            showTableButton.getStyleClass().add("phase2-inner-buttons");
+        }
+        else {
+            autoSimulateButton.getStyleClass().add("phase1-inner-buttons");
+            restartButton.getStyleClass().add("phase1-inner-buttons");
+            downloadResultsButton.getStyleClass().add("phase1-inner-buttons");
+            downloadChartButton.getStyleClass().add("phase1-inner-buttons");
+            backButton.getStyleClass().add("phase1-inner-buttons");
+            showTableButton.getStyleClass().add("phase1-inner-buttons");
+
+        }
 
         HBox buttonLayout = new HBox(10, autoSimulateButton, backButton, restartButton, showTableButton, downloadResultsButton, downloadChartButton);
         return buttonLayout;
@@ -599,8 +620,10 @@ public class MainAppGUI extends Application {
 
 
 
-    private void ResetMainApp() {
-        mainApp = new MainApp(); // Reinitialize the MainApp instance
+    private void ResetMainApp(Boolean isPhase1) {
+        if (isPhase1 == true)
+        mainApp = new MainApp(true); // Reinitialize the MainApp instance
+        else mainApp = new MainApp(false);
     }
 
     private void ResetButton(Stage primaryStage, boolean navigateToMainMenu, boolean isPhase1) {
@@ -608,7 +631,7 @@ public class MainAppGUI extends Application {
             simulationTimeline.stop();
         }
 
-        ResetMainApp();
+        ResetMainApp(isPhase1);
 
         day = 0; // Reset the day counter
         traderSeriesMap.clear();

@@ -148,6 +148,6 @@ public class RSITrader extends Trader implements knowledgeableTrader {
 
     @Override
     public String getName() {
-        return super.getName() + " (RSI Strategy with Trade Limit)";
+        return super.getName() + " (RSI)";
     }
 }

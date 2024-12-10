@@ -5,15 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c6ff5412-655a-4591-a952-7c650bc3c03e" name="Changes" comment="phase 1 disscusion">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MarketSimulator.java" beforeDir="false" afterPath="$PROJECT_DIR$/MarketSimulator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MainApp.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MainApp.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MainAppGUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MainAppGUI.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MovingAverageTrader.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MovingAverageTrader.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/RSITrader.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/RSITrader.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/RandomTrader.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/RandomTrader.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/Trader.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/Trader.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/styles.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Trader.java" beforeDir="false" afterPath="$PROJECT_DIR$/Trader.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -128,7 +120,7 @@
       <workItem from="1733647630186" duration="1193000" />
       <workItem from="1733765191253" duration="353000" />
       <workItem from="1733765555540" duration="2008000" />
-      <workItem from="1733790490766" duration="1064000" />
+      <workItem from="1733790490766" duration="9601000" />
     </task>
     <task id="LOCAL-00001" summary="phase 1 disscusion">
       <option name="closed" value="true" />

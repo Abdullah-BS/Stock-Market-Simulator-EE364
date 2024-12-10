@@ -765,13 +765,133 @@ public class MainAppGUI extends Application {
 
             traderCircle.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2) { // Double-click to show metrics
-                    showTraderPerformanceMetrics(trader);
+                    showTraderInfoTable(trader);
                 }
             });
         }
 
         return CircleLayout;
     }
+    
+    private void showTraderInfoTable(Trader trader) {
+        VBox endLookPage= new VBox(10);
+        endLookPage.setPrefSize(1700,500);
+
+        HBox infoPanel = new HBox(18); // The main panel to hold labels and data
+        infoPanel.getStyleClass().add("InfoPanel");
+        infoPanel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;-fx-background-color: WHITE;-fx-border-color: black;-fx-border-width: 2;");
+
+        infoPanel.setPrefSize(100, 100);
+        infoPanel.setMinSize(100,100);
+
+
+        Label traderActionsTitle = new Label("Daily Metrics - Buy & Sell Advices vs Actions\n\n Trader: " + trader.getName());
+        traderActionsTitle.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
+        infoPanel.getChildren().add(traderActionsTitle);
+        endLookPage.getChildren().add(infoPanel);
+
+        // A container to hold the trader's data (initial placeholder message is added initially)
+        HBox traderBox = new HBox(5);
+
+        // Add 2 containers: buyBox (for Buy advices) and sellBox (for Sell advices)
+        VBox buyBox = new VBox(10);
+        VBox sellBox = new VBox(10);
+
+        Label buyTitle = new Label("\tBuy Advice vs Actions:");
+        buyTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: green;-fx-border-color: Black;-fx-border-width: 2;-fx-background-color: white");
+        buyTitle.setPrefSize(250,60);
+        buyTitle.setMinHeight(60);
+
+        buyBox.getChildren().add(buyTitle);
+
+        Label sellTitle = new Label("\tSell Advice vs Actions:");
+        sellTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: red;-fx-border-color: Black;-fx-border-width: 2;-fx-background-color: white");
+
+        sellTitle.setPrefSize(250,60);
+        sellTitle.setMinHeight(60);
+        sellBox.getChildren().add(sellTitle);
+
+        traderBox.getChildren().addAll(buyBox, sellBox);
+
+        ObservableMap<String, String> buyAdviceVsAction = trader.getBuy_Advice_VS_action();
+        ObservableMap<String, String> sellAdviceVsAction = trader.getSell_Advice_VS_action();
+
+        // Lambda to append new labels for Buy advice updates
+
+        MapChangeListener<String, String> buyAdviceListener = change -> {
+            if (change.wasAdded()) {
+                String newAdvice = change.getKey();
+                String newAction = change.getValueAdded();
+
+                // Create label for the new Buy advice-action pair
+                Label newBuyLabel = new Label("  Advice: " + newAdvice + " ||  Action: " + newAction);
+                buyBox.getChildren().add(newBuyLabel);
+            }
+        };
+
+        // Lambda to append new labels for Sell advice updates
+        MapChangeListener<String, String> sellAdviceListener = change -> {
+            if (change.wasAdded()) {
+                String newAdvice = change.getKey();
+                String newAction = change.getValueAdded();
+
+                // Create label for the new Sell advice-action pair
+                Label newSellLabel = new Label("  Advice: " + newAdvice + " ||  Action: " + newAction);
+
+                sellBox.getChildren().add(newSellLabel);
+            }
+        };
+        sellBox.setStyle("-fx-font-weight: bold; -fx-font-size: 12px;-fx-border-color: Black;-fx-border-width: 2;-fx-background-color: white");
+        buyBox.setStyle("-fx-font-weight: bold; -fx-font-size: 12px;-fx-border-color: Black;-fx-border-width: 2;-fx-background-color: white");
+
+        // Attach listeners to `buyAdviceVsAction` and `sellAdviceVsAction` maps
+        buyAdviceVsAction.addListener(buyAdviceListener);
+        sellAdviceVsAction.addListener(sellAdviceListener);
+
+        // Populate initial data (if exists) for Buy
+        if (!buyAdviceVsAction.isEmpty()) {
+//            Label dayHeaderLabel = new Label("Day Start - Buy Advice");
+//            dayHeaderLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: Black;-fx-border-color: black;-fx-border-width: 2;-fx-background-color: White;-fx-font-size: 12 ");
+//            buyBox.getChildren().add(dayHeaderLabel);
+
+            for (Map.Entry<String, String> entry : buyAdviceVsAction.entrySet()) {
+                Label existingBuyLabel = new Label("  Advice: " + entry.getKey() + " ||  Action: " + entry.getValue());
+                buyBox.getChildren().add(existingBuyLabel);
+            }
+        }
+
+        // Populate initial data (if exists) for Sell
+        if (!sellAdviceVsAction.isEmpty()) {
+//            Label dayHeaderLabel = new Label("Day Start - Sell Advice");
+//            dayHeaderLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: Black;-fx-border-color: black;-fx-border-width: 2;-fx-background-color: White;-fx-font-size: 12 ");
+//            sellBox.getChildren().add(dayHeaderLabel);
+
+            for (Map.Entry<String, String> entry : sellAdviceVsAction.entrySet()) {
+                Label existingSellLabel = new Label("  Advice: " + entry.getKey() + " ||  Action: " + entry.getValue());
+                sellBox.getChildren().add(existingSellLabel);
+            }
+        }
+
+        // Add trader's box to the main info panel
+        endLookPage.getChildren().add(traderBox);
+
+        // Add a separator
+        Separator separator = new Separator();
+        infoPanel.getChildren().add(separator);
+
+        // Popup Stage
+        Stage popupStage = new Stage();
+        popupStage.setTitle("Trader Info - Daily Updates");
+
+        // Use ScrollPane in case of large volume of data
+        ScrollPane scrollPane = new ScrollPane(endLookPage);
+        scrollPane.setFitToWidth(true);
+
+        Scene scene = new Scene(scrollPane);
+        popupStage.setScene(scene);
+        popupStage.show();
+    }
+
 
     private void addTooltipsToChart() {
         for (Trader trader : mainApp.listOfTraders) {

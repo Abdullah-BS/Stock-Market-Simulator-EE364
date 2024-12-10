@@ -796,41 +796,39 @@ public class MainAppGUI extends Application {
 
 
     private void ChangeCircleColors(HBox circleLayout) {
-
-        int TraderIndex = 0;
+        int traderIndex = 0;
 
         for (Trader trader : traderObservableList) {
+            ArrayList<Double> traderWorthHistory = trader.getWorthHistory();
 
-            ArrayList<Double> TraderWorthHistory = trader.getWorthHistory();
+            // Check if the trader's worth history is not empty
+            if (traderWorthHistory.isEmpty()) {
+                continue; // Skip if there's no worth history
+            }
 
-            if (circleLayout.getChildren().get(TraderIndex) instanceof StackPane) {
-                StackPane traderCircle = (StackPane) circleLayout.getChildren().get(TraderIndex);
+            // Ensure the index is within bounds
+            if (traderIndex < circleLayout.getChildren().size()) {
+                if (circleLayout.getChildren().get(traderIndex) instanceof StackPane) {
+                    StackPane traderCircle = (StackPane) circleLayout.getChildren().get(traderIndex);
 
-
-                for (Node node : traderCircle.getChildren()) {
-                    if (node instanceof Circle) {
-
-                        if (TraderWorthHistory.getLast() >= TraderWorthHistory.get(TraderWorthHistory.size() - 2)) {
-                            Circle circle = (Circle) node;
-
-                            // Change the Circle's color
-                            circle.setFill(Color.GREEN);
-                            break; // Stop once we've found and updated the Circle
-
-                        }else {
-
-                            Circle circle = (Circle) node;
-
-
-                            circle.setFill(Color.RED);
-                            break;
-
+                    for (Node node : traderCircle.getChildren()) {
+                        if (node instanceof Circle) {
+                            // Check if the last worth history value is available
+                            if (traderWorthHistory.size() > 1) {
+                                if (traderWorthHistory.get(traderWorthHistory.size() - 1) >= traderWorthHistory.get(traderWorthHistory.size() - 2)) {
+                                    Circle circle = (Circle) node;
+                                    circle.setFill(Color.GREEN);
+                                } else {
+                                    Circle circle = (Circle) node;
+                                    circle.setFill(Color.RED);
+                                }
+                            }
                         }
                     }
                 }
             }
 
-            TraderIndex++;
+            traderIndex++;
         }
     }
 

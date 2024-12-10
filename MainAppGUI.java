@@ -54,6 +54,7 @@ public class MainAppGUI extends Application {
     private VBox mainLayout; // Main layout for Phase 1
     private GridPane stockGrid;
     private Random random = new Random();
+    private boolean isPhase1; // Track the current phase
     // Starting page scene
 
     @Override
@@ -117,6 +118,7 @@ public class MainAppGUI extends Application {
 
     }
     private void initializePhase1(Stage primaryStage) {
+        isPhase1 = true; // Set the current phase to Phase 1
         mainApp = new MainApp(true);
         traderSeriesMap = new HashMap<>();
         traderObservableList = FXCollections.observableArrayList(mainApp.listOfTraders);
@@ -149,8 +151,12 @@ public class MainAppGUI extends Application {
         //create the Middle Layout
         HBox BottomLayout = new HBox(10,Leftlayout,Rightlayout);
 
+        // Initialize metricsPanel
+        metricsPanel = new VBox(10);
+        metricsPanel.setStyle("-fx-padding: 10;");
+
         // Create the Main layout using the above Layouts
-        mainLayout = new VBox(10, TopLayout, buttonLayout, BottomLayout); // Add metricsPanel to mainLayout
+        mainLayout = new VBox(10, TopLayout, buttonLayout, BottomLayout, metricsPanel); // Add metricsPanel to mainLayout
         mainLayout.setPrefSize(1080, 600);
         mainLayout.getStyleClass().add("root");
 
@@ -174,6 +180,7 @@ public class MainAppGUI extends Application {
 
     // YET TO BE IMPLEMENTED
     private void initializePhase2(Stage primaryStage) {
+        isPhase1 = false; // Set the current phase to Phase 2
         mainApp = new MainApp(false);
         traderSeriesMap = new HashMap<>();
         traderObservableList = FXCollections.observableArrayList(mainApp.listOfTraders);
@@ -206,8 +213,12 @@ public class MainAppGUI extends Application {
         //create the Middle Layout
         HBox BottomLayout = new HBox(10,Leftlayout,Rightlayout);
 
+        // Initialize metricsPanel
+        metricsPanel = new VBox(10);
+        metricsPanel.setStyle("-fx-padding: 10;");
+
         // Create the Main layout using the above Layouts
-        mainLayout = new VBox(10, TopLayout, buttonLayout, BottomLayout); // Add metricsPanel to mainLayout
+        mainLayout = new VBox(10, TopLayout, buttonLayout, BottomLayout, metricsPanel); // Add metricsPanel to mainLayout
         mainLayout.setPrefSize(1080, 600);
         mainLayout.getStyleClass().add("root");
 
@@ -642,10 +653,13 @@ public class MainAppGUI extends Application {
         // Reload the current phase or go to the main menu
         if (navigateToMainMenu) {
             initializeMainMenu(primaryStage);
-        } else if (isPhase1) {
-            initializePhase1(primaryStage);
         } else {
-            initializePhase2(primaryStage);
+            // Check the current phase and reset to it
+            if (this.isPhase1) {
+                initializePhase1(primaryStage);
+            } else {
+                initializePhase2(primaryStage);
+            }
         }
     }
 

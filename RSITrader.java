@@ -22,7 +22,7 @@ public class RSITrader extends Trader implements knowledgeableTrader {
             double gain = 0;
             double loss = 0;
 
-            for (int j = 1; j < period; j++) {
+            for (int j = priceHistory.size() - period + 1; j < priceHistory.size(); j++) {
                 double change = priceHistory.get(j) - priceHistory.get(j - 1);
                 if (change > 0) {
                     gain += change;
@@ -42,7 +42,7 @@ public class RSITrader extends Trader implements knowledgeableTrader {
     }
 
     @Override
-    public void execute(Stocks stock, int quantity) {
+    public void execute(MarketSimulator market,Stocks stock, int quantity) {
         if (dailyTradeCount >= MAX_TRADES_PER_DAY) {
             System.out.println(this.getName() + ": Daily trade limit reached.");
             return;

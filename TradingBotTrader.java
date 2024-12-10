@@ -130,6 +130,6 @@ public class TradingBotTrader extends Trader {
 
     @Override
     public String getName() {
-        return super.getName() + " (Improved Trading Bot)";
+        return super.getName() + " (Trading Bot)";
     }
 }

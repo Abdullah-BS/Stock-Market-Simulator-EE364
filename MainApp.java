@@ -11,7 +11,7 @@ public class MainApp {
     public ArrayList<Trader> listOfTraders;
     public String[] traderNames = {"Abdullah", "Ahmed", "Yamin"};
     public int dayCounter = 0;
-    public int quantity = 1;
+    public int quantity = 5;
     public Random random = new Random();
 
     // Constructor: Make the market, create the list of traders
@@ -97,7 +97,7 @@ public class MainApp {
 //                if (portStock != null) {
 //                    trader.execute(marketSimulator, portStock, quantity);
 //                }
-            trader.execute(marketSimulator, randomStock, period);
+            trader.execute(marketSimulator, randomStock, quantity);
 
         }
 

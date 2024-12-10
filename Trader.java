@@ -76,37 +76,40 @@ public abstract class Trader {
 
     // Sell a stock with human error simulation
     public boolean sell(Stocks stock, int quantity, double price) {
-
-        if (stockPortfolio.containsKey(stock)) {
-            do {
-                if (getStockPortfolio().get(stock) >= quantity) {
-                    double totalRevenue = price * quantity;
-                    double profit = totalRevenue - (stock.getPrice() * quantity);
-                    cash += totalRevenue;
-                    stockPortfolio.put(stock, stockPortfolio.get(stock) - quantity);
-
-                    if (profit > 0) {
-                        winCount++;
-                        totalProfit += profit;
-                    } else {
-                        lossCount++;
-                    }
-
-                    if (stockPortfolio.get(stock) == 0) {
-                        stockPortfolio.remove(stock); // Remove stock if no quantity left
-                    }
-
-                    totalTrades++;
-                    return true; // Successful sale
-                }
-                quantity--; // Reduce quantity if insufficient stocks are available
-            } while (true);
-        } else {
+        if (!stockPortfolio.containsKey(stock)) {
             System.out.println("Stock " + stock.getSymbol() + " is not in the portfolio.");
             return false; // Stock not in portfolio
         }
-    }
 
+        int availableQuantity = stockPortfolio.get(stock);
+        if (availableQuantity < quantity) {
+            System.out.println("Not enough quantity of stock " + stock.getSymbol() + " to sell.");
+            return false; // Insufficient stock quantity
+        }
+
+        // Calculate total revenue and update cash
+        double totalRevenue = price * quantity;
+        double buyPrice = stock.getPrice(); // Replace with actual buy price if available
+        double profit = totalRevenue - (buyPrice * quantity);
+
+        cash += totalRevenue;
+        stockPortfolio.put(stock, availableQuantity - quantity);
+
+        if (stockPortfolio.get(stock) == 0) {
+            stockPortfolio.remove(stock); // Remove stock if no quantity left
+        }
+
+        // Update metrics
+        if (profit > 0) {
+            winCount++;
+            totalProfit += profit;
+        } else {
+            lossCount++;
+        }
+
+        totalTrades++;
+        return true; // Successful sale
+    }
     // Calculate net worth
     public double calculateNetWorth(HashMap<Stocks, Integer> stockPortfolio) {
         netWorth = cash;

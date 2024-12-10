@@ -24,53 +24,68 @@ public class RandomTrader extends Trader {
     @Override
     public void execute(MarketSimulator market,Stocks stock, int quantity) {
         try {
-
-
+            // Check daily limit
             if (dailyTradeCount >= MAX_DAILY_OPERATIONS) {
                 System.out.println(this.getName() + ": Reached daily operation limit.");
-                return; // Skip execution if daily limit is reached
-            }
-
-            boolean buyOrSell = random.nextBoolean();
-            double currentPrice = stock.getPrice();
-            double random = Math.random();
-            String advice;
-            String action;
-
-            if (random < 0.1) {
-                System.out.println(randomExcuses());
-                action = randomExcuses();
                 return;
             }
 
-            if (buyOrSell) { // Buy logic
-                if (getCash() >= quantity * currentPrice) {
-                    buy(stock, quantity, currentPrice);
-                    dailyOperationCount++;
-                    System.out.println(this.getName() + ": Bought " + quantity + " units of " + stock.getSymbol() +
-                            " at price " + currentPrice);
+            // Random decision to buy or sell
+            boolean buyOrSell = new Random().nextBoolean();
+            double randomValue = Math.random();
+
+            // Market stocks and portfolio stocks
+            List<Stocks> marketStocks = market.getListStock();
+            List<Stocks> portfolioStocks = new ArrayList<>(stockPortfolio.keySet());
+
+            // Check if portfolio is empty before selling
+            if (!buyOrSell && portfolioStocks.isEmpty()) {
+                System.out.println(this.getName() + ": No stocks available to sell.");
+                return;
+            }
+
+            // Random excuse to skip trading
+            if (randomValue < 0.5) {
+                System.out.println(randomExcuses());
+                return;
+            }
+
+            if (buyOrSell) {
+                // Randomly select stock to buy
+                Stocks buyStock = marketStocks.get(new Random().nextInt(marketStocks.size()));
+                double buyPrice = buyStock.getPrice();
+
+                // Buy logic
+                if (getCash() >= quantity * buyPrice) {
+                    buy(buyStock, quantity, buyPrice);
+                    System.out.println(this.getName() + ": Bought " + quantity + " units of " + buyStock.getSymbol() +
+                            " at price " + buyPrice);
                 } else {
-                    System.out.println(this.getName() + ": Insufficient cash to buy stock " + stock.getSymbol());
+                    System.out.println(this.getName() + ": Insufficient cash to buy stock " + buyStock.getSymbol());
                 }
-            } else { // Sell logic
+            } else {
+                // Randomly select stock to sell
+                Stocks sellStock = portfolioStocks.get(new Random().nextInt(portfolioStocks.size()));
+                double sellPrice = sellStock.getPrice();
 
-                List<Stocks> stocksPortList = new ArrayList<>(stockPortfolio.keySet());
-                Stocks stockToSell = stocksPortList.get((int) (Math.random() * stocksPortList.size()));
-
-                if (getStockPortfolio().getOrDefault(stockToSell, 0) >= quantity) {
-                    sell(stockToSell, quantity, currentPrice);
-                    dailyOperationCount++;
-                    System.out.println(this.getName() + ": Sold " + quantity + " units of " + stockToSell.getSymbol() +
-                            " at price " + currentPrice);
+                // Sell logic
+                if (stockPortfolio.get(sellStock) >= quantity) {
+                    sell(sellStock, quantity, sellPrice);
+                    System.out.println(this.getName() + ": Sold " + quantity + " units of " + sellStock.getSymbol() +
+                            " at price " + sellPrice);
                 } else {
                     System.out.println(this.getName() + ": Not enough stock to sell.");
                 }
             }
+
+            // Increment daily trade count
             dailyTradeCount++;
         } catch (Exception e) {
-            System.out.println("error");
+            System.out.println(this.getName() + ": Error occurred during trade execution.");
+            e.printStackTrace();
         }
     }
+
 
     public String getName() {
         return super.getName() + " (Random)";

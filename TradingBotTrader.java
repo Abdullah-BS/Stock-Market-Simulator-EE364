@@ -114,22 +114,25 @@ public class TradingBotTrader extends Trader {
         List<Stocks> stocksList= market.getListStock();
 
         Stocks buyStock= stocksList.get(0);
-        double compareline=0;
+        double comparelineBuy = Double.MIN_VALUE;
         for (Stocks oneStock : stocksList) {
 
             double RSI = calculateRSI(period,oneStock.getPriceHistory());
             double MovingAverage = calculateMovingAverage(period,oneStock.getPriceHistory());
 
             double line = Math.abs(oneStock.getPrice() - MovingAverage*(1+0.015));
-            if (RSI < 30 && line > compareline) {
+            if (RSI < 30 && line > comparelineBuy) {
 
-                compareline = line;
+                comparelineBuy = line;
                 buyStock = oneStock;
 
             }
         }
-        buy(buyStock,quantity, buyStock.getPrice());
+        double comparelineSell = Double.MIN_VALUE;
 
+        if (comparelineSell > 0) {
+            buy(buyStock, quantity, buyStock.getPrice());
+        }
         List<Stocks> stocksPortList = new ArrayList<Stocks>(stockPortfolio.keySet());
         Stocks sellStock= stocksList.get(0);
         for (Stocks oneStock : stocksPortList) {
@@ -138,15 +141,16 @@ public class TradingBotTrader extends Trader {
             double MovingAverage = calculateMovingAverage(period,oneStock.getPriceHistory());
 
             double line = Math.abs(oneStock.getPrice() - MovingAverage*(1+0.015));
-            if (RSI > 70 && line < compareline) {
-                compareline = line;
+            if (RSI > 70 && line < comparelineSell) {
+                comparelineSell = line;
                 if(buyStock!=oneStock) {
                     sellStock = oneStock;
                 }
             }
         }
-        sell(sellStock,quantity, buyStock.getPrice());
-
+        if (comparelineSell > 0 && buyStock != sellStock) {
+            sell(sellStock, quantity, sellStock.getPrice());
+        }
         hasTraded = true;
     }
 

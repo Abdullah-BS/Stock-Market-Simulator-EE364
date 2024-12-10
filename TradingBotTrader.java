@@ -1,58 +1,31 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class TradingBotTrader extends Trader {
 
-    //<editor-fold desc="Data Fields">
-
     private int period;
-    private double gains;
-    private double losses;
-    private boolean hasTraded = false;
-    private static final double STOP_LOSS_PERCENTAGE = 0.10;
-    private static final double PROFIT_GRAB_PERCENTAGE = 0.35;
-    private static final int MAX_TRADES_PER_DAY = 1;
-    //</editor-fold>
-
-    //<editor-fold desc="Constructors">
+    private static final double STOP_LOSS_PERCENTAGE = 0.10; // 10% stop-loss
+    private static final double PROFIT_GRAB_PERCENTAGE = 0.35; // 35% profit-grab
+    private Map<Stocks, Double> highestPriceTracker; // Track the highest price of each stock
+    private Map<Stocks, Integer> soldStocks; // Track sold stocks and the day they were sold
+    private static final int RECONSIDER_DAYS = 10; // Days to reconsider sold stocks
+    private Map<Stocks, Long> purchaseTimeTracker; // Track purchase time of stocks
 
     public TradingBotTrader(String name, int period, MarketSimulator market) {
         super(name, market);
         this.period = period;
-
+        this.highestPriceTracker = new HashMap<>();
+        this.soldStocks = new HashMap<>(); // Initialize the sold stocks map
+        this.purchaseTimeTracker = new HashMap<>(); // Initialize the purchase time tracker
     }
 
-    // <editor-fold desc="Get and Set Methods">
+    @Override
+    public double calculate(int period, List<Double> priceHistory) {
+        try {
+            if (priceHistory.size() < period) {
+                System.out.println("Not enough data for RSI calculation.");
+                return 50.0; // Neutral RSI
+            }
 
-    public int getPeriod() {
-        return period;
-    }
-    public void setPeriod(int period) {
-        this.period = period;
-    }
-
-    public double getGains() {
-        return gains;
-    }
-    public void setGains(double gains) {
-        this.gains = gains;
-    }
-
-    public double getLosses() {
-        return losses;
-    }
-    public void setLosses(double losses) {
-        this.losses = losses;
-    }
-
-    //</editor-fold>
-
-
-    //<editor-fold desc="Trading bot-- Calculations behaviour">
-
-    // RSI
-    public double calculateRSI(int period, List<Double> priceHistory) {
-        try{
             double gain = 0;
             double loss = 0;
 
@@ -71,102 +44,92 @@ public class TradingBotTrader extends Trader {
             return avgLoss == 0 ? 100 : 100 - (100 / (1 + (avgGain / avgLoss)));
         } catch (Exception e) {
             System.out.println("Error calculating RSI: " + e.getMessage());
-            return 50; // Return neutral RSI value on error
+            return 50.0; // Return neutral RSI value on error
         }
     }
 
-    // MovingAverage
-    public double calculateMovingAverage(int period, List<Double> priceHistory) {
-        period = Math.min(period, priceHistory.size());
+    @Override
+    public void execute(MarketSimulator market, Stocks stock, int quantity) {
+        List<Stocks> allStocks = market.getListStock();
+        Map<Stocks, Double> stockScores = new HashMap<>();
 
-        try {
-            double sum = 0.0;
-            for (int i = priceHistory.size() - period; i < priceHistory.size(); i++) {
-                sum += priceHistory.get(i);
-            }
-            return sum / period;
-        } catch (Exception e) {
-            System.out.println("Error calculating moving average: " + e.getMessage());
-            return 0.0; // Default to 0.0 to avoid incorrect trading decisions
-        }
-
-    }
-
-
-    // Calculate based on RSI and MovingAverage
-    public double calculate(int period, List<Double> prices) {
-        double value;
-        double RSI= calculateRSI(period, prices);
-        double MA= calculateMovingAverage(period, prices);
-
-        value= (RSI+MA)/2;
-
-        return value;
-    }
-    //</editor-fold>
-
-    public void resetDailyTradeFlag() {
-        boolean hasTraded = false;
-    }
-    //<editor-fold desc="Execute">
-    public void execute(MarketSimulator market,Stocks stock, int quantity) {
-        if (dailyTradeCount >= MAX_TRADES_PER_DAY) {
-            return;
-        }
-        List<Stocks> stocksList = market.getListStock();
-
-        Stocks buyStock = null;
-        double highestBuyScore = Double.NEGATIVE_INFINITY;
-        for (Stocks oneStock : stocksList) {
-            double RSI = calculateRSI(period, oneStock.getPriceHistory());
-            double MovingAverage = calculateMovingAverage(period, oneStock.getPriceHistory());
-
-            // Assess buy opportunity
-            if (RSI < 30 && oneStock.getPrice() < MovingAverage) {
-                double buyScore = (30 - RSI) + (MovingAverage - oneStock.getPrice()); // Example scoring mechanism
-                if (buyScore > highestBuyScore) {
-                    highestBuyScore = buyScore;
-                    buyStock = oneStock;
-                }
+        // Evaluate all stocks in the market
+        for (Stocks s : allStocks) {
+            List<Double> priceHistory = s.getPriceHistory();
+            if (priceHistory.size() >= period) {
+                double rsi = calculate(this.period, priceHistory);
+                double momentum = priceHistory.get(priceHistory.size() - 1) - priceHistory.get(priceHistory.size() - 2); // Compare last two prices for momentum
+                double score = rsi - momentum; // Combine RSI and momentum
+                stockScores.put(s, score);
             }
         }
-        if (buyStock != null && getCash() >= buyStock.getPrice() * quantity) {
-            buy(buyStock, 1, buyStock.getPrice());
-            dailyTradeCount++;
-        }
-        List<Stocks> stocksPortList = new ArrayList<>(stockPortfolio.keySet());
-        Stocks sellStock = null;
-        double lowestSellScore = Double.POSITIVE_INFINITY;
-        for (Stocks oneStock : stocksPortList) {
-            double RSI = calculateRSI(period, oneStock.getPriceHistory());
-            double MovingAverage = calculateMovingAverage(period, oneStock.getPriceHistory());
 
-            // Assess sell opportunity
-            if (RSI > 50 && oneStock.getPrice() > MovingAverage) {
-                double sellScore = (oneStock.getPrice() - MovingAverage * (1 + 0.015)); // Example scoring mechanism
-                if (sellScore < lowestSellScore) {
-                    lowestSellScore = sellScore;
-                    sellStock = oneStock;
-                    System.out.println(sellStock);
-                }
+        // Buy top stocks based on scores
+        List<Map.Entry<Stocks, Double>> sortedStocks = new ArrayList<>(stockScores.entrySet());
+        sortedStocks.sort(Map.Entry.comparingByValue());
+
+        for (Map.Entry<Stocks, Double> entry : sortedStocks) {
+            Stocks topStock = entry.getKey();
+            double currentPrice = topStock.getPrice();
+            double rsi = calculate(this.period, topStock.getPriceHistory());
+
+            // Buy if RSI indicates opportunity and cash is available
+            if (rsi < 50 && getCash() > currentPrice) {
+                int buyQuantity = Math.min(quantity, (int) (getCash() / currentPrice));
+                buy(topStock, buyQuantity, currentPrice);
+                highestPriceTracker.put(topStock, currentPrice); // Track the highest price
+                purchaseTimeTracker.put(topStock, System.currentTimeMillis()); // Track purchase time
+                System.out.println(this.getName() + ": Bought " + buyQuantity + " units of " + topStock.getSymbol() +
+                        " at price $" + String.format("%.2f", currentPrice) + " (RSI: " + rsi + ")");
             }
         }
-        do {
-            if (stockPortfolio.getOrDefault(sellStock, 0) >= quantity) {
-                sell(sellStock, quantity, sellStock.getPrice());
-                dailyTradeCount++;
-                quantity=3;
-                break;
+
+        // Apply stop-loss and profit-grab logic for the portfolio
+        applyStopLossAndProfitGrab();
+    }
+
+    private void applyStopLossAndProfitGrab() {
+        Map<Stocks, Integer> portfolioCopy = new HashMap<>(getStockPortfolio());
+        for (Map.Entry<Stocks, Integer> entry : portfolioCopy.entrySet()) {
+            Stocks stock = entry.getKey();
+            int ownedQuantity = entry.getValue();
+            List<Double> priceHistory = stock.getPriceHistory();
+
+            if (priceHistory.isEmpty()) continue;
+
+            double currentPrice = stock.getPrice();
+
+            // Update the highest price tracker
+            highestPriceTracker.put(stock, Math.max(highestPriceTracker.getOrDefault(stock, 0.0), currentPrice));
+
+            double highestPrice = highestPriceTracker.get(stock);
+            double purchasePrice = priceHistory.get(0); // Assuming the first price is the purchase price
+            double profitPercentage = (currentPrice - purchasePrice) / purchasePrice;
+
+            // Check if the stock is losing value
+            if (currentPrice < highestPrice * (1 - STOP_LOSS_PERCENTAGE)) {
+                sell(stock, ownedQuantity, currentPrice);
+                highestPriceTracker.remove(stock); // Reset the tracker after selling
+                soldStocks.put(stock, 0); // Mark the stock as sold with day count 0
+                purchaseTimeTracker.remove(stock); // Remove purchase time after selling
+                System.out.println(this.getName() + ": Sold (Stop Loss) " + ownedQuantity +
+                        " units of " + stock.getSymbol() + " at price $" + String.format("%.2f", currentPrice));
             }
-            quantity--;
-        } while (quantity > 0);
+
+            // Profit-grab logic
+            if (profitPercentage >= PROFIT_GRAB_PERCENTAGE) {
+                sell(stock, ownedQuantity, currentPrice);
+                highestPriceTracker.remove(stock); // Reset the tracker after selling
+                soldStocks.put(stock, 0); // Mark the stock as sold with day count 0
+                purchaseTimeTracker.remove(stock); // Remove purchase time after selling
+                System.out.println(this.getName() + ": Sold (Profit Grab) " + ownedQuantity +
+                        " units of " + stock.getSymbol() + " at price $" + String.format("%.2f", currentPrice));
+            }
+        }
     }
 
-
-
-    public String getName(){
-
-        return super.getName()+" (Trading Bot)";
+    @Override
+    public String getName() {
+        return super.getName() + " (Improved Trading Bot)";
     }
-    //</editor-fold>
 }

@@ -1,3 +1,4 @@
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -22,45 +23,52 @@ public class RandomTrader extends Trader {
 
     @Override
     public void execute(MarketSimulator market,Stocks stock, int quantity) {
-        if (dailyTradeCount >= MAX_DAILY_OPERATIONS) {
-            System.out.println(this.getName() + ": Reached daily operation limit.");
-            return; // Skip execution if daily limit is reached
-        }
+        try {
 
-        boolean buyOrSell = random.nextBoolean();
-        double currentPrice = stock.getPrice();
-        double random = Math.random();
-        String advice;
-        String action;
 
-        if (random < 0.1) {
-            System.out.println(randomExcuses());
-            action = randomExcuses();
-            return;
-        }
-
-        if (buyOrSell) { // Buy logic
-            if (getCash() >= quantity * currentPrice) {
-                buy(stock, quantity, currentPrice);
-                dailyOperationCount++;
-                System.out.println(this.getName() + ": Bought " + quantity + " units of " + stock.getSymbol() +
-                        " at price " + currentPrice);
-            } else {
-                System.out.println(this.getName() + ": Insufficient cash to buy stock " + stock.getSymbol());
+            if (dailyTradeCount >= MAX_DAILY_OPERATIONS) {
+                System.out.println(this.getName() + ": Reached daily operation limit.");
+                return; // Skip execution if daily limit is reached
             }
-        } else { // Sell logic
 
-            List<Stocks> stocksPortList = new ArrayList<>(stockPortfolio.keySet());
-            Stocks stockToSell = stocksPortList.get((int) (Math.random() * stocksPortList.size()));
+            boolean buyOrSell = random.nextBoolean();
+            double currentPrice = stock.getPrice();
+            double random = Math.random();
+            String advice;
+            String action;
 
-            if (getStockPortfolio().getOrDefault(stockToSell, 0) >= quantity) {
-                sell(stockToSell, quantity, currentPrice);
-                dailyOperationCount++;
-                System.out.println(this.getName() + ": Sold " + quantity + " units of " + stockToSell.getSymbol() +
-                        " at price " + currentPrice);
-            } else {
-                System.out.println(this.getName() + ": Not enough stock to sell.");
+            if (random < 0.1) {
+                System.out.println(randomExcuses());
+                action = randomExcuses();
+                return;
             }
+
+            if (buyOrSell) { // Buy logic
+                if (getCash() >= quantity * currentPrice) {
+                    buy(stock, quantity, currentPrice);
+                    dailyOperationCount++;
+                    System.out.println(this.getName() + ": Bought " + quantity + " units of " + stock.getSymbol() +
+                            " at price " + currentPrice);
+                } else {
+                    System.out.println(this.getName() + ": Insufficient cash to buy stock " + stock.getSymbol());
+                }
+            } else { // Sell logic
+
+                List<Stocks> stocksPortList = new ArrayList<>(stockPortfolio.keySet());
+                Stocks stockToSell = stocksPortList.get((int) (Math.random() * stocksPortList.size()));
+
+                if (getStockPortfolio().getOrDefault(stockToSell, 0) >= quantity) {
+                    sell(stockToSell, quantity, currentPrice);
+                    dailyOperationCount++;
+                    System.out.println(this.getName() + ": Sold " + quantity + " units of " + stockToSell.getSymbol() +
+                            " at price " + currentPrice);
+                } else {
+                    System.out.println(this.getName() + ": Not enough stock to sell.");
+                }
+            }
+            dailyTradeCount++;
+        } catch (Exception e) {
+            System.out.println("error");
         }
     }
 

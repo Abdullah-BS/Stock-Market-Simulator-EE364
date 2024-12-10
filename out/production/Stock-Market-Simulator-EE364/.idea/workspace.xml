@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c6ff5412-655a-4591-a952-7c650bc3c03e" name="Changes" comment="phase 1 disscusion">
-      <change beforePath="$PROJECT_DIR$/Trader.java" beforeDir="false" afterPath="$PROJECT_DIR$/Trader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RSITrader.java" beforeDir="false" afterPath="$PROJECT_DIR$/RSITrader.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,7 +77,7 @@
       <option name="ALTERNATIVE_JRE_PATH" value="23" />
       <option name="MAIN_CLASS_NAME" value="MainAppGUI" />
       <module name="Stock-Market-Simulator-EE364" />
-      <option name="VM_PARAMETERS" value="--module-path &quot;C:\Program Files\Java\javafx-sdk-23.0.1\lib&quot; --add-modules javafx.controls,javafx.fxml" />
+      <option name="VM_PARAMETERS" value="--module-path &quot;C:\Java\javafx-sdk-17.0.13\lib&quot; --add-modules javafx.controls,javafx.fxml" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>

@@ -36,7 +36,6 @@ public class Stocks{
 
     public void setPrice(double price) {
         this.price = price;
-        System.out.println(price);
         this.priceHistory.add(price);
     }
     public String toString() {

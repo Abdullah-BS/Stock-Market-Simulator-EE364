@@ -39,11 +39,19 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader {
         Random rand = new Random();
 
         List<Stocks> marketStocks = market.getListStock();
-        Stocks buyStock = marketStocks.get(rand.nextInt(marketStocks.size()));
+        if (marketStocks.size() < 2) {
+            System.out.println(this.getName() + ": Not enough stocks in the market for trading.");
+            return;
+        }
+        Stocks buyStock = marketStocks.get(rand.nextInt(marketStocks.size()-1));
 
 
         List<Stocks> portStocks = new ArrayList<>(stockPortfolio.keySet());
-        Stocks sellStock = portStocks.get(rand.nextInt(portStocks.size()));
+        if (portStocks.size() < 2) {
+            System.out.println(this.getName() + ": Not enough stocks in the portfolio to sell.");
+            return;
+        }
+        Stocks sellStock = portStocks.get(rand.nextInt(portStocks.size()-1));
 
 
         double buyMovingAverage = calculate(this.period, buyStock.getPriceHistory());

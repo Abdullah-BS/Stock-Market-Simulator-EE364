@@ -1,6 +1,4 @@
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class RSITrader extends Trader implements knowledgeableTrader {
 
@@ -48,65 +46,138 @@ public class RSITrader extends Trader implements knowledgeableTrader {
         }
 
         double random = Math.random();
-        String advice;
-        String action;
+        Random rand = new Random();
+        // Step 1: Calculate RSI for the buy and sell stocks
+        List<Stocks> marketStocks = market.getListStock();
+        Stocks buyStock = marketStocks.get(rand.nextInt(marketStocks.size()-1));
 
-        // Step 1: Calculate RSI for the current stock
-        List<Double> priceHistory = stock.getPriceHistory();
-        double RSI = calculate(this.period, priceHistory);
-        double currentPrice = stock.getPrice();
-        List<Stocks> listOfStocks = market.getListStock();
-        Stocks randomStock = listOfStocks.get((int) (Math.random() * listOfStocks.size()));
+        List<Stocks> portStocks = new ArrayList<>(stockPortfolio.keySet());
+        Stocks sellStock = portStocks.get(rand.nextInt(portStocks.size()-1));
 
-        // Step 2: Determine advice based on RSI
-        if (RSI < 30) {
-            advice = "Buy";
-        } else if (RSI > 50) {
-            advice = "Sell";
-        } else {
-            advice = "Hold";
+        double buyRSI = calculate(this.period, buyStock.getPriceHistory());
+        double sellRSI = calculate(this.period, sellStock.getPriceHistory());
+
+        double buyCurrentPrice = buyStock.getPrice();
+        double sellCurrentPrice = sellStock.getPrice();
+
+        String buyAdviceMessage;
+        String sellAdviceMessage;
+
+        String buyAction;
+        String sellAction;
+
+        Boolean BuyAction = true;
+        Boolean SellAction = true;
+
+        Boolean buyAdvice=true;
+        Boolean sellAdvice=true;
+
+        // Determine the advice based on market conditions
+
+        // BUY Advice
+        if (buyRSI<30) {
+            buyAdviceMessage = "Buy: RSI is Lower than the 30,  " + buyRSI + " <  30";
+            System.out.println("Buy: RSI is Lower than the 30,  " + buyRSI + " <  30");
+            buyAdvice = true;
+        } else if (buyRSI<70&&buyRSI>30) {
+            buyAdviceMessage = "Hold: RSI is Between 30 and 70,  30 < " + buyRSI + " < 70 ";
+            System.out.println("Hold: RSI is Between 30 and 70,  30 < " + buyRSI + " < 70 ");
+            buyAdvice = false;
         }
+        else {
+            buyAdviceMessage = "Don't buy RSI > 70, " + buyRSI + " >  70";
+            System.out.println("Don't buy RSI > 70, " + buyRSI + " >  70");
+            BuyAction = false;
+        }
+
+        //Sell Advice
+        if (sellRSI > 70) {
+            sellAdviceMessage = "Sell: Price is Higher than 70  " +  + sellRSI + " > 70" ;
+            sellAdvice = true;
+        }  else if (buyRSI<70 && buyRSI>30) {
+            sellAdviceMessage = "Hold: RSI is Between 30 and 70,  30 < " + sellRSI + " < 70 ";
+            sellAdvice = false;
+        }
+        else {
+            sellAdviceMessage = "Don't Sell RSI <30, " + sellRSI + " < 30";
+            SellAction = false;
+        }
+
+
 
         // Step 3: Random excuses or actual execution
-        if (random < 0.1) {
+        if (random < 0.3) {
             System.out.println(randomExcuses());
-            action = randomExcuses();
-            return;
-        }
-
-        // BUY
-        if (advice.equals("Buy")) {
-            if (getCash() >= quantity * currentPrice) {
-                buy(stock, quantity, currentPrice);
-                dailyTradeCount ++;
-                action = "Bought " + quantity + " units of " + stock.getSymbol() +
-                        " at price " + currentPrice;
-                System.out.println(this.getName() + ": Bought " + quantity + " units of " + stock.getSymbol() +
-                        " at price " + currentPrice);
-            } else {
-                action = "Not enough cash to buy stock";
-                System.out.println(this.getName() + ": Not enough cash to buy stock " + stock.getSymbol());
-            }
-        }
-
-        // SELL
-        if (advice.equals("Sell") && getStockPortfolio().containsKey(randomStock)) {
-            int ownedQuantity = getStockPortfolio().getOrDefault(randomStock, 0);
-            if (ownedQuantity >= quantity) {
-                sell(stock, quantity, currentPrice);
-                dailyTradeCount ++;
-                action = "Sold " + quantity + " units of " + stock.getSymbol() +
-                        " at price " + currentPrice;
-                System.out.println(this.getName() + ": Sold " + quantity + " units of " + stock.getSymbol() +
-                        " at price " + currentPrice);
-            } else {
-                action = "Not enough stock to sell";
-                System.out.println(this.getName() + ": Not enough stock to sell.");
-            }
+            buyAction = randomExcuses();
         } else {
-            action = "Hold";
-            System.out.println(this.getName() + ": Holding stock.");
+            if (BuyAction) {
+                if (buyAdvice) {
+                    do {
+                        if (getCash() >= quantity * buyCurrentPrice) {
+                            buy(buyStock, quantity, buyCurrentPrice);
+                            dailyTradeCount++;
+
+                            buyAction = "Bought " + quantity + " units of " + buyStock.getSymbol() +
+                                    " at price " + buyCurrentPrice;
+                            System.out.println(this.getName() + ": Bought " + quantity + " units of " + buyStock.getSymbol() +
+                                    " at price " + buyCurrentPrice);
+                            break;
+                        }
+
+                        quantity--; // Reduce quantity by 1
+
+                        if (quantity <= 0) {
+                            System.out.println(this.getName() + ": Not enough cash to buy stock " + buyStock.getSymbol());
+                            buyAction = "Not enough cash to buy stock " + buyStock.getSymbol();
+                            break;
+                        }
+                    } while (true);
+                } else {
+                    buyAction = "Hold";
+                }
+            }
+            else{
+                buyAction = "Don't Buy";
+            }
         }
+
+        // Sell Action
+        if (random < 0.3) {
+            System.out.println(randomExcuses());
+            sellAction = randomExcuses();
+        } else {
+            if (SellAction) {
+                if (sellAdvice) {
+                    do {
+                        if (getStockPortfolio().get(sellStock) >= quantity) {
+                            sell(sellStock, quantity, sellCurrentPrice);
+                            dailyTradeCount++;
+
+                            sellAction = "Sold " + quantity + " units of " + sellStock.getSymbol() +
+                                    " at price " + sellCurrentPrice;
+                            System.out.println(this.getName() + ": Sold " + quantity + " units of " + sellStock.getSymbol() +
+                                    " at price " + sellCurrentPrice);
+                            break;
+                        }
+                        quantity--;
+
+                        if (quantity <= 0) {
+                            System.out.println("Not enough stock to sell.");
+                            sellAction = "Not enough stock to sell";
+                            break;
+                        }
+                    } while (true);
+                } else {
+                    sellAction = "Hold";
+                }
+            }
+            else{
+                sellAction = "Don't Sell";
+            }
+        }
+
+        getBuy_Advice_VS_action().put(buyAdviceMessage, buyAction);
+        getSell_Advice_VS_action().put(sellAdviceMessage, sellAction);
 
         // Step 4: Stop-loss and profit-grab logic
 //        applyStopLossAndProfitGrab();

@@ -651,7 +651,7 @@ public class MainAppGUI extends Application {
 
 
     private void initializeTimeline() {
-        simulationTimeline = new Timeline(new KeyFrame(Duration.seconds(2), e -> simulateDay()));
+        simulationTimeline = new Timeline(new KeyFrame(Duration.seconds(0.5), e -> simulateDay()));
         simulationTimeline.setCycleCount(Timeline.INDEFINITE);
     }
 

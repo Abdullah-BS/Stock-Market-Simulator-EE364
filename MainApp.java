@@ -23,22 +23,29 @@ public class MainApp {
     }
 
     public void createListOfTraders(){
-
+        int index=0;
         for (String traderName : traderNames){
 
-        int randomNum = random.nextInt(3);
+
                //temp
 
-        if (randomNum == 0){
+        if (index == 2){
             listOfTraders.add(new RandomTrader(traderName, this.marketSimulator));
+            index++;
         }
 
-        else if (randomNum == 1){
+        else if (index == 1){
             listOfTraders.add(new MovingAverageTrader(traderName, 3,this.marketSimulator));
+            index++;
         }
+        else if (index == 0){
+            listOfTraders.add(new TradingBotTrader(traderName, 3, this.marketSimulator));
+            index++;
 
+        }
         else {
             listOfTraders.add(new RSITrader(traderName, 3, this.marketSimulator));
+            index++;
         }
 
         }
@@ -60,8 +67,24 @@ public class MainApp {
         List<Stocks> listOfStocks = marketSimulator.getListStock();
         for (Trader trader : listOfTraders) {
             Stocks randomStock = listOfStocks.get(random.nextInt(listOfStocks.size()));
-            trader.execute(randomStock, quantity);
+            if(trader instanceof TradingBotTrader){
+                trader.execute(marketSimulator,randomStock, quantity);
+                ((TradingBotTrader) trader).resetDailyTradeFlag();
+
+
+            }
+            trader.execute(marketSimulator,randomStock, quantity);
+            try {
+                List<Stocks> stocksList = new ArrayList<Stocks>(trader.stockPortfolio.keySet());
+                Stocks portStock = stocksList.get(random.nextInt(listOfStocks.size()));
+                trader.execute(marketSimulator,portStock, quantity);
+            }catch (Exception e){
+                System.out.println("NO Stock in portfolio");
+            }
+
         }
+
+
 
         // Return the daily report for the GUI
         return dailyReport;
@@ -79,7 +102,6 @@ public class MainApp {
             if (input.equalsIgnoreCase("exit")) {
                 break;
             }
-
             simulateDay();
             printResults();
         }
@@ -105,6 +127,9 @@ public class MainApp {
 //    }
 
     // initialize the app
+
+
+
     public static void main (String[] args){
             MainApp app = new MainApp();
             app.runSimulation();

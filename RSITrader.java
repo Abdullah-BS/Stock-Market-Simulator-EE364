@@ -112,7 +112,8 @@ public class RSITrader extends Trader implements knowledgeableTrader {
 //        applyStopLossAndProfitGrab();
 
         // Step 5: Store advice and action in the hashmap
-        advice_VS_action.put(advice, action);
+//        getBuy_Advice_VS_action().put(buyAdviceMessage, buyAction);
+//        getSell_Advice_VS_action().put(sellAdviceMessage, sellAction);
     }
 
     // Helper method to process stop-loss and profit-grab logic

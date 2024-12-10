@@ -329,7 +329,7 @@ public class MainAppGUI extends Application {
         for (Trader trader : mainApp.listOfTraders) {
             VBox traderBox = new VBox(1);  // This VBox will hold the trader's data
 
-            ObservableMap<String, String> adviceVsAction = trader.getAdvice_VS_action();
+            ObservableMap<String, String> adviceVsAction = trader.getBuy_Advice_VS_action();
 
             // Trader name
             Label traderName = new Label("Trader: " + trader.getName());

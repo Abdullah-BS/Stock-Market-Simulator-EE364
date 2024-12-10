@@ -84,23 +84,21 @@ public class MainApp {
         List<Stocks> listOfStocks = marketSimulator.getListStock();
         for (Trader trader : listOfTraders) {
             Stocks randomStock = listOfStocks.get(random.nextInt(listOfStocks.size()));
-            Stocks portStock = null;
+//            Stocks portStock = null;
+//
+//            if (!trader.stockPortfolio.isEmpty()) {
+//                List<Stocks> stocksList = new ArrayList<>(trader.stockPortfolio.keySet());
+//                portStock = stocksList.get(random.nextInt(stocksList.size()));
+//                trader.execute(marketSimulator, portStock, quantity);
+//            }
+//
+//                trader.execute(marketSimulator, randomStock, quantity);
+//
+//                if (portStock != null) {
+//                    trader.execute(marketSimulator, portStock, quantity);
+//                }
+            trader.execute(marketSimulator, randomStock, period);
 
-            if (!trader.stockPortfolio.isEmpty()) {
-                List<Stocks> stocksList = new ArrayList<>(trader.stockPortfolio.keySet());
-                portStock = stocksList.get(random.nextInt(stocksList.size()));
-                trader.execute(marketSimulator, portStock, quantity);
-            }
-
-            try {
-                trader.execute(marketSimulator, randomStock, quantity);
-
-                if (portStock != null) {
-                    trader.execute(marketSimulator, portStock, quantity);
-                }
-            } catch (Exception e) {
-                System.out.println(trader.getName() + ": NO Stock in portfolio");
-            }
         }
 
 

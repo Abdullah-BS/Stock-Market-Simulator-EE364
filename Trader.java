@@ -17,7 +17,8 @@ public abstract class Trader {
     public double initialCash = 10000; // Initial cash allocated to the trader
     private String[] excuses; // List of excuses for human errors
     private Random random; // Random generator for simulating probabilities
-    protected ObservableMap<String, String> advice_VS_action;
+    protected ObservableMap<String, String> Buy_Advice_VS_action;
+    protected ObservableMap<String, String> Sell_Advice_VS_action;
     public int dailyTradeCount = 0;
 
     // Performance Metrics
@@ -31,7 +32,8 @@ public abstract class Trader {
     public Trader(String name, MarketSimulator market) {
         this.name = name;
         this.cash = initialCash;
-        this.advice_VS_action = FXCollections.observableHashMap();
+        this.Buy_Advice_VS_action = FXCollections.observableHashMap();
+        this.Sell_Advice_VS_action = FXCollections.observableHashMap();
         this.stockPortfolio = new HashMap<>();
         this.worthHistory = new ArrayList<>();
         this.random = new Random();
@@ -120,8 +122,12 @@ public abstract class Trader {
         return stockPortfolio;
     }
 
-    public ObservableMap<String, String> getAdvice_VS_action() {
-        return advice_VS_action;
+    public ObservableMap<String, String> getBuy_Advice_VS_action() {
+        return Buy_Advice_VS_action;
+    }
+
+    public ObservableMap<String, String> getSell_Advice_VS_action() {
+        return Sell_Advice_VS_action;
     }
 
 

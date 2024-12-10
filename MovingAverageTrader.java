@@ -1,6 +1,4 @@
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MovingAverageTrader extends Trader implements knowledgeableTrader {
 
@@ -38,31 +36,124 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader {
         }
 
         double random = Math.random();
-        List<Double> priceHistory = stock.getPriceHistory();
-        double movingAverage = calculate(this.period, priceHistory);
-        double currentPrice = stock.getPrice();
-        String advice;
-        String action;
+        Random rand = new Random();
 
+        List<Stocks> marketStocks = market.getListStock();
+        Stocks buyStock = marketStocks.get(rand.nextInt(marketStocks.size()));
+
+
+        List<Stocks> portStocks = new ArrayList<>(stockPortfolio.keySet());
+        Stocks sellStock = portStocks.get(rand.nextInt(portStocks.size()));
+
+
+        double buyMovingAverage = calculate(this.period, buyStock.getPriceHistory());
+        double sellMovingAverage = calculate(this.period, sellStock.getPriceHistory());
+
+        double buyCurrentPrice = buyStock.getPrice();
+        double sellCurrentPrice = sellStock.getPrice();
+
+        String buyAdviceMessage;
+        String sellAdviceMessage;
+
+        String buyAction;
+        String sellAction;
+
+        Boolean buyAdvice;
+        Boolean sellAdvice;
+
+
+        // BUY Advice
         // Determine the advice based on market conditions
-        if (currentPrice > movingAverage * (1 + threshold)) {
-            advice = "Sell";
-        } else if (currentPrice < movingAverage * (1 - threshold)) {
-            advice = "Buy";
+        if (buyCurrentPrice < buyMovingAverage * (1 + threshold)) {
+            buyAdviceMessage = "Buy: Price is Higher than the MA " + buyCurrentPrice + " < " + buyMovingAverage * (1 + threshold);
+            buyAdvice = true;
         } else {
-            advice = "Hold";
+            buyAdviceMessage = "Hold: Price is around than the MA " + buyCurrentPrice + " ~= " + buyMovingAverage * (1 + threshold);
+            buyAdvice = false;
         }
 
-        // Stop-loss and profit-grab checks for all owned stocks
-        for (Map.Entry<Stocks, Integer> entry : new HashMap<>(getStockPortfolio()).entrySet()) {
-            if (dailyTradeCount >= MAX_TRADES_PER_DAY) break;
+        //Sell Advice
+        if (sellCurrentPrice > sellMovingAverage * (1 + threshold)) {
+            sellAdviceMessage = "Sell: Price is lower than the MA " + sellCurrentPrice + " > " + sellMovingAverage * (1 + threshold);
+            sellAdvice = true;
+        } else {
+            sellAdviceMessage = "Hold: Price is around than the MA " + sellCurrentPrice + " ~= " + sellMovingAverage * (1 + threshold);
+            sellAdvice = false;
+        }
 
-            Stocks portfolioStock = entry.getKey();
-            int ownedQuantity = entry.getValue();
-            double purchasePrice = portfolioStock.getPriceHistory().get(portfolioStock.getPriceHistory().size() - 1); // Last price as purchase price
-            double profitPercentage = (currentPrice - purchasePrice) / purchasePrice;
+        // Buy Actions
+        if (random < 0.3) {
+            System.out.println(randomExcuses());
+            buyAction = randomExcuses();
+        } else {
 
-            // Stop-loss logic
+            if (buyAdvice){
+            do {
+                if (getCash() >= quantity * buyCurrentPrice) {
+                    buy(buyStock, quantity, buyCurrentPrice);
+                    dailyTradeCount++;
+
+                    buyAction = "Bought " + quantity + " units of " + buyStock.getSymbol() +
+                            " at price " + buyCurrentPrice;
+                    System.out.println(this.getName() + ": Bought " + quantity + " units of " + buyStock.getSymbol() +
+                            " at price " + buyCurrentPrice);
+                    break;
+                }
+
+                quantity--; // Reduce quantity by 1
+
+                if (quantity <= 0) {
+                    System.out.println(this.getName() + ": Not enough cash to buy stock " + buyStock.getSymbol());
+                    buyAction = "Not enough cash to buy stock " + buyStock.getSymbol();
+                    break;
+                }
+            } while (true);
+        }   else{
+                buyAction = "Hold";
+            }
+        }
+
+        // Sell Action
+        if (random < 0.3) {
+            System.out.println(randomExcuses());
+            sellAction = randomExcuses();
+        } else {
+
+            if (sellAdvice){
+                do {
+                    if (getStockPortfolio().get(sellStock) >= quantity) {
+                        sell(sellStock, quantity, sellCurrentPrice);
+                        dailyTradeCount++;
+
+                        sellAction = "Sold " + quantity + " units of " + sellStock.getSymbol() +
+                                " at price " + sellCurrentPrice;
+                        System.out.println(this.getName() + ": Sold " + quantity + " units of " + sellStock.getSymbol() +
+                                " at price " + sellCurrentPrice);
+                        break;
+                    }
+                    quantity--;
+
+                    if (quantity <= 0) {
+                        System.out.println("Not enough stock to sell.");
+                        sellAction = "Not enough stock to sell";
+                        break;
+                    }
+                } while (true);
+            }   else{
+                sellAction = "Hold";
+            }
+        }
+
+//        // Stop-loss and profit-grab checks for all owned stocks
+//        for (Map.Entry<Stocks, Integer> entry : new HashMap<>(getStockPortfolio()).entrySet()) {
+//            if (dailyTradeCount >= MAX_TRADES_PER_DAY) break;
+//
+//            Stocks portfolioStock = entry.getKey();
+//            int ownedQuantity = entry.getValue();
+//            double purchasePrice = portfolioStock.getPriceHistory().get(portfolioStock.getPriceHistory().size() - 1); // Last price as purchase price
+//            double profitPercentage = (currentPrice - purchasePrice) / purchasePrice;
+//
+////             Stop-loss logic
 //            if (profitPercentage <= -STOP_LOSS_PERCENTAGE) {
 //                sell(portfolioStock, ownedQuantity, currentPrice);
 //                dailyTradeCount++;
@@ -79,65 +170,11 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader {
 //                        portfolioStock.getSymbol() + " at price " + currentPrice);
 //                return; // Exit after executing profit-grab
 //            }
-        }
+//        }
 
-        // Simulate trader's action (random excuse or actual action)
-        if (random < 0.1) {
-            System.out.println(randomExcuses());
-            action = randomExcuses();
-            return;
-        } else {
-            // SELL
-            if (advice.equals("Sell") && getStockPortfolio().containsKey(stock)) {
-                do {
-                    if (getStockPortfolio().get(stock) >= quantity) {
-                        sell(stock, quantity, currentPrice);
-                        dailyTradeCount++;
 
-                        action = "Sold " + quantity + " units of " + stock.getSymbol() +
-                                " at price " + currentPrice;
-                        System.out.println(this.getName() + ": Sold " + quantity + " units of " + stock.getSymbol() +
-                                " at price " + currentPrice);
-                        break;
-                    }
-                    quantity--;
-
-                    if (quantity <= 0) {
-                        System.out.println("Not enough stock to sell.");
-                        action = "Not enough stock to sell";
-                        break;
-                    }
-                } while (true);
-            }
-            // BUY
-            else if (advice.equals("Buy")) {
-                do {
-                    if (getCash() >= quantity * currentPrice) {
-                        buy(stock, quantity, currentPrice);
-                        dailyTradeCount++;
-
-                        action = "Bought " + quantity + " units of " + stock.getSymbol() +
-                                " at price " + currentPrice;
-                        System.out.println(this.getName() + ": Bought " + quantity + " units of " + stock.getSymbol() +
-                                " at price " + currentPrice);
-                        break;
-                    }
-
-                    quantity--; // Reduce quantity by 1
-
-                    if (quantity <= 0) {
-                        System.out.println(this.getName() + ": Not enough cash to buy stock " + stock.getSymbol());
-                        action = "Not enough cash to buy stock " + stock.getSymbol();
-                        break;
-                    }
-                } while (true);
-            } else {
-                action = "Hold";
-                System.out.println(this.getName() + ": Hold stock, price is within the threshold range of the moving average.");
-            }
-        }
-
-        getAdvice_VS_action().put(advice, action);
+        getBuy_Advice_VS_action().put(buyAdviceMessage, buyAction);
+        getSell_Advice_VS_action().put(sellAdviceMessage, sellAction);
     }
 
     public String getName() {

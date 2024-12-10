@@ -126,7 +126,9 @@ public abstract class Trader {
 
     public abstract double calculate(int period, List<Double> priceHistory);
 
-    public abstract void execute(Stocks stock, int quantity);
+    public abstract void execute(MarketSimulator market,Stocks stock, int quantity);
+
+
 
     public String getName() {
         return name;

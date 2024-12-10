@@ -19,7 +19,7 @@ public class RandomTrader extends Trader {
     }
 
     @Override
-    public void execute(Stocks stock, int quantity) {
+    public void execute(MarketSimulator market,Stocks stock, int quantity) {
         if (dailyOperationCount >= MAX_DAILY_OPERATIONS) {
             System.out.println(this.getName() + ": Reached daily operation limit.");
             return; // Skip execution if daily limit is reached
@@ -27,6 +27,14 @@ public class RandomTrader extends Trader {
 
         boolean buyOrSell = random.nextBoolean();
         double currentPrice = stock.getPrice();
+        double random = Math.random();
+        String advice;
+        String action;
+
+        if (random < 0.5) {
+            System.out.println(randomExcuses());
+            action = randomExcuses();
+        }
 
         if (buyOrSell) { // Buy logic
             if (getCash() >= quantity * currentPrice) {

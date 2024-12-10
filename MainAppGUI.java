@@ -293,6 +293,9 @@ public class MainAppGUI extends Application {
         Button showTableButton = new Button("Show Trader Table");
         showTableButton.setOnAction(e -> showTraderTableWindow());
 
+         Button showTraderTradesButton = new Button("Type-based Trades");
+        showTraderTradesButton.setOnAction(e -> showTraderTotalTrades());
+
 
         if (!isphase1){
             autoSimulateButton.getStyleClass().add("phase2-inner-buttons");
@@ -301,6 +304,7 @@ public class MainAppGUI extends Application {
             downloadChartButton.getStyleClass().add("phase2-inner-buttons");
             backButton.getStyleClass().add("phase2-inner-buttons");
             showTableButton.getStyleClass().add("phase2-inner-buttons");
+            showTraderTradesButton.getStyleClass().add("phase2-inner-buttons");
         }
         else {
             autoSimulateButton.getStyleClass().add("phase1-inner-buttons");
@@ -309,12 +313,67 @@ public class MainAppGUI extends Application {
             downloadChartButton.getStyleClass().add("phase1-inner-buttons");
             backButton.getStyleClass().add("phase1-inner-buttons");
             showTableButton.getStyleClass().add("phase1-inner-buttons");
+            showTraderTradesButton.getStyleClass().add("phase1-inner-buttons");
 
         }
 
-        HBox buttonLayout = new HBox(10, autoSimulateButton, backButton, restartButton, showTableButton, downloadResultsButton, downloadChartButton);
+        HBox buttonLayout = new HBox(10, autoSimulateButton, backButton, restartButton, showTableButton,  showTraderTradesButton , downloadResultsButton, downloadChartButton);
         return buttonLayout;
     }
+
+      private void showTraderTotalTrades() {
+        // Create a new Stage (window)
+        Stage tableStage = new Stage();
+        tableStage.setTitle("Trader Total Trades");
+
+        // Create a TableView
+        TableView<Map.Entry<String, Integer>> traderTable = new TableView<>();
+        traderTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        // Create a column for Trader Type
+        TableColumn<Map.Entry<String, Integer>, String> traderTypeColumn = new TableColumn<>("Trader Type");
+        traderTypeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getKey()));
+
+        // Create a column for Total Trades
+        TableColumn<Map.Entry<String, Integer>, Integer> totalTradesColumn = new TableColumn<>("Total Trades");
+        totalTradesColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getValue()));
+
+        // Add the columns to the table
+        traderTable.getColumns().addAll(traderTypeColumn, totalTradesColumn);
+
+        // Populate the table with data
+        traderTable.setItems(getTraderTypeTotalTradesData());
+
+        // Create a layout and add the table
+        VBox layout = new VBox(10, traderTable);
+        layout.setStyle("-fx-padding: 20;");
+
+        // Set the scene and show the stage
+        Scene scene = new Scene(layout, 400, 300);
+        tableStage.setScene(scene);
+        tableStage.show();
+    }
+
+    // Helper method to prepare the data for the table
+    private ObservableList<Map.Entry<String, Integer>> getTraderTypeTotalTradesData() {
+        // Create a map to accumulate total trades by trader type
+        Map<String, Integer> traderTypeTotals = new HashMap<>();
+        traderTypeTotals.put("Trading Bot", 0);
+        traderTypeTotals.put("Knowledgeable Trader", 0);
+
+        // Sum up the total trades for each type
+        for (Trader trader : mainApp.listOfTraders) {
+            if (trader instanceof TradingBotTrader) {
+                traderTypeTotals.put("Trading Bot", traderTypeTotals.get("Trading Bot") + trader.getTotalTrades());
+            } else if (trader instanceof knowledgeableTrader){
+                traderTypeTotals.put("Knowledgeable Trader", traderTypeTotals.get("Knowledgeable Trader") + trader.getTotalTrades());
+            }
+        }
+
+        // Return the map entries as an ObservableList
+        return FXCollections.observableArrayList(traderTypeTotals.entrySet());
+    }
+
 
 
     private VBox createInfoPanel() {

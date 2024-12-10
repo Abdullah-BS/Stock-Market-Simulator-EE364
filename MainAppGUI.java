@@ -144,7 +144,7 @@ public class MainAppGUI extends Application {
 
         //create the Left Layout
         VBox infoPanel=createInfoPanel();
-        TableView<Trader> metricsTable = createMetricTable();
+        TableView<Trader> metricsTable = createMetricTable(true);
 
         VBox Leftlayout = new VBox(10,metricsTable,infoPanel);
 
@@ -206,7 +206,7 @@ public class MainAppGUI extends Application {
 
         //create the Left Layout
         VBox infoPanel=createInfoPanel();
-        TableView<Trader> metricsTable = createMetricTable();
+        TableView<Trader> metricsTable = createMetricTable(false);
 
         VBox Leftlayout = new VBox(10,metricsTable,infoPanel);
 
@@ -479,7 +479,7 @@ public class MainAppGUI extends Application {
     }
 
 
-    private TableView<Trader> createMetricTable() {
+    private TableView<Trader> createMetricTable(Boolean isPhase1) {
         TableView<Trader> metricTable = new TableView<>(traderObservableList);
         // to make column resize automatically
         metricTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -518,6 +518,12 @@ public class MainAppGUI extends Application {
         });
 
         metricTable.setMinWidth(580);
+        if (isPhase1){
+            metricTable.getStyleClass().add("metric-table1");
+        }
+        else {
+            metricTable.getStyleClass().add("metric-table2");
+        }
         return metricTable;
     }
 

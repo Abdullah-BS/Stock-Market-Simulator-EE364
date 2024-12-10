@@ -139,3 +139,135 @@
     -fx-background-color: WHITE;
 }
 
+/* Table styles Phase 1*/
+.metric-table1 {
+    -fx-background-color: #f4f4f4;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1px;
+    -fx-font-family: Arial, sans-serif;
+    -fx-font-size: 14px;
+    -fx-alignment: center;
+    -fx-text-fill: black; /* Default text color */
+}
+
+/* Header styles */
+.metric-table1 .column-header {
+    -fx-background-color: #3498db;
+    -fx-border-color: #0d3d66;    /* Darker border when clicked */
+    -fx-text-fill: #ffffff;       /* White text for header */
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-padding: 10px;
+}
+
+.metric-table1 .column-header .label {
+    -fx-text-fill: #ffffff;       /* White text for header */
+    -fx-font-size: 12px;
+}
+
+/* Column styles */
+.metric-table1 .table-column {
+    -fx-alignment: center;
+    -fx-font-size: 12px;
+    -fx-padding: 10px;
+    -fx-border-color: #cacaca;   /* Border color for columns */
+    -fx-border-width: 0 1px 0 0; /* Add vertical grid line between columns */
+}
+
+/* Row styles */
+.metric-table1 .table-row-cell {
+    -fx-border-color: #cacaca;
+    -fx-border-width: 0 0 1px 0;  /* Horizontal grid line for rows */
+}
+
+/* Specific text color for cells in rows */
+.metric-table1 .table-row-cell .table-cell {
+    -fx-text-fill: black;         /* Ensure text color in the cells is black */
+}
+
+/* Hover effect for rows */
+.metric-table1 .table-row-cell:hover {
+    -fx-cursor: hand;
+}
+
+/* Cell padding */
+.metric-table1 .table-cell {
+    -fx-padding: 0px;
+    -fx-text-fill: black;         /* Ensures text in cells is black */
+}
+
+/* Alternate row color */
+.metric-table1 .table-row-cell:even {
+    -fx-background-color: #efefef;
+}
+
+.metric-table1 .table-row-cell:odd {
+    -fx-background-color: #ffffff;
+}
+
+
+/* Table styles Phase 2*/
+.metric-table2 {
+    -fx-background-color: #f4f4f4;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1px;
+    -fx-font-family: Arial, sans-serif;
+    -fx-font-size: 14px;
+    -fx-alignment: center;
+    -fx-text-fill: black; /* Default text color */
+}
+
+/* Header styles */
+.metric-table2 .column-header {
+    -fx-background-color: #ff3232;;
+    -fx-border-color: #8f1b1b;
+    -fx-text-fill: #ffffff;       /* White text for header */
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-padding: 10px;
+}
+
+.metric-table2 .column-header .label {
+    -fx-text-fill: #ffffff;       /* White text for header */
+    -fx-font-size: 12px;
+}
+
+/* Column styles */
+.metric-table2 .table-column {
+    -fx-alignment: center;
+    -fx-font-size: 12px;
+    -fx-padding: 10px;
+    -fx-border-color: #cacaca;   /* Border color for columns */
+    -fx-border-width: 0 1px 0 0; /* Add vertical grid line between columns */
+}
+
+/* Row styles */
+.metric-table2 .table-row-cell {
+    -fx-border-color: #cacaca;
+    -fx-border-width: 0 0 1px 0;  /* Horizontal grid line for rows */
+}
+
+/* Specific text color for cells in rows */
+.metric-table2 .table-row-cell .table-cell {
+    -fx-text-fill: black;         /* Ensure text color in the cells is black */
+}
+
+/* Hover effect for rows */
+.metric-table2 .table-row-cell:hover {
+    -fx-cursor: hand;
+}
+
+/* Cell padding */
+.metric-table2 .table-cell {
+    -fx-padding: 0px;
+    -fx-text-fill: black;         /* Ensures text in cells is black */
+}
+
+/* Alternate row color */
+.metric-table2 .table-row-cell:even {
+    -fx-background-color: #efefef;
+}
+
+.metric-table2 .table-row-cell:odd {
+    -fx-background-color: #ffffff;
+}

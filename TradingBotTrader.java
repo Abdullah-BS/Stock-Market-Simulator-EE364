@@ -6,11 +6,16 @@ public class TradingBotTrader extends Trader {
     private static final double STOP_LOSS_PERCENTAGE = 0.10; // 10% stop-loss
     private static final double PROFIT_GRAB_PERCENTAGE = 0.35; // 35% profit-grab
     private Map<Stocks, Double> highestPriceTracker; // Track the highest price of each stock
+    private Map<Stocks, Integer> soldStocks; // Track sold stocks and the day they were sold
+    private static final int RECONSIDER_DAYS = 10; // Days to reconsider sold stocks
+    private Map<Stocks, Long> purchaseTimeTracker; // Track purchase time of stocks
 
     public TradingBotTrader(String name, int period, MarketSimulator market) {
         super(name, market);
         this.period = period;
         this.highestPriceTracker = new HashMap<>();
+        this.soldStocks = new HashMap<>(); // Initialize the sold stocks map
+        this.purchaseTimeTracker = new HashMap<>(); // Initialize the purchase time tracker
     }
 
     @Override
@@ -53,17 +58,16 @@ public class TradingBotTrader extends Trader {
             List<Double> priceHistory = s.getPriceHistory();
             if (priceHistory.size() >= period) {
                 double rsi = calculate(this.period, priceHistory);
-                double momentum = priceHistory.get(priceHistory.size() - 1) - priceHistory.get(0); // Entire history momentum
+                double momentum = priceHistory.get(priceHistory.size() - 1) - priceHistory.get(priceHistory.size() - 2); // Compare last two prices for momentum
                 double score = rsi - momentum; // Combine RSI and momentum
                 stockScores.put(s, score);
             }
         }
 
-        // Sort stocks based on their scores (ascending, lower RSI and higher momentum preferred)
+        // Buy top stocks based on scores
         List<Map.Entry<Stocks, Double>> sortedStocks = new ArrayList<>(stockScores.entrySet());
         sortedStocks.sort(Map.Entry.comparingByValue());
 
-        // Buy top stocks
         for (Map.Entry<Stocks, Double> entry : sortedStocks) {
             Stocks topStock = entry.getKey();
             double currentPrice = topStock.getPrice();
@@ -74,6 +78,7 @@ public class TradingBotTrader extends Trader {
                 int buyQuantity = Math.min(quantity, (int) (getCash() / currentPrice));
                 buy(topStock, buyQuantity, currentPrice);
                 highestPriceTracker.put(topStock, currentPrice); // Track the highest price
+                purchaseTimeTracker.put(topStock, System.currentTimeMillis()); // Track purchase time
                 System.out.println(this.getName() + ": Bought " + buyQuantity + " units of " + topStock.getSymbol() +
                         " at price $" + String.format("%.2f", currentPrice) + " (RSI: " + rsi + ")");
             }
@@ -100,12 +105,13 @@ public class TradingBotTrader extends Trader {
             double highestPrice = highestPriceTracker.get(stock);
             double purchasePrice = priceHistory.get(0); // Assuming the first price is the purchase price
             double profitPercentage = (currentPrice - purchasePrice) / purchasePrice;
-            double dropFromHighest = (currentPrice - highestPrice) / highestPrice;
 
-            // Stop-loss logic: Sell if current price drops significantly
-            if (profitPercentage <= -STOP_LOSS_PERCENTAGE || dropFromHighest <= -STOP_LOSS_PERCENTAGE) {
+            // Check if the stock is losing value
+            if (currentPrice < highestPrice * (1 - STOP_LOSS_PERCENTAGE)) {
                 sell(stock, ownedQuantity, currentPrice);
                 highestPriceTracker.remove(stock); // Reset the tracker after selling
+                soldStocks.put(stock, 0); // Mark the stock as sold with day count 0
+                purchaseTimeTracker.remove(stock); // Remove purchase time after selling
                 System.out.println(this.getName() + ": Sold (Stop Loss) " + ownedQuantity +
                         " units of " + stock.getSymbol() + " at price $" + String.format("%.2f", currentPrice));
             }
@@ -114,6 +120,8 @@ public class TradingBotTrader extends Trader {
             if (profitPercentage >= PROFIT_GRAB_PERCENTAGE) {
                 sell(stock, ownedQuantity, currentPrice);
                 highestPriceTracker.remove(stock); // Reset the tracker after selling
+                soldStocks.put(stock, 0); // Mark the stock as sold with day count 0
+                purchaseTimeTracker.remove(stock); // Remove purchase time after selling
                 System.out.println(this.getName() + ": Sold (Profit Grab) " + ownedQuantity +
                         " units of " + stock.getSymbol() + " at price $" + String.format("%.2f", currentPrice));
             }

@@ -21,7 +21,8 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader {
 
         try {
             double sum = 0.0;
-            for (int i = priceHistory.size() - period; i < priceHistory.size(); i++) {
+
+            for (int i = priceHistory.size() - period + 1; i < priceHistory.size(); i++) {
                 sum += priceHistory.get(i);
             }
             return sum / period;
@@ -31,7 +32,7 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader {
         }
     }
 
-    public void execute(Stocks stock, int quantity) {
+    public void execute(MarketSimulator market,Stocks stock, int quantity) {
         if (dailyTradeCount >= MAX_TRADES_PER_DAY) {
             System.out.println(this.getName() + ": Daily trade limit reached.");
             return;

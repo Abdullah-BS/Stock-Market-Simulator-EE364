@@ -3,9 +3,6 @@ import java.util.*;
 public class RSITrader extends Trader implements knowledgeableTrader {
 
     private int period;
-    private static final double STOP_LOSS_PERCENTAGE = 0.10; // 10% stop-loss
-    private static final double PROFIT_GRAB_PERCENTAGE = 0.35; // 35% profit-grab
-    private static final int MAX_TRADES_PER_DAY = 2; // Max trades allowed per day
 
     public RSITrader(String name, int period, MarketSimulator market) {
         super(name, market);  // Initialize parent class
@@ -45,10 +42,7 @@ public class RSITrader extends Trader implements knowledgeableTrader {
     @Override
     public void execute(MarketSimulator market,Stocks stock, int quantity) {
         // Check if daily trade limit is reached
-        if (dailyTradeCount  >= MAX_TRADES_PER_DAY) {
-            System.out.println(this.getName() + ": Daily trade limit reached.");
-            return;
-        }
+
 
         double random = Math.random();
         Random rand = new Random();
@@ -61,8 +55,9 @@ public class RSITrader extends Trader implements knowledgeableTrader {
 
         // Calculate RSI for buy and sell stocks
         double buyRSI = calculate(this.period, buyStock.getPriceHistory());
+        buyRSI = Math.round(buyRSI*100.0)/100.0;
         double sellRSI = calculate(this.period, sellStock.getPriceHistory());
-
+        sellRSI = Math.round(sellRSI*100.0)/100.0;
         double buyCurrentPrice = buyStock.getPrice();
         double sellCurrentPrice = sellStock.getPrice();
 
@@ -80,30 +75,27 @@ public class RSITrader extends Trader implements knowledgeableTrader {
 
         // Determine buy and sell advice based on RSI levels
         if (buyRSI<30) {
-            buyAdviceMessage = "Buy: RSI is Lower than the 30,  " + buyRSI + " <  30";
-            System.out.println("Buy: RSI is Lower than the 30,  " + buyRSI + " <  30");
+            buyAdviceMessage = "Buy: RSI is Lower than the 30,  ( " + Math.round(buyRSI*100.0)/100.0 + " <  30 )";
             buyAdvice = true;
         } else if (buyRSI<70&&buyRSI>30) {
-            buyAdviceMessage = "Hold: RSI is Between 30 and 70,  30 < " + buyRSI + " < 70 ";
-            System.out.println("Hold: RSI is Between 30 and 70,  30 < " + buyRSI + " < 70 ");
+            buyAdviceMessage = "Hold: RSI is Between 30 and 70, ( 30 < " + Math.round(buyRSI*100.0)/100.0 + " < 70 )";
             buyAdvice = false;
         }
         else {
-            buyAdviceMessage = "Don't buy RSI > 70, " + buyRSI + " >  70";
-            System.out.println("Don't buy RSI > 70, " + buyRSI + " >  70");
+            buyAdviceMessage = "Don't buy RSI > 70, ( " + Math.round(buyRSI*100.0)/100.0 + " >  70 )";
             BuyAction = false;
         }
 
         //Sell Advice
         if (sellRSI > 70) {
-            sellAdviceMessage = "Sell: Price is Higher than 70  " +  + sellRSI + " > 70" ;
+            sellAdviceMessage = "Sell: Price is Higher than 70,  ( " +  Math.round(sellRSI*100.0)/100.0 + " > 70 )" ;
             sellAdvice = true;
         }  else if (buyRSI<70 && buyRSI>30) {
-            sellAdviceMessage = "Hold: RSI is Between 30 and 70,  30 < " + sellRSI + " < 70 ";
+            sellAdviceMessage = "Hold: RSI is Between 30 and 70, ( 30 < " + Math.round(sellRSI*100.0)/100.0 + " < 70 )";
             sellAdvice = false;
         }
         else {
-            sellAdviceMessage = "Don't Sell RSI <30, " + sellRSI + " < 30";
+            sellAdviceMessage = "Don't Sell RSI <30, ( " + Math.round(sellRSI*100.0)/100.0 + " < 30 )";
             SellAction = false;
         }
 

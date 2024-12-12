@@ -66,7 +66,7 @@ public abstract class Trader {
         double totalCost = price * quantity;
         if (cash >= totalCost) {
             cash -= totalCost;
-            stockPortfolio.put(stock, stockPortfolio.getOrDefault(stock, 0) + quantity);
+            stockPortfolio.put(stock, stockPortfolio.getOrDefault(stock,0) + quantity);
             totalTrades++;
             return true; // Successful purchase
         } else {

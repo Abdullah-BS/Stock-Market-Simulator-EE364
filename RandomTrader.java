@@ -6,9 +6,7 @@ import java.util.Random;
 public class RandomTrader extends Trader {
 
     private final Random random;
-    private int dailyOperationCount; // Counter for daily operations
-    private static final int MAX_DAILY_OPERATIONS = 2; // Maximum operations per day
-    private int dailyTradeCount = 0;
+
 
     public RandomTrader(String name, MarketSimulator market) {
         super(name, market);
@@ -24,11 +22,6 @@ public class RandomTrader extends Trader {
     @Override
     public void execute(MarketSimulator market,Stocks stock, int quantity) {
         try {
-            // Check daily limit
-            if (dailyTradeCount >= MAX_DAILY_OPERATIONS) {
-                System.out.println(this.getName() + ": Reached daily operation limit.");
-                return;
-            }
 
             // Random decision to buy or sell
             boolean buyOrSell = new Random().nextBoolean();

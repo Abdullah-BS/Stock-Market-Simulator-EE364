@@ -58,13 +58,9 @@ public class MainAppGUI extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-//        mainApp = new MainApp();
-//        traderSeriesMap = new HashMap<>();
-//        traderObservableList = FXCollections.observableArrayList(mainApp.listOfTraders);
-
         primaryStage.getIcons().add(new Image("LOGO.jpg"));
 
-        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds(); // Get screen bounds
 
         // Set the stage size and position to fit within the screen
         primaryStage.setX(screenBounds.getMinX());
@@ -77,12 +73,13 @@ public class MainAppGUI extends Application {
 
 
         // Show the Main Menu scene initially
-        primaryStage.setScene(mainMenuScene);
-        primaryStage.show();
+        primaryStage.setScene(mainMenuScene); // Set the scene to the main menu
+        primaryStage.show(); // Display the stage
 
     }
 
     private void initializeMainMenu(Stage primaryStage) {
+        // Create Phase 1 button and set its action and style
         Button phase1Button = new Button("Phase 1");
         phase1Button.setOnAction(e -> initializePhase1(primaryStage));
         phase1Button.setPrefWidth(200);
@@ -90,20 +87,23 @@ public class MainAppGUI extends Application {
         phase1Button.getStyleClass().add("phase1-button");
 
 
+        // Create Phase 2 button and set its action and style
         Button phase2Button = new Button("Phase 2");
-//       Phase 2 yet to be implemented
         phase2Button.setOnAction(e -> initializePhase2(primaryStage));
         phase2Button.setPrefWidth(200);
         phase2Button.setPrefHeight(50);
         phase2Button.getStyleClass().add("phase2-button");
 
 
+        // Create image view for logo
         ImageView imageView = new ImageView(new Image("Trading-Bot.jpg"));
         imageView.setPreserveRatio(true);
 
+        // Layout for the buttons
         VBox menuLayout = new VBox(20, phase1Button, phase2Button);
         menuLayout.setStyle("-fx-alignment: center; -fx-padding: 20;");
 
+        // Root container for the scene
         StackPane root = new StackPane();
         root.getChildren().addAll(imageView, menuLayout);
 
@@ -111,6 +111,7 @@ public class MainAppGUI extends Application {
         // Reference to the style file to apply it into the main menu scene
         mainMenuScene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("styles.css")).toExternalForm());
 
+        // Set the scene and title for the primary stage
         primaryStage.setScene(mainMenuScene);
         primaryStage.setTitle("Market Simulator");
         primaryStage.show();
@@ -127,7 +128,7 @@ public class MainAppGUI extends Application {
         // create the Buttons layout
         HBox buttonLayout= creatButtonLayout(primaryStage, true);
 
-        //create the Top Layout
+        // Create the Top Layout with events and stock grid
         VBox eventsBox = createEventDisplay();
         stockGrid=creatStockGrid();
 
@@ -135,19 +136,19 @@ public class MainAppGUI extends Application {
         TopLayout.setStyle("-fx-alignment: center;");
 
 
-        //create the Right Layout
+        // Create the Right Layout with a line chart and trader circles
         LineChart<Number, Number> lineChart=createLineChart();
         HBox circlesLayout = createTraderCircles();
 
         VBox Rightlayout = new VBox(10,lineChart,circlesLayout);
 
-        //create the Left Layout
+        // Create the Left Layout with metrics table and info panel
         VBox infoPanel=createInfoPanel();
         TableView<Trader> metricsTable = createMetricTable(true);
 
         VBox Leftlayout = new VBox(10,metricsTable,infoPanel);
 
-        //create the Middle Layout
+        // Create the Bottom Layout combining Left and Right layouts
         HBox BottomLayout = new HBox(10,Leftlayout,Rightlayout);
 
 
@@ -161,27 +162,27 @@ public class MainAppGUI extends Application {
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("styles.css")).toExternalForm());
 
 
+        // Set the stage size and position to fit within the screen
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
         primaryStage.setX(screenBounds.getMinX());
         primaryStage.setY(screenBounds.getMinY());
         primaryStage.setWidth(screenBounds.getWidth());
         primaryStage.setHeight(screenBounds.getHeight());
 
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        primaryStage.setScene(scene); // Set the scene for the primary stage
+        primaryStage.show(); // Show the primary stage
 
-        initializeTimeline();
+        initializeTimeline(); // Initialize the timeline for Phase 1
     }
 
 
-    // YET TO BE IMPLEMENTED
     private void initializePhase2(Stage primaryStage) {
         isPhase1 = false; // Set the current phase to Phase 2
-        mainApp = new MainApp(false);
-        traderSeriesMap = new HashMap<>();
-        traderObservableList = FXCollections.observableArrayList(mainApp.listOfTraders);
+        mainApp = new MainApp(false); // Initialize the main app for Phase 2
+        traderSeriesMap = new HashMap<>(); // Initialize the map to store trader data
+        traderObservableList = FXCollections.observableArrayList(mainApp.listOfTraders); // Create an observable list of traders
 
-        primaryStage.setTitle("Market Simulation Phase 2");
+        primaryStage.setTitle("Market Simulation Phase 2"); // Set the stage title
 
         // create the Buttons layout
         HBox buttonLayout= creatButtonLayout(primaryStage, false);
@@ -206,7 +207,7 @@ public class MainAppGUI extends Application {
 
         VBox Leftlayout = new VBox(10,metricsTable,infoPanel);
 
-        //create the Middle Layout
+        // Create the Bottom Layout combining Left and Right layouts
         HBox BottomLayout = new HBox(10,Leftlayout,Rightlayout);
 
         // Create the Main layout using the above Layouts
@@ -219,33 +220,36 @@ public class MainAppGUI extends Application {
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("styles.css")).toExternalForm());
 
 
+        // Set the stage size and position to fit within the screen
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
         primaryStage.setX(screenBounds.getMinX());
         primaryStage.setY(screenBounds.getMinY());
         primaryStage.setWidth(screenBounds.getWidth());
         primaryStage.setHeight(screenBounds.getHeight());
 
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        primaryStage.setScene(scene); // Set the scene for the primary stage
+        primaryStage.show(); // Show the primary stage
 
-        initializeTimeline();
+        initializeTimeline(); // Initialize the timeline for Phase 2
     }
     private VBox createEventDisplay(){
 
-        dayCounterLabel = new Label("Day: 0"); // Initialize dayCounterLabel
-        dayCounterLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+        dayCounterLabel = new Label("Day: 0"); // Initialize the day counter label
+        dayCounterLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;"); // Style the day counter label
 
+        // Create a text area to display events
         eventsDisplay = new TextArea();
         eventsDisplay.setEditable(false);
-        eventsDisplay.setPrefHeight(300); // Increase height to accommodate more events
+        eventsDisplay.setPrefHeight(300);
         eventsDisplay.getStyleClass().add("text-area");
 
-        VBox eventsBox = new VBox(10, dayCounterLabel, eventsDisplay); // Include day counter with events display
-        eventsBox.setMinSize(580,100);
+        VBox eventsBox = new VBox(10, dayCounterLabel, eventsDisplay);
+        eventsBox.setMinSize(580, 100);
         eventsBox.setMaxHeight(200);
         return eventsBox;
     }
     private LineChart<Number, Number> createLineChart(){
+        // Create the X and Y axes for the line chart
         NumberAxis xAxis = new NumberAxis();
         xAxis.setLabel("Day");
 
@@ -253,6 +257,7 @@ public class MainAppGUI extends Application {
         yAxis.setLabel("Net Worth ($)");
         yAxis.setForceZeroInRange(false);
 
+        // Create the line chart with the X and Y axes
         lineChart = new LineChart<>(xAxis, yAxis);
         lineChart.setTitle("Trader Net Worth Over Time");
         lineChart.getStyleClass().add("chart");
@@ -260,19 +265,22 @@ public class MainAppGUI extends Application {
         lineChart.setLayoutY(100);
         lineChart.setMaxHeight(400);
 
+        // Add a series for each trader and add it to the chart
         for (Trader trader : mainApp.listOfTraders) {
             XYChart.Series<Number, Number> series = new XYChart.Series<>();
-            series.setName(trader.getName());
-            traderSeriesMap.put(trader.getName(), series);
-            lineChart.getData().add(series);
+            series.setName(trader.getName()); // Set series name to the trader's name
+            traderSeriesMap.put(trader.getName(), series); // Store series in the map
+            lineChart.getData().add(series); // Add series to the chart
         }
         return lineChart;
     }
 
     private HBox creatButtonLayout(Stage primaryStage, Boolean isphase1){
+        // Create the "Start Auto Simulation" button and handle its action
         ToggleButton autoSimulateButton = new ToggleButton("Start Auto Simulation");
         autoSimulateButton.setOnAction(e -> toggleSimulation(autoSimulateButton));
 
+        // Create other buttons and define their actions
         Button restartButton = new Button("Restart");
         restartButton.setOnAction(e -> ResetButton(primaryStage, false, true));
 
@@ -282,6 +290,7 @@ public class MainAppGUI extends Application {
         Button downloadChartButton = new Button("Download Chart");
         downloadChartButton.setOnAction(e -> downloadChart());
 
+        // Back button with stop simulation functionality
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
             if (simulationTimeline != null && simulationTimeline.getStatus() == Timeline.Status.RUNNING) {
@@ -290,6 +299,7 @@ public class MainAppGUI extends Application {
             ResetButton(primaryStage, true, isphase1);
         });
 
+        // Show trader table and show trades buttons
         Button showTableButton = new Button("Show Trader Table");
         showTableButton.setOnAction(e -> showTraderTableWindow());
 
@@ -297,6 +307,7 @@ public class MainAppGUI extends Application {
         showTraderTradesButton.setOnAction(e -> showTraderTotalTrades());
 
 
+        // Apply styles based on the phase (Phase 1 or Phase 2)
         if (!isphase1){
             autoSimulateButton.getStyleClass().add("phase2-inner-buttons");
             restartButton.getStyleClass().add("phase2-inner-buttons");
@@ -317,6 +328,7 @@ public class MainAppGUI extends Application {
 
         }
 
+        // Create and return a horizontal box (HBox) containing the buttons
         HBox buttonLayout = new HBox(10, autoSimulateButton, backButton, restartButton, showTableButton,  showTraderTradesButton , downloadResultsButton, downloadChartButton);
         return buttonLayout;
     }
@@ -474,27 +486,32 @@ public class MainAppGUI extends Application {
 
 
     private TableView<Trader>  createTraderTable(){
-
-
+        // Create a TableView for displaying traders' data
         TableView<Trader> table = new TableView<>(traderObservableList);
+
         // to make column resize automatically
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
 
+        // Create a column for Trader Name
         TableColumn<Trader, String> nameColumn = new TableColumn<>("Trader Name");
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 
+        // Create a column for Initial Cash, convert value to string for display
         TableColumn<Trader, String> initialCashColumn = new TableColumn<>("Starting Cash ($)");
         initialCashColumn.setCellValueFactory(cellData ->
                 new SimpleObjectProperty<>(cellData.getValue().initialCash).asString() // Directly access initialCash
         );
 
+        // Create a column for Current Cash
         TableColumn<Trader, Double> cashColumn = new TableColumn<>("Current Cash ($)");
         cashColumn.setCellValueFactory(new PropertyValueFactory<>("cash"));
 
+        // Create a column for Net Worth
         TableColumn<Trader, Double> netWorthColumn = new TableColumn<>("Net Worth ($)");
         netWorthColumn.setCellValueFactory(new PropertyValueFactory<>("netWorth"));
 
+        // Create a column for Trader Type, determine based on trader class type
         TableColumn<Trader, String> traderTypeColumn = new TableColumn<>("Trader Type");
         traderTypeColumn.setCellValueFactory(cellData -> {
             Trader trader = cellData.getValue();
@@ -511,6 +528,7 @@ public class MainAppGUI extends Application {
             return new SimpleStringProperty(traderType);
         });
 
+        // Add all columns to the table
         table.getColumns().addAll(nameColumn,initialCashColumn, cashColumn, netWorthColumn, traderTypeColumn);
 
         // Add a row selection listener
@@ -531,29 +549,34 @@ public class MainAppGUI extends Application {
 
 
     private TableView<Trader> createMetricTable(Boolean isPhase1) {
+        // Create a TableView for displaying traders' metrics
         TableView<Trader> metricTable = new TableView<>(traderObservableList);
         // to make column resize automatically
         metricTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         metricTable.setMinHeight(150);
 
-
-
+        // Create a column for Trader Name
         TableColumn<Trader, String> nameColumn = new TableColumn<>("Trader Name");
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 
+        // Create a column for Total Trades
         TableColumn<Trader, String> totalTradesColumn = new TableColumn<>("Total Trades");
         totalTradesColumn.setCellValueFactory(new PropertyValueFactory<>("totalTrades"));
 
+        // Create a column for Win Ratio
         TableColumn<Trader, Double> WinColumn = new TableColumn<>("Win Ratio");
         WinColumn.setCellValueFactory(new PropertyValueFactory<>("winCount"));
 
+        // Create a column for Loss Ratio
         TableColumn<Trader, Double> LossColumn = new TableColumn<>("Loss Ratio");
         LossColumn.setCellValueFactory(new PropertyValueFactory<>("lossCount"));
 
+        // Create a column for Average Profit per Trade
         TableColumn<Trader, Double> AvgProfitColumn = new TableColumn<>("Avg Profit/Trade");
         AvgProfitColumn.setCellValueFactory(new PropertyValueFactory<>("averageProfit"));
 
 
+        // Add all columns to the table
         metricTable.getColumns().addAll(nameColumn,totalTradesColumn, WinColumn, LossColumn,AvgProfitColumn);
 
         // Add a row selection listener
@@ -568,7 +591,10 @@ public class MainAppGUI extends Application {
             return row;
         });
 
+        // Set the minimum width of the table
         metricTable.setMinWidth(580);
+
+        // Apply different styles based on the phase
         if (isPhase1){
             metricTable.getStyleClass().add("metric-table1");
         }
@@ -579,46 +605,54 @@ public class MainAppGUI extends Application {
     }
 
     private GridPane creatStockGrid() {
+        // Create a new GridPane for the stock grid layout
         stockGrid = new GridPane();
-        stockGrid.setHgap(10);
-        stockGrid.setVgap(10);
+        stockGrid.setHgap(10);  // Set horizontal gap between cells
+        stockGrid.setVgap(10);  // Set vertical gap between cells
         stockGrid.setMaxSize(10000,100);
         stockGrid.setStyle("-fx-padding: 20;");
         stockGrid.setStyle("-fx-background-color: black; -fx-hgap: 2; -fx-vgap: 2; -fx-border-color: black; -fx-border-width: 4;");
 
+        // Loop through each row and column to create empty labels for the grid
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 11; col++) {
-                Label emptyLabel = new Label("                   ");
+                Label emptyLabel = new Label("                   ");  // Create a blank label
                 emptyLabel.setFont(Font.font(12));
                 emptyLabel.setStyle("-fx-background-color: lightgray; -fx-padding: 5;-fx-min-width: 110;");
-                stockGrid.add(emptyLabel, col, row);
+                stockGrid.add(emptyLabel, col, row);  // Add the label to the grid at the specified row and column
             }
         }
         return stockGrid;
     }
 
     private void populateStockGrid(GridPane stockGrid, ArrayList<Stocks> stockList) {
-        stockGrid.getChildren().clear();
+        stockGrid.getChildren().clear();  // Clear the grid
 
         int column = 0;
         int row = 0;
 
+        // Iterate through the stock list
         for (Stocks stock : stockList) {
             String formattedPrice = String.format("%.2f", stock.getPrice());
+
+            // Check if the price is increasing or stable
             if (stock.getPrice() >= stock.getPriceHistory().get(stock.getPriceHistory().size() - 2)) {
+                // Green background for price increase or stability
                 Label stockLabel = new Label(stock.getSymbol() + " - $" + formattedPrice);
                 stockLabel.setStyle("-fx-background-color: lightgreen; -fx-padding: 5; -fx-font-size: 12;-fx-border-color: white;-fx-border-width: 2;-fx-min-width: 110");
                 stockGrid.add(stockLabel, column, row);
 
                 column++;
             } else {
+                // Red background for price decrease
                 Label stockLabel = new Label(stock.getSymbol() + " - $" + formattedPrice);
                 stockLabel.setStyle("-fx-background-color: #FF9999; -fx-padding: 5; -fx-font-size: 12;-fx-border-color: white;-fx-border-width: 2; -fx-min-width: 110");
                 stockGrid.add(stockLabel, column, row);
 
-                column++;
+                column++;  // Move to the next column
             }
 
+            // Move to the next row if 11 columns are filled
             if (column == 11) {
                 column = 0;
                 row++;
@@ -689,9 +723,11 @@ public class MainAppGUI extends Application {
 
 
     private void ResetMainApp(Boolean isPhase1) {
+        // Reinitialize the MainApp instance based on the phase
         if (isPhase1 == true)
-        mainApp = new MainApp(true); // Reinitialize the MainApp instance
-        else mainApp = new MainApp(false);
+            mainApp = new MainApp(true);  // Initialize for Phase 1
+        else
+            mainApp = new MainApp(false); // Initialize for Phase 2
     }
 
     private void ResetButton(Stage primaryStage, boolean navigateToMainMenu, boolean isPhase1) {
@@ -722,39 +758,44 @@ public class MainAppGUI extends Application {
 
 
     private void initializeTimeline() {
+        // Create a Timeline to simulate each day every 0.5 seconds
         simulationTimeline = new Timeline(new KeyFrame(Duration.seconds(0.5), e -> simulateDay()));
         simulationTimeline.setCycleCount(Timeline.INDEFINITE);
     }
 
     private void toggleSimulation(ToggleButton button) {
+        // Check if the simulation is currently running
         if (simulationTimeline.getStatus() == Timeline.Status.RUNNING) {
-            simulationTimeline.stop();
-            button.setText("Start Auto Simulation");
+            simulationTimeline.stop();  // Stop the simulation
+            button.setText("Start Auto Simulation");  // Change button text to "Start"
         } else {
-            simulationTimeline.play();
-            button.setText("Stop Auto Simulation");
+            simulationTimeline.play();  // Start the simulation
+            button.setText("Stop Auto Simulation");  // Change button text to "Stop"
         }
     }
 
     private void simulateDay() {
+        // Simulate events for the day and increment the day counter
         List<String> dailyEvents = mainApp.simulateDay();
         day++;
         dayCounterLabel.setText("Day: " + day);
 
         // Update day counter
-
         eventsDisplay.appendText("--- Day " + day + " ---\n");
         eventsDisplay.appendText(String.join("\n", dailyEvents) + "\n");
 
         double minNetWorth = Double.MAX_VALUE;
         double maxNetWorth = Double.MIN_VALUE;
 
+        // Iterate through traders to calculate net worth and update chart
         for (Trader trader : mainApp.listOfTraders) {
             double netWorth = trader.calculateNetWorth(trader.getStockPortfolio());
             XYChart.Series<Number, Number> series = traderSeriesMap.get(trader.getName());
             if (series != null) {
                 series.getData().add(new XYChart.Data<>(day, netWorth));
             }
+
+            // Track the min and max net worth
             minNetWorth = Math.min(minNetWorth, netWorth);
             maxNetWorth = Math.max(maxNetWorth, netWorth);
 
@@ -764,9 +805,11 @@ public class MainAppGUI extends Application {
             trader.updateMetrics(isWinningTrade, profit);
         }
 
+        // Update global min and max net worth values
         globalMinNetWorth = Math.min(globalMinNetWorth, minNetWorth);
         globalMaxNetWorth = Math.max(globalMaxNetWorth, maxNetWorth);
 
+        // Adjust Y-axis range based on net worth values
         double padding = (globalMaxNetWorth - globalMinNetWorth) * 0.1;
         if (padding == 0) padding = 500;
         lineChart.getYAxis().setAutoRanging(false);
@@ -774,6 +817,7 @@ public class MainAppGUI extends Application {
         yAxis.setLowerBound(Math.max(0, globalMinNetWorth - padding));
         yAxis.setUpperBound(globalMaxNetWorth + padding);
 
+        // Update trader list and visual elements
         traderObservableList.setAll(mainApp.listOfTraders);
         ChangeCircleColors(CircleLayout);
         ArrayList<Stocks> stockList = mainApp.marketSimulator.getListStock();
@@ -794,8 +838,11 @@ public class MainAppGUI extends Application {
 
 
     private void showTraderInfoTable(Trader trader) {
+        // Create main layout for the trader info table
         VBox endLookPage= new VBox(10);
         endLookPage.setPrefSize(1700,500);
+
+        // Info panel header with trader name and daily metrics title
         HBox infoPanel = new HBox(18); // The main panel to hold labels and data
         infoPanel.getStyleClass().add("InfoPanel");
         infoPanel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;-fx-background-color: WHITE;-fx-border-color: black;-fx-border-width: 2;");
@@ -805,25 +852,31 @@ public class MainAppGUI extends Application {
         traderActionsTitle.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
         infoPanel.getChildren().add(traderActionsTitle);
         endLookPage.getChildren().add(infoPanel);
-        // A container to hold the trader's data (initial placeholder message is added initially)
+
+        // Containers for Buy and Sell advice vs. actions
         HBox traderBox = new HBox(5);
-        // Add 2 containers: buyBox (for Buy advices) and sellBox (for Sell advices)
         VBox buyBox = new VBox(10);
         VBox sellBox = new VBox(10);
+
+        // Titles for Buy and Sell sections
         Label buyTitle = new Label("\tBuy Advice vs Actions:");
         buyTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: green;-fx-border-color: Black;-fx-border-width: 2;-fx-background-color: white");
         buyTitle.setPrefSize(250,60);
         buyTitle.setMinHeight(60);
         buyBox.getChildren().add(buyTitle);
+
         Label sellTitle = new Label("\tSell Advice vs Actions:");
         sellTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: red;-fx-border-color: Black;-fx-border-width: 2;-fx-background-color: white");
         sellTitle.setPrefSize(250,60);
         sellTitle.setMinHeight(60);
         sellBox.getChildren().add(sellTitle);
         traderBox.getChildren().addAll(buyBox, sellBox);
+
+        // Initialize data maps for Buy and Sell advice vs. actions
         ObservableMap<String, String> buyAdviceVsAction = trader.getBuy_Advice_VS_action();
         ObservableMap<String, String> sellAdviceVsAction = trader.getSell_Advice_VS_action();
-        // Lambda to append new labels for Buy advice updates
+
+        // Listener to add new Buy advice-action pairs dynamically
         MapChangeListener<String, String> buyAdviceListener = change -> {
             if (change.wasAdded()) {
                 String newAdvice = change.getKey();
@@ -833,7 +886,8 @@ public class MainAppGUI extends Application {
                 buyBox.getChildren().add(newBuyLabel);
             }
         };
-        // Lambda to append new labels for Sell advice updates
+
+        // Listener to add new Sell advice-action pairs dynamically
         MapChangeListener<String, String> sellAdviceListener = change -> {
             if (change.wasAdded()) {
                 String newAdvice = change.getKey();
@@ -843,39 +897,40 @@ public class MainAppGUI extends Application {
                 sellBox.getChildren().add(newSellLabel);
             }
         };
+
+        // Apply styles to Buy and Sell boxes
         sellBox.setStyle("-fx-font-weight: bold; -fx-font-size: 12px;-fx-border-color: Black;-fx-border-width: 2;-fx-background-color: white");
+
         buyBox.setStyle("-fx-font-weight: bold; -fx-font-size: 12px;-fx-border-color: Black;-fx-border-width: 2;-fx-background-color: white");
         // Attach listeners to `buyAdviceVsAction` and `sellAdviceVsAction` maps
         buyAdviceVsAction.addListener(buyAdviceListener);
         sellAdviceVsAction.addListener(sellAdviceListener);
+
         // Populate initial data (if exists) for Buy
         if (!buyAdviceVsAction.isEmpty()) {
-//            Label dayHeaderLabel = new Label("Day Start - Buy Advice");
-//            dayHeaderLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: Black;-fx-border-color: black;-fx-border-width: 2;-fx-background-color: White;-fx-font-size: 12 ");
-//            buyBox.getChildren().add(dayHeaderLabel);
             for (Map.Entry<String, String> entry : buyAdviceVsAction.entrySet()) {
                 Label existingBuyLabel = new Label("  Advice: " + entry.getKey() + " ||  Action: " + entry.getValue());
                 buyBox.getChildren().add(existingBuyLabel);
             }
         }
-        // Populate initial data (if exists) for Sell
         if (!sellAdviceVsAction.isEmpty()) {
-//            Label dayHeaderLabel = new Label("Day Start - Sell Advice");
-//            dayHeaderLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: Black;-fx-border-color: black;-fx-border-width: 2;-fx-background-color: White;-fx-font-size: 12 ");
-//            sellBox.getChildren().add(dayHeaderLabel);
             for (Map.Entry<String, String> entry : sellAdviceVsAction.entrySet()) {
                 Label existingSellLabel = new Label("  Advice: " + entry.getKey() + " ||  Action: " + entry.getValue());
                 sellBox.getChildren().add(existingSellLabel);
             }
         }
+
         // Add trader's box to the main info panel
         endLookPage.getChildren().add(traderBox);
+
         // Add a separator
         Separator separator = new Separator();
         infoPanel.getChildren().add(separator);
+
         // Popup Stage
         Stage popupStage = new Stage();
         popupStage.setTitle("Trader Info - Daily Updates");
+
         // Use ScrollPane in case of large volume of data
         ScrollPane scrollPane = new ScrollPane(endLookPage);
         scrollPane.setFitToWidth(true);
@@ -886,21 +941,28 @@ public class MainAppGUI extends Application {
 
 
     private HBox createTraderCircles() {
+        // Layout to hold all trader circles
         CircleLayout = new HBox(10);
         CircleLayout.setStyle("-fx-alignment: center; -fx-padding: 20;");
 
+        // Loop through each trader in the observable list
         for (Trader trader : traderObservableList) {
+            // Create a circle for the trader
             Circle circle = new Circle(100);
             circle.setFill(Color.ORANGE);
 
+            // Add the trader's name inside the circle
             Text traderName = new Text(trader.getName());
             traderName.getStyleClass().add("circle-text");
 
+            // Combine the circle and text into a StackPane
             StackPane traderCircle = new StackPane(circle, traderName);
             traderCircle.setStyle("-fx-alignment: center;");
 
+            // Add the trader circle to the layout
             CircleLayout.getChildren().add(traderCircle);
 
+            // Set double-click event to show trader info table
             traderCircle.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2) { // Double-click to show metrics
                     showTraderInfoTable(trader);
@@ -912,13 +974,17 @@ public class MainAppGUI extends Application {
     }
 
     private void addTooltipsToChart() {
+        // Iterate over all traders in the application
         for (Trader trader : mainApp.listOfTraders) {
+            // Get the series corresponding to the trader
             XYChart.Series<Number, Number> series = traderSeriesMap.get(trader.getName());
             if (series != null) {
+                // Iterate over all data points in the series
                 for (XYChart.Data<Number, Number> data : series.getData()) {
                     Platform.runLater(() -> {
-                        Node node = data.getNode();
+                        Node node = data.getNode(); // Get the graphical node for the data point
                         if (node != null) {
+                            // Create a tooltip displaying detailed information about the data point
                             Tooltip tooltip = new Tooltip(
                                     "Day: " + data.getXValue() +
                                             "\nNet Worth: $" + String.format("%.2f", data.getYValue()) +
@@ -926,7 +992,7 @@ public class MainAppGUI extends Application {
                                             "\nAverage Profit: $" + String.format("%.2f", trader.getAverageProfitPerTrade()) +
                                             "\nWin/Loss Ratio: " + trader.getWinCount() + ":" + trader.getLossCount()
                             );
-                            Tooltip.install(node, tooltip);
+                            Tooltip.install(node, tooltip); // Attach the tooltip to the node
 
                             // Customize the node for better interaction
                             node.setOnMouseEntered(e -> node.setStyle("-fx-scale: 1.2; -fx-cursor: hand;"));
@@ -940,10 +1006,10 @@ public class MainAppGUI extends Application {
 
 
     private void ChangeCircleColors(HBox circleLayout) {
-        int traderIndex = 0;
+        int traderIndex = 0; // Initialize the trader index to track positions in the circle layout
 
         for (Trader trader : traderObservableList) {
-            ArrayList<Double> traderWorthHistory = trader.getWorthHistory();
+            ArrayList<Double> traderWorthHistory = trader.getWorthHistory(); // Get the trader's worth history
 
             // Check if the trader's worth history is not empty
             if (traderWorthHistory.isEmpty()) {
@@ -980,55 +1046,60 @@ public class MainAppGUI extends Application {
 
 
     private void showTraderTableWindow() {
+        // Create a new stage for displaying the trader table
         Stage tableStage = new Stage();
         tableStage.setTitle("Trader Details");
 
+        // Create a TableView containing trader data
         TableView<Trader> traderTable = createTraderTable();
+
+        // Add the table to a VBox layout
         VBox layout = new VBox(traderTable);
         layout.setStyle("-fx-padding: 20;");
 
+        // Configure the scene with the VBox layout
         Scene scene = new Scene(layout, 800, 600);
+
+        // Attach the scene to the stage and display it
         tableStage.setScene(scene);
         tableStage.show();
     }
-    private void showTraderPerformanceMetrics(Trader trader) {
-        Stage metricsStage = new Stage();
-        metricsStage.setTitle(trader.getName() + " - Performance Metrics");
-
-        Label totalTradesLabel = new Label("Total Trades: " + trader.getTotalTrades());
-        Label avgProfitLabel = new Label(String.format("Average Profit/Trade: $%.2f", trader.getAverageProfitPerTrade()));
-        Label winLossRatioLabel = new Label("Win/Loss Ratio: " + trader.getWinCount() + ":" + trader.getLossCount());
-
-        VBox metricsBox = new VBox(10, totalTradesLabel, avgProfitLabel, winLossRatioLabel);
-        metricsBox.setStyle("-fx-padding: 20; -fx-border-color: gray; -fx-border-width: 1; -fx-border-radius: 5;");
-
-        Scene scene = new Scene(metricsBox, 300, 200);
-        metricsStage.setScene(scene);
-        metricsStage.show();
-    }
 
     private void downloadResults() {
+        // Create a FileChooser for saving the results
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Results");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", ".csv"));
+
+        // Show the save dialog and get the chosen file
         File file = fileChooser.showSaveDialog(null);
 
         if (file != null) {
             try (PrintWriter writer = new PrintWriter(file)) {
+                // Write the header row for the CSV file
                 writer.println("Trader Name,Net Worth");
+
+                // Write trader data to the CSV file
                 for (Trader trader : mainApp.listOfTraders) {
                     writer.printf("%s,%.2f%n", trader.getName(), trader.getNetWorth());
                 }
+
+                // Show a success alert to the user
                 showAlert("Results saved successfully!");
+
             } catch (IOException e) {
+                // Print stack trace and show error alert
                 e.printStackTrace();
             }
         }
 
     } private void downloadChart() {
+        // Create a FileChooser for saving the chart
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Chart");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG Files", ".png"));
+
+        // Show the save dialog and get the chosen file
         File file = fileChooser.showSaveDialog(null);
 
         if (file != null) {

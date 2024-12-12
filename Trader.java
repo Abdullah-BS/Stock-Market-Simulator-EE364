@@ -200,7 +200,9 @@ public abstract class Trader {
         }
     }
 
+    // Generate random excuses for errors or missed opportunities
     public String randomExcuses() {
+        // Array of predefined excuses based on common scenarios traders might face
         this.excuses = new String[] {
                 this.name + " experienced an internet connection failure.",
                 this.name + " couldn't trade because the trading platform was temporarily unavailable.",
@@ -215,6 +217,7 @@ public abstract class Trader {
                 "A power outage stopped " + this.name + " from accessing the trading platform.",
                 this.name + " missed the opportunity due to a delay."
         };
+        // Select a random excuse from the list and return it
         String randomExcuse = excuses[(int) (Math.random() * excuses.length)];
         return randomExcuse;
     }

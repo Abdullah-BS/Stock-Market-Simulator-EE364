@@ -6,17 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="c6ff5412-655a-4591-a952-7c650bc3c03e" name="Changes" comment="phase 1 disscusion">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Event.java" beforeDir="false" afterPath="$PROJECT_DIR$/Event.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/MainApp.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainAppGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/MainAppGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MarketSimulator.java" beforeDir="false" afterPath="$PROJECT_DIR$/MarketSimulator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MovingAverageTrader.java" beforeDir="false" afterPath="$PROJECT_DIR$/MovingAverageTrader.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RSITrader.java" beforeDir="false" afterPath="$PROJECT_DIR$/RSITrader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RandomTrader.java" beforeDir="false" afterPath="$PROJECT_DIR$/RandomTrader.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Stocks.java" beforeDir="false" afterPath="$PROJECT_DIR$/Stocks.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MainAppGUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MainAppGUI.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MovingAverageTrader.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/MovingAverageTrader.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/RSITrader.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/RSITrader.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/RandomTrader.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/RandomTrader.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/Stocks.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Stock-Market-Simulator-EE364/Stocks.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,33 +52,33 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Java.executor": "Debug",
-    "Application.MainApp.executor": "Run",
-    "Application.MainAppGUI.executor": "Run",
-    "Application.test.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "main",
-    "ignore.preview.features.used": "true",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/JavaFX/javafx-sdk-17.0.13/lib",
-    "list.type.of.created.stylesheet": "CSS",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Libraries",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.editor",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Java.executor&quot;: &quot;Debug&quot;,
+    &quot;Application.MainApp.executor&quot;: &quot;Run&quot;,
+    &quot;Application.MainAppGUI.executor&quot;: &quot;Run&quot;,
+    &quot;Application.test.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.preview.features.used&quot;: &quot;true&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/JavaFX/javafx-sdk-17.0.13/lib&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.editor&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="Java" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="23" />
@@ -132,6 +128,7 @@
       <workItem from="1733765191253" duration="353000" />
       <workItem from="1733765555540" duration="2008000" />
       <workItem from="1733790490766" duration="9601000" />
+      <workItem from="1734019239639" duration="4493000" />
     </task>
     <task id="LOCAL-00001" summary="phase 1 disscusion">
       <option name="closed" value="true" />

@@ -17,9 +17,12 @@ public class MarketSimulator {
     private Map<Stocks, List<EventEffect>> ongoingEvents;
 
     public MarketSimulator() {
+        // Initialize lists and map to store stocks, events, and ongoing events
         listStock = new ArrayList<>();
         listEvent = new ArrayList<>();
         ongoingEvents = new HashMap<>();
+
+        // Load data from CSV files
         loadFiles(EVENT_CSV);
         loadFiles(STOCK_CSV);
     }
@@ -29,6 +32,8 @@ public class MarketSimulator {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
+
+                // Check if line represents stock data (more than 2 parts)
                 if (parts.length > 2) {
                     List<Double> priceHistory = new ArrayList<>();
 
@@ -39,19 +44,21 @@ public class MarketSimulator {
                         priceHistory.add(Double.parseDouble(parts[i]));
                     }
 
+                    // Add stock to the list
                     listStock.add(new Stocks(symbol, company, priceHistory));
 
                 } else {
+                    // Add event data to the list
                     listEvent.add(new Event(parts[0], Double.parseDouble(parts[1])));
                 }
             }
 
         } catch (IOException e) {
+            // Handle file reading errors
             System.out.println("Error reading file: " + e.getMessage());
         }
     }
 
-    // Apply an event's effect to a stock
     // Apply an event's effect to a stock with capping
     public void applyEventToStock(Stocks stock, Event event, double multiplier) {
         double originalPrice = stock.getPrice();
@@ -174,7 +181,6 @@ public class MarketSimulator {
         return elapsedDays < multipliers.length ? multipliers[elapsedDays] : 0.1; // Default to 10% for days beyond the array
     }
 
-    // Inner class to track ongoing event effects
     // Inner class to track ongoing event effects
     private static class EventEffect {
         private final Event event;

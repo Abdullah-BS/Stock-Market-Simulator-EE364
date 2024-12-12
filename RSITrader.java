@@ -8,8 +8,9 @@ public class RSITrader extends Trader implements knowledgeableTrader {
     private static final int MAX_TRADES_PER_DAY = 2; // Max trades allowed per day
 
     public RSITrader(String name, int period, MarketSimulator market) {
-        super(name, market);
-        this.period = period;
+        super(name, market);  // Initialize parent class
+        this.period = period; // Set the RSI period
+
     }
 
     @Override
@@ -19,6 +20,7 @@ public class RSITrader extends Trader implements knowledgeableTrader {
             double gain = 0;
             double loss = 0;
 
+            // Calculate gains and losses over the specified period
             for (int j = priceHistory.size() - period + 1; j < priceHistory.size(); j++) {
                 double change = priceHistory.get(j) - priceHistory.get(j - 1);
                 if (change > 0) {
@@ -28,9 +30,11 @@ public class RSITrader extends Trader implements knowledgeableTrader {
                 }
             }
 
+            // Calculate average gain and loss
             double avgGain = gain / period;
             double avgLoss = loss / period;
 
+            // Return RSI value (0-100)
             return avgLoss == 0 ? 100 : 100 - (100 / (1 + (avgGain / avgLoss)));
         } catch (Exception e) {
             System.out.println("Error calculating RSI: " + e.getMessage());
@@ -40,6 +44,7 @@ public class RSITrader extends Trader implements knowledgeableTrader {
 
     @Override
     public void execute(MarketSimulator market,Stocks stock, int quantity) {
+        // Check if daily trade limit is reached
         if (dailyTradeCount  >= MAX_TRADES_PER_DAY) {
             System.out.println(this.getName() + ": Daily trade limit reached.");
             return;
@@ -47,13 +52,14 @@ public class RSITrader extends Trader implements knowledgeableTrader {
 
         double random = Math.random();
         Random rand = new Random();
-        // Step 1: Calculate RSI for the buy and sell stocks
+
+        // Select random stocks from market and portfolio
         List<Stocks> marketStocks = market.getListStock();
         Stocks buyStock = marketStocks.get(rand.nextInt(marketStocks.size()-1));
-
         List<Stocks> portStocks = new ArrayList<>(stockPortfolio.keySet());
         Stocks sellStock = portStocks.get(rand.nextInt(portStocks.size()-1));
 
+        // Calculate RSI for buy and sell stocks
         double buyRSI = calculate(this.period, buyStock.getPriceHistory());
         double sellRSI = calculate(this.period, sellStock.getPriceHistory());
 
@@ -72,9 +78,7 @@ public class RSITrader extends Trader implements knowledgeableTrader {
         Boolean buyAdvice=true;
         Boolean sellAdvice=true;
 
-        // Determine the advice based on market conditions
-
-        // BUY Advice
+        // Determine buy and sell advice based on RSI levels
         if (buyRSI<30) {
             buyAdviceMessage = "Buy: RSI is Lower than the 30,  " + buyRSI + " <  30";
             System.out.println("Buy: RSI is Lower than the 30,  " + buyRSI + " <  30");
@@ -105,13 +109,14 @@ public class RSITrader extends Trader implements knowledgeableTrader {
 
 
 
-        // Step 3: Random excuses or actual execution
+        // Execute random excuses or actual buy/sell actions
         if (random < 0.3) {
             System.out.println(randomExcuses());
             buyAction = randomExcuses();
         } else {
             if (BuyAction) {
                 if (buyAdvice) {
+                    // Buy stock if enough cash is available
                     do {
                         if (getCash() >= quantity * buyCurrentPrice) {
                             buy(buyStock, quantity, buyCurrentPrice);
@@ -141,7 +146,7 @@ public class RSITrader extends Trader implements knowledgeableTrader {
             }
         }
 
-        // Sell Action
+        // Sell stock if applicable
         if (random < 0.3) {
             System.out.println(randomExcuses());
             sellAction = randomExcuses();
@@ -176,46 +181,13 @@ public class RSITrader extends Trader implements knowledgeableTrader {
             }
         }
 
+        // Store the advice vs action in a map for later analysis
         getBuy_Advice_VS_action().put(buyAdviceMessage, buyAction);
         getSell_Advice_VS_action().put(sellAdviceMessage, sellAction);
 
-        // Step 4: Stop-loss and profit-grab logic
-//        applyStopLossAndProfitGrab();
-
-        // Step 5: Store advice and action in the hashmap
-//        getBuy_Advice_VS_action().put(buyAdviceMessage, buyAction);
-//        getSell_Advice_VS_action().put(sellAdviceMessage, sellAction);
     }
 
-    // Helper method to process stop-loss and profit-grab logic
-//    private void applyStopLossAndProfitGrab() {
-//        Map<Stocks, Integer> portfolioCopy = new HashMap<>(getStockPortfolio());
-//
-//        for (Map.Entry<Stocks, Integer> entry : portfolioCopy.entrySet()) {
-//            if (super().dailyTradeCount  >= MAX_TRADES_PER_DAY) break;
-//
-//            Stocks portfolioStock = entry.getKey();
-//            int ownedQuantity = entry.getValue();
-//            double currentPrice = portfolioStock.getPrice();
-//            double purchasePrice = portfolioStock.getPriceHistory().get(0); // Assume first price is purchase price
-//            double profitPercentage = (currentPrice - purchasePrice) / purchasePrice;
-//
-//            // Stop-loss logic
-//            if (profitPercentage <= -STOP_LOSS_PERCENTAGE * 2) {
-//                sell(portfolioStock, ownedQuantity, currentPrice);
-//                super().dailyTradeCount ++;
-//                System.out.println(this.getName() + ": Sold (Stop Loss) " + ownedQuantity + " units of " +
-//                        portfolioStock.getSymbol() + " at price " + currentPrice);
-//            }
-//            // Profit-grab logic
-//            else if (profitPercentage >= PROFIT_GRAB_PERCENTAGE / 2) {
-//                sell(portfolioStock, ownedQuantity, currentPrice);
-//                super().dailyTradeCount ++;
-//                System.out.println(this.getName() + ": Sold (Profit Grab) " + ownedQuantity + " units of " +
-//                        portfolioStock.getSymbol() + " at price " + currentPrice);
-//            }
-//        }
-//    }
+
 
 
     @Override

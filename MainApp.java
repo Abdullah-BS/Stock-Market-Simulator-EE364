@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MainApp {
 
+    // Default period and variables for the market simulation
     public int period=5;
     public MarketSimulator marketSimulator;
     public ArrayList<Trader> listOfTraders;
@@ -22,7 +23,9 @@ public class MainApp {
 
     }
 
+    // Create traders depending on phase
     public void createListOfTraders(Boolean isPhase1){
+        // Assign different types of traders for phase 2
         if (isPhase1 == false) {
         int index=0;
             this.traderNames = new String[] {"Abdullah", "Ahmed", "Yamin", "Saud"};
@@ -47,6 +50,7 @@ public class MainApp {
 
             }
         } else {
+            // Assign different types of traders for phase 1
             int index = 0;
             for (String traderName : traderNames) {
                 if (index == 0) {
@@ -63,12 +67,14 @@ public class MainApp {
     }
     }
 
+    // Simulate one day of trading and return the daily report
     public List<String> simulateDay() {
 
 
         dayCounter++;
         System.out.println("\n--- Day " + dayCounter + " ---");
 
+        // Reset daily trade counts for traders
         for (Trader trader : listOfTraders) {
             trader.resetDailyTradeCount();
         }
@@ -84,19 +90,6 @@ public class MainApp {
         List<Stocks> listOfStocks = marketSimulator.getListStock();
         for (Trader trader : listOfTraders) {
             Stocks randomStock = listOfStocks.get(random.nextInt(listOfStocks.size()));
-//            Stocks portStock = null;
-//
-//            if (!trader.stockPortfolio.isEmpty()) {
-//                List<Stocks> stocksList = new ArrayList<>(trader.stockPortfolio.keySet());
-//                portStock = stocksList.get(random.nextInt(stocksList.size()));
-//                trader.execute(marketSimulator, portStock, quantity);
-//            }
-//
-//                trader.execute(marketSimulator, randomStock, quantity);
-//
-//                if (portStock != null) {
-//                    trader.execute(marketSimulator, portStock, quantity);
-//                }
             trader.execute(marketSimulator, randomStock, quantity);
 
         }
@@ -110,6 +103,7 @@ public class MainApp {
 
 
 
+    // Run the simulation with the user
     public void runSimulation() {
         Scanner scanner = new Scanner(System.in);
 
@@ -118,14 +112,15 @@ public class MainApp {
             String input = scanner.nextLine();
 
             if (input.equalsIgnoreCase("exit")) {
-                break;
+                break; // Exit if the user types 'exit'
             }
-            simulateDay();
-            printResults();
+            simulateDay(); // Simulate a day of trading
+            printResults(); // Print results after each day
         }
 
     }
 
+    // Print results of the simulation
     private void printResults() {
         System.out.println("\nInvestor Net Worth:");
         for (Trader trader : listOfTraders) {
@@ -135,19 +130,7 @@ public class MainApp {
         }
     }
 
-//    private void printWithDelay(String message) {
-//        System.out.println(message);
-//        try {
-//            TimeUnit.MILLISECONDS.sleep(500); // 0.5 second delay
-//        } catch (InterruptedException e) {
-//            Thread.currentThread().interrupt();
-//        }
-//    }
-
     // initialize the app
-
-
-
     public static void main (String[] args){
             MainApp app = new MainApp(true);
             app.runSimulation();

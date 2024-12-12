@@ -2,9 +2,8 @@ import java.util.*;
 
 public class MovingAverageTrader extends Trader implements knowledgeableTrader {
 
-    private int period;
-    private double threshold = 0.015;
- 
+    private int period; // Moving average period
+    private double threshold = 0.015; // Threshold for trading decision
     private static final int MAX_TRADES_PER_DAY = 2; // Max trades allowed per day
 
     public MovingAverageTrader(String name, int period, MarketSimulator market) {
@@ -12,6 +11,7 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader {
         this.period = period;
     }
 
+    // Calculate the moving average for the specified period
     public double calculate(int period, List<Double> priceHistory) {
         period = Math.min(period, priceHistory.size());
 
@@ -28,23 +28,26 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader {
         }
     }
 
+    // Execute a trading strategy based on moving average analysis
     public void execute(MarketSimulator market,Stocks stock, int quantity) {
         if (dailyTradeCount  >= MAX_TRADES_PER_DAY) {
             System.out.println(this.getName() + ": Daily trade limit reached.");
             return;
         }
 
+        // Random factor and market setup
         double random = Math.random();
         Random rand = new Random();
-
         List<Stocks> marketStocks = market.getListStock();
+
+        // Check if sufficient stocks are available in the market
         if (marketStocks.size() < 2) {
             System.out.println(this.getName() + ": Not enough stocks in the market for trading.");
             return;
         }
+
+        // Randomly select stocks for buy and sell actions
         Stocks buyStock = marketStocks.get(rand.nextInt(marketStocks.size()-1));
-
-
         List<Stocks> portStocks = new ArrayList<>(stockPortfolio.keySet());
         if (portStocks.size() < 2) {
             System.out.println(this.getName() + ": Not enough stocks in the portfolio to sell.");
@@ -53,24 +56,21 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader {
         Stocks sellStock = portStocks.get(rand.nextInt(portStocks.size()-1));
 
 
+        // Calculate moving averages for buy and sell stocks
         double buyMovingAverage = calculate(this.period, buyStock.getPriceHistory());
         double sellMovingAverage = calculate(this.period, sellStock.getPriceHistory());
-
         double buyCurrentPrice = buyStock.getPrice();
         double sellCurrentPrice = sellStock.getPrice();
 
+        // Initialize advice and action variables
         String buyAdviceMessage;
         String sellAdviceMessage;
-
         String buyAction;
         String sellAction;
-
         Boolean buyAdvice;
         Boolean sellAdvice;
 
-
-        // BUY Advice
-        // Determine the advice based on market conditions
+        // Generate buy advice based on moving average and threshold
         if (buyCurrentPrice < buyMovingAverage * (1 + threshold)) {
             buyAdviceMessage = "Buy: Price is Higher than the MA " + buyCurrentPrice + " < " + buyMovingAverage * (1 + threshold);
             buyAdvice = true;
@@ -79,7 +79,7 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader {
             buyAdvice = false;
         }
 
-        //Sell Advice
+        // Generate sell advice based on moving average and threshold
         if (sellCurrentPrice > sellMovingAverage * (1 + threshold)) {
             sellAdviceMessage = "Sell: Price is lower than the MA " + sellCurrentPrice + " > " + sellMovingAverage * (1 + threshold);
             sellAdvice = true;
@@ -88,7 +88,7 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader {
             sellAdvice = false;
         }
 
-        // Buy Actions
+        // Execute buy action based on advice
         if (random < 0.3) {
             System.out.println(randomExcuses());
             buyAction = randomExcuses();
@@ -120,7 +120,7 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader {
             }
         }
 
-        // Sell Action
+        // Execute sell action based on advice
         if (random < 0.3) {
             System.out.println(randomExcuses());
             sellAction = randomExcuses();
@@ -151,11 +151,12 @@ public class MovingAverageTrader extends Trader implements knowledgeableTrader {
             }
         }
 
-
+        // Log buy and sell advice with corresponding actions
         getBuy_Advice_VS_action().put(buyAdviceMessage, buyAction);
         getSell_Advice_VS_action().put(sellAdviceMessage, sellAction);
     }
 
+    // Override getName to include trader type
     public String getName() {
         return super.getName() + " (Moving Average)";
     }
